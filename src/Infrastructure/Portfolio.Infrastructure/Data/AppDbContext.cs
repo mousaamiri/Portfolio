@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Portfolio.Domain.Admins;
 using Portfolio.Domain.Entities.Educations;
 using Portfolio.Domain.Entities.Experiences;
 using Portfolio.Domain.Entities.Projects;
@@ -8,6 +9,8 @@ namespace Portfolio.Infrastructure.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
+    public DbSet<Admin> Admins => Set<Admin>();
+
     public DbSet<Education> Educations => Set<Education>();
     public DbSet<EducationTranslation> EducationTranslations => Set<EducationTranslation>();
 
