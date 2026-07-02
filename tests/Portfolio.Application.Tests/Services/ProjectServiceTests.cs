@@ -146,4 +146,67 @@ public class ProjectServiceTests
     }
 
     #endregion
+
+    #region GetByIdAsync
+
+    [Fact]
+    public async Task GetByIdAsync_WithValidId_ReturnsCorrectDto()
+    {
+        var projectId = Guid.NewGuid();
+        var project = CreateProject(id: projectId, title: "Found Project");
+
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(project);
+
+        var result = await _sut.GetByIdAsync(projectId, "en");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value!.Id.Should().Be(projectId);
+        result.Value.Title.Should().Be("Found Project");
+        result.Value.ImageUrl.Should().Be(project.ImageUrl);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_WithNonExistentId_ReturnsFailure()
+    {
+        var nonExistentId = Guid.NewGuid();
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(nonExistentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Project?)null);
+
+        var result = await _sut.GetByIdAsync(nonExistentId, "en");
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_SelectsCorrectLanguageTranslation()
+    {
+        var projectId = Guid.NewGuid();
+        var project = new Project
+        {
+            Id = projectId, ImageUrl = "img.png", DisplayOrder = 1,
+            IsActive = true, CreatedAt = DateTime.UtcNow
+        };
+        project.Translations.Add(new ProjectTranslation
+        {
+            Id = Guid.NewGuid(), ProjectId = projectId, Language = Language.En,
+            Title = "English", Description = "Desc EN", Technologies = "C#"
+        });
+        project.Translations.Add(new ProjectTranslation
+        {
+            Id = Guid.NewGuid(), ProjectId = projectId, Language = Language.Fa,
+            Title = "فارسی", Description = "توضیحات", Technologies = "سی‌شارپ"
+        });
+
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(project);
+
+        var result = await _sut.GetByIdAsync(projectId, "fa");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value!.Title.Should().Be("فارسی");
+    }
+
+    #endregion
 }
