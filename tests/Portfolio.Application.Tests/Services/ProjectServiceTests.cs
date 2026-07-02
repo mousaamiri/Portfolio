@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Moq;
+using Portfolio.Application.DTOs.Projects;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Services;
 using Portfolio.Domain.Entities.Projects;
@@ -206,6 +207,82 @@ public class ProjectServiceTests
 
         result.IsSuccess.Should().BeTrue();
         result.Value!.Title.Should().Be("فارسی");
+    }
+
+    #endregion
+
+    #region CreateAsync
+
+    [Fact]
+    public async Task CreateAsync_WithValidRequest_CallsAddAsyncAndSaveChanges()
+    {
+        var request = new CreateProjectRequest
+        {
+            ImageUrl = "https://example.com/image.png",
+            DemoUrl = "https://example.com/demo",
+            SourceCodeUrl = "https://github.com/test",
+            DisplayOrder = 1,
+            Translations =
+            [
+                new ProjectTranslationRequest
+                {
+                    LanguageCode = "en", Title = "My Project",
+                    Description = "Desc", Technologies = "C#"
+                }
+            ]
+        };
+
+        _unitOfWorkMock.Setup(u => u.Projects.AddAsync(It.IsAny<Project>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        var result = await _sut.CreateAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBe(Guid.Empty);
+        _unitOfWorkMock.Verify(u => u.Projects.AddAsync(It.IsAny<Project>(), It.IsAny<CancellationToken>()), Times.Once);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateAsync_MapsRequestToEntityCorrectly()
+    {
+        Project? capturedProject = null;
+        _unitOfWorkMock.Setup(u => u.Projects.AddAsync(It.IsAny<Project>(), It.IsAny<CancellationToken>()))
+            .Callback<Project, CancellationToken>((p, _) => capturedProject = p)
+            .Returns(Task.CompletedTask);
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        var request = new CreateProjectRequest
+        {
+            ImageUrl = "img.png",
+            DemoUrl = "demo.com",
+            SourceCodeUrl = "github.com",
+            DisplayOrder = 5,
+            Translations =
+            [
+                new ProjectTranslationRequest
+                {
+                    LanguageCode = "en", Title = "Title EN",
+                    Description = "Desc EN", Technologies = "C#"
+                },
+                new ProjectTranslationRequest
+                {
+                    LanguageCode = "fa", Title = "عنوان",
+                    Description = "توضیحات", Technologies = "سی‌شارپ"
+                }
+            ]
+        };
+
+        await _sut.CreateAsync(request);
+
+        capturedProject.Should().NotBeNull();
+        capturedProject!.ImageUrl.Should().Be("img.png");
+        capturedProject.DemoUrl.Should().Be("demo.com");
+        capturedProject.SourceCodeUrl.Should().Be("github.com");
+        capturedProject.DisplayOrder.Should().Be(5);
+        capturedProject.Translations.Should().HaveCount(2);
     }
 
     #endregion
