@@ -17,9 +17,14 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         return Result<IReadOnlyList<ProjectDto>>.Success(dtos);
     }
 
-    public Task<Result<ProjectDto>> GetByIdAsync(Guid id, string languageCode, CancellationToken cancellationToken = default)
+    public async Task<Result<ProjectDto>> GetByIdAsync(Guid id, string languageCode, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var project = await unitOfWork.Projects.GetByIdAsync(id, cancellationToken);
+        if (project is null)
+            return Result<ProjectDto>.Failure($"Project with id '{id}' was not found.");
+
+        var language = ParseLanguage(languageCode);
+        return Result<ProjectDto>.Success(MapToDto(project, language));
     }
 
     public Task<Result<Guid>> CreateAsync(CreateProjectRequest request, CancellationToken cancellationToken = default)
