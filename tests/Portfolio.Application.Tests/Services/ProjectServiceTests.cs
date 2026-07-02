@@ -383,4 +383,39 @@ public class ProjectServiceTests
     }
 
     #endregion
+
+    #region DeleteAsync
+
+    [Fact]
+    public async Task DeleteAsync_WithValidId_DeletesEntityAndSavesChanges()
+    {
+        var projectId = Guid.NewGuid();
+        var existingProject = CreateProject(id: projectId);
+
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingProject);
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        var result = await _sut.DeleteAsync(projectId);
+
+        result.IsSuccess.Should().BeTrue();
+        _unitOfWorkMock.Verify(u => u.Projects.Delete(existingProject), Times.Once);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WithNonExistentId_ReturnsFailure()
+    {
+        var nonExistentId = Guid.NewGuid();
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(nonExistentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Project?)null);
+
+        var result = await _sut.DeleteAsync(nonExistentId);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().NotBeNullOrEmpty();
+        _unitOfWorkMock.Verify(u => u.Projects.Delete(It.IsAny<Project>()), Times.Never);
+    }
+
+    #endregion
 }
