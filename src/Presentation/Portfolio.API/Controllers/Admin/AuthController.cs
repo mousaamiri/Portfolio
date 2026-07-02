@@ -20,4 +20,10 @@ public class AuthController(AuthService authService) : AdminControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("me")]
+    public IActionResult Me()
+    {
+        return Ok(new { Username = User.Identity?.Name });
+    }
 }
