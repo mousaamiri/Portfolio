@@ -60,9 +60,37 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         return Result<Guid>.Success(project.Id);
     }
 
-    public Task<Result<bool>> UpdateAsync(Guid id, UpdateProjectRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> UpdateAsync(Guid id, UpdateProjectRequest request, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var project = await unitOfWork.Projects.GetByIdAsync(id, cancellationToken);
+        if (project is null)
+            return Result<bool>.Failure($"Project with id '{id}' was not found.");
+
+        project.ImageUrl = request.ImageUrl;
+        project.DemoUrl = request.DemoUrl;
+        project.SourceCodeUrl = request.SourceCodeUrl;
+        project.DisplayOrder = request.DisplayOrder;
+        project.IsActive = request.IsActive;
+        project.UpdatedAt = DateTime.UtcNow;
+
+        project.Translations.Clear();
+        foreach (var t in request.Translations)
+        {
+            project.Translations.Add(new ProjectTranslation
+            {
+                Id = Guid.NewGuid(),
+                ProjectId = project.Id,
+                Language = ParseLanguage(t.LanguageCode),
+                Title = t.Title,
+                Description = t.Description,
+                Technologies = t.Technologies
+            });
+        }
+
+        unitOfWork.Projects.Update(project);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result<bool>.Success(true);
     }
 
     public Task<Result<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
