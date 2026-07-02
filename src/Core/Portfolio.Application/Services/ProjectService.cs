@@ -93,9 +93,16 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         return Result<bool>.Success(true);
     }
 
-    public Task<Result<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var project = await unitOfWork.Projects.GetByIdAsync(id, cancellationToken);
+        if (project is null)
+            return Result<bool>.Failure($"Project with id '{id}' was not found.");
+
+        unitOfWork.Projects.Delete(project);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result<bool>.Success(true);
     }
 
     private static Language ParseLanguage(string languageCode)
