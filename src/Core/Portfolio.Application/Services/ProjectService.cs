@@ -2,6 +2,7 @@ using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Projects;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
+using Portfolio.Domain.Entities.Projects;
 using Portfolio.Domain.Enums;
 
 namespace Portfolio.Application.Services;
@@ -27,9 +28,36 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         return Result<ProjectDto>.Success(MapToDto(project, language));
     }
 
-    public Task<Result<Guid>> CreateAsync(CreateProjectRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<Guid>> CreateAsync(CreateProjectRequest request, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var project = new Project
+        {
+            Id = Guid.NewGuid(),
+            ImageUrl = request.ImageUrl,
+            DemoUrl = request.DemoUrl,
+            SourceCodeUrl = request.SourceCodeUrl,
+            DisplayOrder = request.DisplayOrder,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        foreach (var t in request.Translations)
+        {
+            project.Translations.Add(new ProjectTranslation
+            {
+                Id = Guid.NewGuid(),
+                ProjectId = project.Id,
+                Language = ParseLanguage(t.LanguageCode),
+                Title = t.Title,
+                Description = t.Description,
+                Technologies = t.Technologies
+            });
+        }
+
+        await unitOfWork.Projects.AddAsync(project, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result<Guid>.Success(project.Id);
     }
 
     public Task<Result<bool>> UpdateAsync(Guid id, UpdateProjectRequest request, CancellationToken cancellationToken = default)
