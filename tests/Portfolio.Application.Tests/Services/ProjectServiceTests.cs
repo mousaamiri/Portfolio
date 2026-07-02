@@ -286,4 +286,101 @@ public class ProjectServiceTests
     }
 
     #endregion
+
+    #region UpdateAsync
+
+    [Fact]
+    public async Task UpdateAsync_WithValidId_UpdatesEntityAndSavesChanges()
+    {
+        var projectId = Guid.NewGuid();
+        var existingProject = CreateProject(id: projectId);
+
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingProject);
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        var request = new UpdateProjectRequest
+        {
+            ImageUrl = "new-image.png",
+            DemoUrl = "new-demo.com",
+            SourceCodeUrl = "new-github.com",
+            DisplayOrder = 10,
+            IsActive = false,
+            Translations =
+            [
+                new ProjectTranslationRequest
+                {
+                    LanguageCode = "en", Title = "Updated Title",
+                    Description = "Updated Desc", Technologies = "Go"
+                }
+            ]
+        };
+
+        var result = await _sut.UpdateAsync(projectId, request);
+
+        result.IsSuccess.Should().BeTrue();
+        _unitOfWorkMock.Verify(u => u.Projects.Update(It.IsAny<Project>()), Times.Once);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithNonExistentId_ReturnsFailure()
+    {
+        var nonExistentId = Guid.NewGuid();
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(nonExistentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Project?)null);
+
+        var request = new UpdateProjectRequest
+        {
+            ImageUrl = "img.png", DisplayOrder = 1, IsActive = true, Translations = []
+        };
+
+        var result = await _sut.UpdateAsync(nonExistentId, request);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().NotBeNullOrEmpty();
+        _unitOfWorkMock.Verify(u => u.Projects.Update(It.IsAny<Project>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_MapsRequestFieldsToEntity()
+    {
+        var projectId = Guid.NewGuid();
+        var existingProject = CreateProject(id: projectId);
+
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingProject);
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        Project? capturedProject = null;
+        _unitOfWorkMock.Setup(u => u.Projects.Update(It.IsAny<Project>()))
+            .Callback<Project>(p => capturedProject = p);
+
+        var request = new UpdateProjectRequest
+        {
+            ImageUrl = "updated.png",
+            DemoUrl = "updated-demo.com",
+            SourceCodeUrl = "updated-src.com",
+            DisplayOrder = 99,
+            IsActive = false,
+            Translations =
+            [
+                new ProjectTranslationRequest
+                {
+                    LanguageCode = "en", Title = "Updated", Description = "New Desc", Technologies = "Rust"
+                }
+            ]
+        };
+
+        await _sut.UpdateAsync(projectId, request);
+
+        capturedProject.Should().NotBeNull();
+        capturedProject!.ImageUrl.Should().Be("updated.png");
+        capturedProject.DemoUrl.Should().Be("updated-demo.com");
+        capturedProject.SourceCodeUrl.Should().Be("updated-src.com");
+        capturedProject.DisplayOrder.Should().Be(99);
+        capturedProject.IsActive.Should().BeFalse();
+    }
+
+    #endregion
 }
