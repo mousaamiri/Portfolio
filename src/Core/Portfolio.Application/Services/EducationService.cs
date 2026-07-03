@@ -64,7 +64,7 @@ public class EducationService(IUnitOfWork unitOfWork) : IEducationService
 
     public async Task<Result<bool>> UpdateAsync(Guid id, UpdateEducationRequest request, CancellationToken cancellationToken = default)
     {
-        var education = await unitOfWork.Educations.GetByIdAsync(id, cancellationToken);
+        var education = await unitOfWork.Educations.GetByIdWithTranslationsAsync(id, cancellationToken);
         if (education is null)
             return Result<bool>.Failure($"Education with id '{id}' was not found.");
 
@@ -91,7 +91,6 @@ public class EducationService(IUnitOfWork unitOfWork) : IEducationService
             });
         }
 
-        unitOfWork.Educations.Update(education);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<bool>.Success(true);

@@ -240,7 +240,7 @@ public class EducationServiceTests
     {
         var eduId = Guid.NewGuid();
         var existing = CreateEducation(id: eduId);
-        _unitOfWorkMock.Setup(u => u.Educations.GetByIdAsync(eduId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        _unitOfWorkMock.Setup(u => u.Educations.GetByIdWithTranslationsAsync(eduId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
         var request = new UpdateEducationRequest
@@ -253,7 +253,6 @@ public class EducationServiceTests
         var result = await _sut.UpdateAsync(eduId, request);
 
         result.IsSuccess.Should().BeTrue();
-        _unitOfWorkMock.Verify(u => u.Educations.Update(It.IsAny<Education>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -261,7 +260,7 @@ public class EducationServiceTests
     public async Task UpdateAsync_WithNonExistentId_ReturnsFailure()
     {
         var id = Guid.NewGuid();
-        _unitOfWorkMock.Setup(u => u.Educations.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync((Education?)null);
+        _unitOfWorkMock.Setup(u => u.Educations.GetByIdWithTranslationsAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync((Education?)null);
 
         var request = new UpdateEducationRequest
         {
@@ -270,7 +269,7 @@ public class EducationServiceTests
         var result = await _sut.UpdateAsync(id, request);
 
         result.IsSuccess.Should().BeFalse();
-        _unitOfWorkMock.Verify(u => u.Educations.Update(It.IsAny<Education>()), Times.Never);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -278,11 +277,8 @@ public class EducationServiceTests
     {
         var eduId = Guid.NewGuid();
         var existing = CreateEducation(id: eduId);
-        _unitOfWorkMock.Setup(u => u.Educations.GetByIdAsync(eduId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        _unitOfWorkMock.Setup(u => u.Educations.GetByIdWithTranslationsAsync(eduId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
-
-        Education? captured = null;
-        _unitOfWorkMock.Setup(u => u.Educations.Update(It.IsAny<Education>())).Callback<Education>(e => captured = e);
 
         var newStart = new DateTime(2021, 9, 1, 0, 0, 0, DateTimeKind.Utc);
         var newEnd = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -295,13 +291,12 @@ public class EducationServiceTests
 
         await _sut.UpdateAsync(eduId, request);
 
-        captured.Should().NotBeNull();
-        captured!.InstitutionLogo.Should().Be("updated.png");
-        captured.InstitutionUrl.Should().Be("updated.com");
-        captured.StartDate.Should().Be(newStart);
-        captured.EndDate.Should().Be(newEnd);
-        captured.Gpa.Should().Be(3.2);
-        captured.IsActive.Should().BeFalse();
+        existing.InstitutionLogo.Should().Be("updated.png");
+        existing.InstitutionUrl.Should().Be("updated.com");
+        existing.StartDate.Should().Be(newStart);
+        existing.EndDate.Should().Be(newEnd);
+        existing.Gpa.Should().Be(3.2);
+        existing.IsActive.Should().BeFalse();
     }
 
     #endregion

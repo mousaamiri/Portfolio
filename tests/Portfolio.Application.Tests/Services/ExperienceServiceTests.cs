@@ -235,7 +235,7 @@ public class ExperienceServiceTests
     {
         var expId = Guid.NewGuid();
         var existing = CreateExperience(id: expId);
-        _unitOfWorkMock.Setup(u => u.Experiences.GetByIdAsync(expId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        _unitOfWorkMock.Setup(u => u.Experiences.GetByIdWithTranslationsAsync(expId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
         var request = new UpdateExperienceRequest
@@ -247,7 +247,6 @@ public class ExperienceServiceTests
         var result = await _sut.UpdateAsync(expId, request);
 
         result.IsSuccess.Should().BeTrue();
-        _unitOfWorkMock.Verify(u => u.Experiences.Update(It.IsAny<Experience>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -255,7 +254,7 @@ public class ExperienceServiceTests
     public async Task UpdateAsync_WithNonExistentId_ReturnsFailure()
     {
         var id = Guid.NewGuid();
-        _unitOfWorkMock.Setup(u => u.Experiences.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync((Experience?)null);
+        _unitOfWorkMock.Setup(u => u.Experiences.GetByIdWithTranslationsAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync((Experience?)null);
 
         var request = new UpdateExperienceRequest
         {
@@ -264,7 +263,7 @@ public class ExperienceServiceTests
         var result = await _sut.UpdateAsync(id, request);
 
         result.IsSuccess.Should().BeFalse();
-        _unitOfWorkMock.Verify(u => u.Experiences.Update(It.IsAny<Experience>()), Times.Never);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -272,11 +271,8 @@ public class ExperienceServiceTests
     {
         var expId = Guid.NewGuid();
         var existing = CreateExperience(id: expId);
-        _unitOfWorkMock.Setup(u => u.Experiences.GetByIdAsync(expId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        _unitOfWorkMock.Setup(u => u.Experiences.GetByIdWithTranslationsAsync(expId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
-
-        Experience? captured = null;
-        _unitOfWorkMock.Setup(u => u.Experiences.Update(It.IsAny<Experience>())).Callback<Experience>(e => captured = e);
 
         var newStart = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var newEnd = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -289,12 +285,11 @@ public class ExperienceServiceTests
 
         await _sut.UpdateAsync(expId, request);
 
-        captured.Should().NotBeNull();
-        captured!.CompanyLogo.Should().Be("updated.png");
-        captured.CompanyUrl.Should().Be("updated.com");
-        captured.StartDate.Should().Be(newStart);
-        captured.EndDate.Should().Be(newEnd);
-        captured.IsActive.Should().BeFalse();
+        existing.CompanyLogo.Should().Be("updated.png");
+        existing.CompanyUrl.Should().Be("updated.com");
+        existing.StartDate.Should().Be(newStart);
+        existing.EndDate.Should().Be(newEnd);
+        existing.IsActive.Should().BeFalse();
     }
 
     #endregion

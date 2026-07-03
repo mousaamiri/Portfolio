@@ -295,7 +295,7 @@ public class ProjectServiceTests
         var projectId = Guid.NewGuid();
         var existingProject = CreateProject(id: projectId);
 
-        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdWithTranslationsAsync(projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProject);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
@@ -319,7 +319,6 @@ public class ProjectServiceTests
         var result = await _sut.UpdateAsync(projectId, request);
 
         result.IsSuccess.Should().BeTrue();
-        _unitOfWorkMock.Verify(u => u.Projects.Update(It.IsAny<Project>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -327,7 +326,7 @@ public class ProjectServiceTests
     public async Task UpdateAsync_WithNonExistentId_ReturnsFailure()
     {
         var nonExistentId = Guid.NewGuid();
-        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(nonExistentId, It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdWithTranslationsAsync(nonExistentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Project?)null);
 
         var request = new UpdateProjectRequest
@@ -339,7 +338,7 @@ public class ProjectServiceTests
 
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().NotBeNullOrEmpty();
-        _unitOfWorkMock.Verify(u => u.Projects.Update(It.IsAny<Project>()), Times.Never);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -348,13 +347,9 @@ public class ProjectServiceTests
         var projectId = Guid.NewGuid();
         var existingProject = CreateProject(id: projectId);
 
-        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdWithTranslationsAsync(projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProject);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
-
-        Project? capturedProject = null;
-        _unitOfWorkMock.Setup(u => u.Projects.Update(It.IsAny<Project>()))
-            .Callback<Project>(p => capturedProject = p);
 
         var request = new UpdateProjectRequest
         {
@@ -374,12 +369,11 @@ public class ProjectServiceTests
 
         await _sut.UpdateAsync(projectId, request);
 
-        capturedProject.Should().NotBeNull();
-        capturedProject!.ImageUrl.Should().Be("updated.png");
-        capturedProject.DemoUrl.Should().Be("updated-demo.com");
-        capturedProject.SourceCodeUrl.Should().Be("updated-src.com");
-        capturedProject.DisplayOrder.Should().Be(99);
-        capturedProject.IsActive.Should().BeFalse();
+        existingProject.ImageUrl.Should().Be("updated.png");
+        existingProject.DemoUrl.Should().Be("updated-demo.com");
+        existingProject.SourceCodeUrl.Should().Be("updated-src.com");
+        existingProject.DisplayOrder.Should().Be(99);
+        existingProject.IsActive.Should().BeFalse();
     }
 
     #endregion

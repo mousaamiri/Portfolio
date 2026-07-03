@@ -61,7 +61,7 @@ public class SkillService(IUnitOfWork unitOfWork) : ISkillService
 
     public async Task<Result<bool>> UpdateAsync(Guid id, UpdateSkillRequest request, CancellationToken cancellationToken = default)
     {
-        var skill = await unitOfWork.Skills.GetByIdAsync(id, cancellationToken);
+        var skill = await unitOfWork.Skills.GetByIdWithTranslationsAsync(id, cancellationToken);
         if (skill is null)
             return Result<bool>.Failure($"Skill with id '{id}' was not found.");
 
@@ -85,7 +85,6 @@ public class SkillService(IUnitOfWork unitOfWork) : ISkillService
             });
         }
 
-        unitOfWork.Skills.Update(skill);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<bool>.Success(true);

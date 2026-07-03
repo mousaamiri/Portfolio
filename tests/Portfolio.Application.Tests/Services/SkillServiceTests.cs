@@ -226,7 +226,7 @@ public class SkillServiceTests
     {
         var skillId = Guid.NewGuid();
         var existing = CreateSkill(id: skillId);
-        _unitOfWorkMock.Setup(u => u.Skills.GetByIdAsync(skillId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        _unitOfWorkMock.Setup(u => u.Skills.GetByIdWithTranslationsAsync(skillId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
         var request = new UpdateSkillRequest
@@ -238,7 +238,6 @@ public class SkillServiceTests
         var result = await _sut.UpdateAsync(skillId, request);
 
         result.IsSuccess.Should().BeTrue();
-        _unitOfWorkMock.Verify(u => u.Skills.Update(It.IsAny<Skill>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -246,13 +245,13 @@ public class SkillServiceTests
     public async Task UpdateAsync_WithNonExistentId_ReturnsFailure()
     {
         var id = Guid.NewGuid();
-        _unitOfWorkMock.Setup(u => u.Skills.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync((Skill?)null);
+        _unitOfWorkMock.Setup(u => u.Skills.GetByIdWithTranslationsAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync((Skill?)null);
 
         var request = new UpdateSkillRequest { IconUrl = "x", Proficiency = 1, DisplayOrder = 1, IsActive = true, Translations = [] };
         var result = await _sut.UpdateAsync(id, request);
 
         result.IsSuccess.Should().BeFalse();
-        _unitOfWorkMock.Verify(u => u.Skills.Update(It.IsAny<Skill>()), Times.Never);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -260,11 +259,8 @@ public class SkillServiceTests
     {
         var skillId = Guid.NewGuid();
         var existing = CreateSkill(id: skillId);
-        _unitOfWorkMock.Setup(u => u.Skills.GetByIdAsync(skillId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        _unitOfWorkMock.Setup(u => u.Skills.GetByIdWithTranslationsAsync(skillId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
-
-        Skill? captured = null;
-        _unitOfWorkMock.Setup(u => u.Skills.Update(It.IsAny<Skill>())).Callback<Skill>(s => captured = s);
 
         var request = new UpdateSkillRequest
         {
@@ -274,11 +270,10 @@ public class SkillServiceTests
 
         await _sut.UpdateAsync(skillId, request);
 
-        captured.Should().NotBeNull();
-        captured!.IconUrl.Should().Be("updated.png");
-        captured.Proficiency.Should().Be(100);
-        captured.DisplayOrder.Should().Be(99);
-        captured.IsActive.Should().BeFalse();
+        existing.IconUrl.Should().Be("updated.png");
+        existing.Proficiency.Should().Be(100);
+        existing.DisplayOrder.Should().Be(99);
+        existing.IsActive.Should().BeFalse();
     }
 
     #endregion

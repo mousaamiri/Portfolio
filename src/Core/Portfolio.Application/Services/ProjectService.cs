@@ -62,7 +62,7 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
 
     public async Task<Result<bool>> UpdateAsync(Guid id, UpdateProjectRequest request, CancellationToken cancellationToken = default)
     {
-        var project = await unitOfWork.Projects.GetByIdAsync(id, cancellationToken);
+        var project = await unitOfWork.Projects.GetByIdWithTranslationsAsync(id, cancellationToken);
         if (project is null)
             return Result<bool>.Failure($"Project with id '{id}' was not found.");
 
@@ -87,7 +87,6 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
             });
         }
 
-        unitOfWork.Projects.Update(project);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<bool>.Success(true);

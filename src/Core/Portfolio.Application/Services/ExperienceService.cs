@@ -63,7 +63,7 @@ public class ExperienceService(IUnitOfWork unitOfWork) : IExperienceService
 
     public async Task<Result<bool>> UpdateAsync(Guid id, UpdateExperienceRequest request, CancellationToken cancellationToken = default)
     {
-        var experience = await unitOfWork.Experiences.GetByIdAsync(id, cancellationToken);
+        var experience = await unitOfWork.Experiences.GetByIdWithTranslationsAsync(id, cancellationToken);
         if (experience is null)
             return Result<bool>.Failure($"Experience with id '{id}' was not found.");
 
@@ -89,7 +89,6 @@ public class ExperienceService(IUnitOfWork unitOfWork) : IExperienceService
             });
         }
 
-        unitOfWork.Experiences.Update(experience);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<bool>.Success(true);
