@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Portfolio.API.Common;
 
 namespace Portfolio.API.Controllers.Public;
 
 public class HealthController : PublicControllerBase
 {
     [HttpGet]
-    public IActionResult Get() => Ok(new { Status = "Healthy" });
+    public ActionResult<ApiResponse<object>> Get()
+        => Ok(ApiResponse<object>.Ok(new { Status = "Healthy" }));
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Portfolio.API.Common;
 using Portfolio.Application.DTOs;
 using Portfolio.Application.Services;
 
@@ -12,18 +13,19 @@ public class AuthController(AuthService authService) : AdminControllerBase
     [HttpPost("login")]
     [AllowAnonymous]
     [EnableRateLimiting("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<ApiResponse<LoginResponse>>> Login(
+        [FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         var result = await authService.LoginAsync(request, cancellationToken);
         if (result is null)
-            return Unauthorized();
+            return Unauthorized(ApiResponse.Fail("Invalid username or password."));
 
-        return Ok(result);
+        return Ok(ApiResponse<LoginResponse>.Ok(result));
     }
 
     [HttpGet("me")]
-    public IActionResult Me()
+    public ActionResult<ApiResponse<object>> Me()
     {
-        return Ok(new { Username = User.Identity?.Name });
+        return Ok(ApiResponse<object>.Ok(new { Username = User.Identity?.Name }));
     }
 }
