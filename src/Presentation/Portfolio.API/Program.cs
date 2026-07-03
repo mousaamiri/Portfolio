@@ -125,9 +125,13 @@ builder.Services.AddScoped<AdminSeeder>();
 
 var app = builder.Build();
 
-// Seed admin
+// Migrate and seed
 using (var scope = app.Services.CreateScope())
 {
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (db.Database.IsRelational())
+        await db.Database.MigrateAsync();
+
     var seeder = scope.ServiceProvider.GetRequiredService<AdminSeeder>();
     var adminUsername = builder.Configuration["AdminSeed:Username"] ?? "admin";
     var adminPassword = builder.Configuration["AdminSeed:Password"];
