@@ -100,5 +100,12 @@ ServiceFabricBackup/
 # dotnet tool
 .config/dotnet-tools.json
 
+# Sensitive appsettings
+appsettings.Development.json
+appsettings.Production.json
+
+# Git backup
+.git-backup/
+
 # Claude Code
 .claude/
