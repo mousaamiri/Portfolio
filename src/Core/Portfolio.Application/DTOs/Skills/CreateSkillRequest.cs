@@ -1,9 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Portfolio.Application.DTOs.Skills;
 
 public class CreateSkillRequest
 {
+    [Required]
     public string IconUrl { get; set; } = string.Empty;
     public int Proficiency { get; set; }
     public int DisplayOrder { get; set; }
+
+    [Required]
+    [MinLength(1)]
     public List<SkillTranslationRequest> Translations { get; set; } = [];
 }
