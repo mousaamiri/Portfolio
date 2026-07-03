@@ -1,10 +1,15 @@
 using System.Text;
+using System.Text.Json;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Portfolio.API.Common;
+using Portfolio.API.Middleware;
+using Portfolio.Application;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Services;
 using Portfolio.Domain.Admins;
@@ -16,7 +21,28 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(e => e.Value?.Errors.Count > 0)
+            .SelectMany(e => e.Value!.Errors.Select(err =>
+                string.IsNullOrWhiteSpace(err.ErrorMessage)
+                    ? $"Invalid value for '{e.Key}'."
+                    : err.ErrorMessage))
+            .ToList();
+
+        return new BadRequestObjectResult(ApiResponse.Fail(errors));
+    };
+});
+
 builder.Services.AddOpenApi();
 
 // EF Core
@@ -30,6 +56,7 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 // Application services
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddSingleton<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
+builder.Services.AddApplicationServices();
 
 // JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -53,6 +80,29 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(jwtSettings["Secret"]!))
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+
+            var response = ApiResponse.Fail("Authentication is required to access this resource.");
+            await context.Response.WriteAsync(
+                JsonSerializer.Serialize(response, JsonDefaults.CamelCase));
+        },
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            context.Response.ContentType = "application/json";
+
+            var response = ApiResponse.Fail("You do not have permission to access this resource.");
+            await context.Response.WriteAsync(
+                JsonSerializer.Serialize(response, JsonDefaults.CamelCase));
+        }
     };
 });
 
@@ -86,6 +136,8 @@ using (var scope = app.Services.CreateScope())
         await seeder.SeedAsync(adminUsername, adminPassword);
     }
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
