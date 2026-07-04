@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Educations;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.Educations;
@@ -76,20 +77,22 @@ public class EducationService(IUnitOfWork unitOfWork) : IEducationService
         education.IsActive = request.IsActive;
         education.UpdatedAt = DateTime.UtcNow;
 
-        education.Translations.Clear();
-        foreach (var t in request.Translations)
-        {
-            education.Translations.Add(new EducationTranslation
+        education.Translations.SyncTranslations(
+            request.Translations.Select(t => new EducationTranslation
             {
-                Id = Guid.NewGuid(),
-                EducationId = education.Id,
                 Language = ParseLanguage(t.LanguageCode),
                 InstitutionName = t.InstitutionName,
                 Degree = t.Degree,
                 FieldOfStudy = t.FieldOfStudy,
                 Description = t.Description
+            }).ToList(),
+            (existing, incoming) =>
+            {
+                existing.InstitutionName = incoming.InstitutionName;
+                existing.Degree = incoming.Degree;
+                existing.FieldOfStudy = incoming.FieldOfStudy;
+                existing.Description = incoming.Description;
             });
-        }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

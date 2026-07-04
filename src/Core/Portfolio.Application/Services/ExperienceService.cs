@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Experiences;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.Experiences;
