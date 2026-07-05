@@ -1,5 +1,86 @@
+@model HomeViewModel
 @{
     ViewData["Title"] = "Home";
 }
 
-<h1>Portfolio</h1>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<section id="hero" class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <p class="hero-greeting">Hello, I'm</p>
+            <h1 class="hero-name">@Model.FullName</h1>
+            <p class="hero-title">@Model.JobTitle</p>
+            <p class="hero-bio">@Model.Bio</p>
+            <div class="hero-actions">
+                <a href="#projects" class="btn btn-primary">View Projects</a>
+                <a href="#contact" class="btn btn-outline">Get in Touch</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<main id="main-content">
+
+    <section id="projects" class="section">
+        <div class="container">
+            <h2 class="section-title">Projects</h2>
+            <p class="section-subtitle">Some of my recent work</p>
+            <div class="projects-grid">
+                @foreach (var project in Model.Projects)
+                {
+                    <partial name="Partials/_ProjectCard" model="project" />
+                }
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Skills</h2>
+            <p class="section-subtitle">Technologies I work with</p>
+            @{
+                var skillGroups = Model.Skills.GroupBy(s => s.Category ?? "Other");
+            }
+            @foreach (var group in skillGroups)
+            {
+                <div class="skill-group">
+                    <h3 class="skill-group-title">@group.Key</h3>
+                    <div class="skills-list">
+                        @foreach (var skill in group)
+                        {
+                            <partial name="Partials/_SkillCard" model="skill" />
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section id="experience" class="section">
+        <div class="container">
+            <h2 class="section-title">Experience</h2>
+            <p class="section-subtitle">My professional journey</p>
+            <div class="timeline">
+                @foreach (var exp in Model.Experiences)
+                {
+                    <partial name="Partials/_ExperienceCard" model="exp" />
+                }
+            </div>
+        </div>
+    </section>
+
+    <section id="education" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Education</h2>
+            <p class="section-subtitle">Academic background</p>
+            <div class="timeline">
+                @foreach (var edu in Model.Educations)
+                {
+                    <partial name="Partials/_EducationCard" model="edu" />
+                }
+            </div>
+        </div>
+    </section>
+
+</main>
