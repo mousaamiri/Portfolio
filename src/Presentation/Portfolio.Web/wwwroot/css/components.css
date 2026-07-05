@@ -1,0 +1,280 @@
+/* ── Buttons ── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-decoration: none;
+    line-height: 1;
+    min-height: 44px;
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--white);
+    border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: var(--white);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-outline:hover {
+    background-color: var(--color-primary);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+.btn-outline:active {
+    transform: translateY(0);
+}
+
+/* ── Cards ── */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--card-shadow);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.card-body {
+    padding: var(--space-6);
+}
+
+.card-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    margin-block-end: var(--space-2);
+}
+
+.card-text {
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+}
+
+/* ── Project Card ── */
+.project-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.project-image {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background-color: var(--color-bg-alt);
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.project-card:hover .project-image img {
+    transform: scale(1.03);
+}
+
+.card-links {
+    display: flex;
+    gap: var(--space-3);
+    margin-block-start: var(--space-4);
+}
+
+.card-links .btn {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-xs);
+    min-height: 36px;
+}
+
+/* ── Badges / Tags ── */
+.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: var(--space-3);
+}
+
+.badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--badge-bg);
+    color: var(--badge-text);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    line-height: 1.4;
+}
+
+/* ── Skill Card ── */
+.skill-card {
+    padding: var(--space-4);
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    transition: box-shadow var(--transition-base);
+}
+
+.skill-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.skill-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-end: var(--space-3);
+}
+
+.skill-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-primary);
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+.skill-name {
+    font-weight: 600;
+    font-size: var(--text-sm);
+    flex: 1;
+}
+
+.skill-percent {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+.progress-bar {
+    height: 6px;
+    background-color: var(--progress-bg);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--progress-fill);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+/* ── Timeline ── */
+.timeline-dot {
+    position: absolute;
+    inset-inline-start: calc(-1 * var(--space-8) - 5px);
+    top: var(--space-6);
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary);
+    border: 2px solid var(--color-bg);
+    box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.timeline-content {
+    padding: var(--space-6);
+}
+
+.timeline-header {
+    margin-block-end: var(--space-2);
+}
+
+.timeline-company {
+    display: block;
+    font-size: var(--text-sm);
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.timeline-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-block-end: var(--space-3);
+}
+
+.timeline-date,
+.timeline-location,
+.timeline-gpa {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+}
+
+.timeline-date svg,
+.timeline-location svg {
+    flex-shrink: 0;
+}
+
+/* ── Theme Toggle ── */
+.theme-toggle,
+.lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    transition: all var(--transition-fast);
+}
+
+.theme-toggle:hover,
+.lang-toggle:hover {
+    background-color: var(--color-bg-alt);
+    color: var(--color-text);
+    border-color: var(--color-text-tertiary);
+}
+
+.theme-toggle:focus-visible,
+.lang-toggle:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+}
+
+.lang-toggle {
+    font-weight: 600;
+    font-size: var(--text-xs);
+}
