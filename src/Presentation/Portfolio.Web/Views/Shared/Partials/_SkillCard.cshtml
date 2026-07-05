@@ -1,0 +1,12 @@
+@model SkillViewModel
+
+<div class="skill-card">
+    <div class="skill-header">
+        <span class="skill-icon @Model.IconClass" aria-hidden="true"></span>
+        <span class="skill-name">@Model.Name</span>
+        <span class="skill-percent">@Model.Proficiency%</span>
+    </div>
+    <div class="progress-bar" role="progressbar" aria-valuenow="@Model.Proficiency" aria-valuemin="0" aria-valuemax="100" aria-label="@Model.Name proficiency">
+        <div class="progress-fill" style="width: @(Model.Proficiency)%"></div>
+    </div>
+</div>
