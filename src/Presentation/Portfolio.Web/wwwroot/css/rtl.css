@@ -1,0 +1,30 @@
+[dir="rtl"] .hero-content {
+    text-align: right;
+}
+
+[dir="rtl"] .timeline {
+    padding-inline-start: 0;
+    padding-inline-end: var(--space-8);
+}
+
+[dir="rtl"] .timeline::before {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+}
+
+[dir="rtl"] .timeline-dot {
+    inset-inline-start: auto;
+    inset-inline-end: calc(-1 * var(--space-8) - 5px);
+}
+
+[dir="rtl"] .nav-links {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .card-links {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .hero-actions {
+    flex-direction: row-reverse;
+}
