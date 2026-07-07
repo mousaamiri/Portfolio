@@ -55,7 +55,7 @@ public class EducationServiceTests
     {
         var edu1 = CreateEducation(institutionName: "MIT");
         var edu2 = CreateEducation(institutionName: "Stanford");
-        _unitOfWorkMock.Setup(u => u.Educations.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Educations.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Education> { edu1, edu2 });
 
         var result = await _sut.GetAllAsync("en");
@@ -69,7 +69,7 @@ public class EducationServiceTests
     [Fact]
     public async Task GetAllAsync_WhenEmpty_ReturnsEmptyList()
     {
-        _unitOfWorkMock.Setup(u => u.Educations.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Educations.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Education>());
 
         var result = await _sut.GetAllAsync("en");
@@ -82,7 +82,7 @@ public class EducationServiceTests
     public async Task GetAllAsync_MapsAllPropertiesCorrectly()
     {
         var edu = CreateEducation(institutionName: "Mapped Uni");
-        _unitOfWorkMock.Setup(u => u.Educations.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Educations.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Education> { edu });
 
         var result = await _sut.GetAllAsync("en");
@@ -121,7 +121,7 @@ public class EducationServiceTests
             InstitutionName = "دانشگاه صنعتی", Degree = "کارشناسی", FieldOfStudy = "کامپیوتر", Description = "توضیحات"
         });
 
-        _unitOfWorkMock.Setup(u => u.Educations.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Educations.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Education> { edu });
 
         var result = await _sut.GetAllAsync("fa");
@@ -134,7 +134,7 @@ public class EducationServiceTests
     public async Task GetAllAsync_WhenTranslationMissing_ReturnsEmptyStrings()
     {
         var edu = CreateEducation(language: "En");
-        _unitOfWorkMock.Setup(u => u.Educations.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Educations.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Education> { edu });
 
         var result = await _sut.GetAllAsync("ar");
@@ -153,7 +153,7 @@ public class EducationServiceTests
     {
         var eduId = Guid.NewGuid();
         var edu = CreateEducation(id: eduId, institutionName: "Found Uni");
-        _unitOfWorkMock.Setup(u => u.Educations.GetByIdAsync(eduId, It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Educations.GetByIdWithTranslationsAsync(eduId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(edu);
 
         var result = await _sut.GetByIdAsync(eduId, "en");

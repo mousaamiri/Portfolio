@@ -13,7 +13,7 @@ public class ExperienceService(IUnitOfWork unitOfWork) : IExperienceService
     public async Task<Result<IReadOnlyList<ExperienceDto>>> GetAllAsync(string languageCode, CancellationToken cancellationToken = default)
     {
         var language = ParseLanguage(languageCode);
-        var experiences = await unitOfWork.Experiences.GetAllAsync(cancellationToken);
+        var experiences = await unitOfWork.Experiences.GetAllWithTranslationsAsync(cancellationToken);
 
         var dtos = experiences.Select(e => MapToDto(e, language)).ToList();
         return Result<IReadOnlyList<ExperienceDto>>.Success(dtos);
@@ -21,7 +21,7 @@ public class ExperienceService(IUnitOfWork unitOfWork) : IExperienceService
 
     public async Task<Result<ExperienceDto>> GetByIdAsync(Guid id, string languageCode, CancellationToken cancellationToken = default)
     {
-        var experience = await unitOfWork.Experiences.GetByIdAsync(id, cancellationToken);
+        var experience = await unitOfWork.Experiences.GetByIdWithTranslationsAsync(id, cancellationToken);
         if (experience is null)
             return Result<ExperienceDto>.Failure($"Experience with id '{id}' was not found.");
 

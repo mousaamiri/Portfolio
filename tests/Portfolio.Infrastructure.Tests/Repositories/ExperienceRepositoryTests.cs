@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Domain.Entities.Experiences;
+using Portfolio.Domain.Enums;
 using Portfolio.Infrastructure.Data;
 using Portfolio.Infrastructure.Repositories;
 
@@ -26,6 +27,39 @@ public class ExperienceRepositoryTests
         CreatedAt = DateTime.UtcNow,
         IsActive = true
     };
+
+    [Fact]
+    public async Task GetAllWithTranslationsAsync_ShouldEagerLoadTranslations()
+    {
+        var dbName = Guid.NewGuid().ToString();
+        var experience = CreateExperience();
+        experience.Translations.Add(new ExperienceTranslation
+        {
+            Id = Guid.NewGuid(),
+            ExperienceId = experience.Id,
+            Language = Language.En,
+            CompanyName = "Acme",
+            JobTitle = "Engineer",
+            Description = "desc",
+            Location = "Remote"
+        });
+
+        await using (var context = CreateContext(dbName))
+        {
+            context.Experiences.Add(experience);
+            await context.SaveChangesAsync();
+        }
+
+        await using (var context = CreateContext(dbName))
+        {
+            var repo = new ExperienceRepository(context);
+            var result = await repo.GetAllWithTranslationsAsync();
+
+            result.Should().HaveCount(1);
+            result[0].Translations.Should().ContainSingle();
+            result[0].Translations.First().JobTitle.Should().Be("Engineer");
+        }
+    }
 
     [Fact]
     public async Task AddAsync_ShouldPersistExperience()

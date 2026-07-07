@@ -13,7 +13,7 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
     public async Task<Result<IReadOnlyList<ProjectDto>>> GetAllAsync(string languageCode, CancellationToken cancellationToken = default)
     {
         var language = ParseLanguage(languageCode);
-        var projects = await unitOfWork.Projects.GetAllAsync(cancellationToken);
+        var projects = await unitOfWork.Projects.GetAllWithTranslationsAsync(cancellationToken);
 
         var dtos = projects.Select(p => MapToDto(p, language)).ToList();
         return Result<IReadOnlyList<ProjectDto>>.Success(dtos);
@@ -21,7 +21,7 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
 
     public async Task<Result<ProjectDto>> GetByIdAsync(Guid id, string languageCode, CancellationToken cancellationToken = default)
     {
-        var project = await unitOfWork.Projects.GetByIdAsync(id, cancellationToken);
+        var project = await unitOfWork.Projects.GetByIdWithTranslationsAsync(id, cancellationToken);
         if (project is null)
             return Result<ProjectDto>.Failure($"Project with id '{id}' was not found.");
 

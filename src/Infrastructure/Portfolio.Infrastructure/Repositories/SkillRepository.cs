@@ -13,4 +13,11 @@ public class SkillRepository(AppDbContext context) : Repository<Skill>(context),
             .Include(s => s.Translations)
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Skill>> GetAllWithTranslationsAsync(CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Include(s => s.Translations)
+            .ToListAsync(cancellationToken);
+    }
 }
