@@ -13,7 +13,7 @@ public class ProjectsController(IProjectService projectService) : PublicControll
         [FromQuery] string? lang, CancellationToken ct)
     {
         var language = LanguageResolver.Resolve(lang, Request);
-        var result = await projectService.GetAllAsync(language, ct);
+        var result = await projectService.GetPublicAsync(language, ct);
         return result.ToOkResult();
     }
 

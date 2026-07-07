@@ -62,6 +62,37 @@ public class ExperienceRepositoryTests
     }
 
     [Fact]
+    public async Task GetActiveWithTranslationsAsync_ShouldReturnOnlyActiveOrderedByStartDateDescending()
+    {
+        var dbName = Guid.NewGuid().ToString();
+
+        var older = CreateExperience();
+        older.StartDate = new DateTime(2019, 1, 1);
+        var newer = CreateExperience();
+        newer.StartDate = new DateTime(2023, 1, 1);
+        var inactive = CreateExperience();
+        inactive.StartDate = new DateTime(2024, 1, 1);
+        inactive.IsActive = false;
+
+        await using (var context = CreateContext(dbName))
+        {
+            context.Experiences.AddRange(older, newer, inactive);
+            await context.SaveChangesAsync();
+        }
+
+        await using (var context = CreateContext(dbName))
+        {
+            var repo = new ExperienceRepository(context);
+            var result = await repo.GetActiveWithTranslationsAsync();
+
+            result.Should().HaveCount(2);
+            result.Should().OnlyContain(e => e.IsActive);
+            result[0].Id.Should().Be(newer.Id);
+            result[1].Id.Should().Be(older.Id);
+        }
+    }
+
+    [Fact]
     public async Task AddAsync_ShouldPersistExperience()
     {
         var dbName = Guid.NewGuid().ToString();

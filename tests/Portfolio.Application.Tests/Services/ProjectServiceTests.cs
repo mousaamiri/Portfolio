@@ -148,6 +148,25 @@ public class ProjectServiceTests
 
     #endregion
 
+    #region GetPublicAsync
+
+    [Fact]
+    public async Task GetPublicAsync_UsesActiveWithTranslationsRepositoryMethod()
+    {
+        var project = CreateProject(title: "Public Project");
+        _unitOfWorkMock.Setup(u => u.Projects.GetActiveWithTranslationsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Project> { project });
+
+        var result = await _sut.GetPublicAsync("en");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().ContainSingle();
+        result.Value![0].Title.Should().Be("Public Project");
+        _unitOfWorkMock.Verify(u => u.Projects.GetActiveWithTranslationsAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    #endregion
+
     #region GetByIdAsync
 
     [Fact]

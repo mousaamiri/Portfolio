@@ -54,7 +54,6 @@ public class ProjectRepositoryTests
             context.Projects.Add(project);
             await context.SaveChangesAsync();
         }
-
         await using (var context = CreateContext(dbName))
         {
             var repo = new ProjectRepository(context);
@@ -63,6 +62,37 @@ public class ProjectRepositoryTests
             result.Should().HaveCount(1);
             result[0].Translations.Should().ContainSingle();
             result[0].Translations.First().Title.Should().Be("Translated Project");
+        }
+    }
+
+    [Fact]
+    public async Task GetActiveWithTranslationsAsync_ShouldReturnOnlyActiveOrderedByDisplayOrder()
+    {
+        var dbName = Guid.NewGuid().ToString();
+
+        var active2 = CreateProject();
+        active2.DisplayOrder = 2;
+        var active1 = CreateProject();
+        active1.DisplayOrder = 1;
+        var inactive = CreateProject();
+        inactive.DisplayOrder = 0;
+        inactive.IsActive = false;
+
+        await using (var context = CreateContext(dbName))
+        {
+            context.Projects.AddRange(active2, active1, inactive);
+            await context.SaveChangesAsync();
+        }
+
+        await using (var context = CreateContext(dbName))
+        {
+            var repo = new ProjectRepository(context);
+            var result = await repo.GetActiveWithTranslationsAsync();
+
+            result.Should().HaveCount(2);
+            result.Should().OnlyContain(p => p.IsActive);
+            result[0].Id.Should().Be(active1.Id);
+            result[1].Id.Should().Be(active2.Id);
         }
     }
 

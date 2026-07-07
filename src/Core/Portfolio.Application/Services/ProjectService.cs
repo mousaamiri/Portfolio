@@ -19,6 +19,15 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         return Result<IReadOnlyList<ProjectDto>>.Success(dtos);
     }
 
+    public async Task<Result<IReadOnlyList<ProjectDto>>> GetPublicAsync(string languageCode, CancellationToken cancellationToken = default)
+    {
+        var language = ParseLanguage(languageCode);
+        var projects = await unitOfWork.Projects.GetActiveWithTranslationsAsync(cancellationToken);
+
+        var dtos = projects.Select(p => MapToDto(p, language)).ToList();
+        return Result<IReadOnlyList<ProjectDto>>.Success(dtos);
+    }
+
     public async Task<Result<ProjectDto>> GetByIdAsync(Guid id, string languageCode, CancellationToken cancellationToken = default)
     {
         var project = await unitOfWork.Projects.GetByIdWithTranslationsAsync(id, cancellationToken);

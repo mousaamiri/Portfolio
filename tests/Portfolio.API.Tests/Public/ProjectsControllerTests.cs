@@ -40,7 +40,7 @@ public class ProjectsControllerTests : IDisposable
             new() { Id = Guid.NewGuid(), Title = "Project 1", ImageUrl = "img1.png" },
             new() { Id = Guid.NewGuid(), Title = "Project 2", ImageUrl = "img2.png" }
         };
-        _mockService.Setup(s => s.GetAllAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        _mockService.Setup(s => s.GetPublicAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<ProjectDto>>.Success(projects));
 
         var response = await _client.GetAsync("/api/public/projects");
@@ -55,13 +55,13 @@ public class ProjectsControllerTests : IDisposable
     [Fact]
     public async Task GetAll_WithLangParam_ShouldPassLanguageToService()
     {
-        _mockService.Setup(s => s.GetAllAsync("fa", It.IsAny<CancellationToken>()))
+        _mockService.Setup(s => s.GetPublicAsync("fa", It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<ProjectDto>>.Success(new List<ProjectDto>()));
 
         var response = await _client.GetAsync("/api/public/projects?lang=fa");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        _mockService.Verify(s => s.GetAllAsync("fa", It.IsAny<CancellationToken>()), Times.Once);
+        _mockService.Verify(s => s.GetPublicAsync("fa", It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class ProjectsControllerTests : IDisposable
     [Fact]
     public async Task GetAll_WithoutToken_ShouldReturn200()
     {
-        _mockService.Setup(s => s.GetAllAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        _mockService.Setup(s => s.GetPublicAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<ProjectDto>>.Success(new List<ProjectDto>()));
 
         var response = await _client.GetAsync("/api/public/projects");

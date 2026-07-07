@@ -39,7 +39,7 @@ public class ExperiencesControllerTests : IDisposable
         {
             new() { Id = Guid.NewGuid(), CompanyName = "Company A", JobTitle = "Dev", CompanyLogo = "a.png", CompanyUrl = "https://a.com" }
         };
-        _mockService.Setup(s => s.GetAllAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        _mockService.Setup(s => s.GetPublicAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<ExperienceDto>>.Success(experiences));
 
         var response = await _client.GetAsync("/api/public/experiences");
@@ -53,13 +53,13 @@ public class ExperiencesControllerTests : IDisposable
     [Fact]
     public async Task GetAll_WithLangParam_ShouldPassLanguageToService()
     {
-        _mockService.Setup(s => s.GetAllAsync("ar", It.IsAny<CancellationToken>()))
+        _mockService.Setup(s => s.GetPublicAsync("ar", It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<ExperienceDto>>.Success(new List<ExperienceDto>()));
 
         var response = await _client.GetAsync("/api/public/experiences?lang=ar");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        _mockService.Verify(s => s.GetAllAsync("ar", It.IsAny<CancellationToken>()), Times.Once);
+        _mockService.Verify(s => s.GetPublicAsync("ar", It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

@@ -13,7 +13,7 @@ public class ExperiencesController(IExperienceService experienceService) : Publi
         [FromQuery] string? lang, CancellationToken ct)
     {
         var language = LanguageResolver.Resolve(lang, Request);
-        var result = await experienceService.GetAllAsync(language, ct);
+        var result = await experienceService.GetPublicAsync(language, ct);
         return result.ToOkResult();
     }
 

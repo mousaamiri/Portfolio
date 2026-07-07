@@ -60,6 +60,37 @@ public class SkillRepositoryTests
     }
 
     [Fact]
+    public async Task GetActiveWithTranslationsAsync_ShouldReturnOnlyActiveOrderedByDisplayOrder()
+    {
+        var dbName = Guid.NewGuid().ToString();
+
+        var active2 = CreateSkill();
+        active2.DisplayOrder = 2;
+        var active1 = CreateSkill();
+        active1.DisplayOrder = 1;
+        var inactive = CreateSkill();
+        inactive.DisplayOrder = 0;
+        inactive.IsActive = false;
+
+        await using (var context = CreateContext(dbName))
+        {
+            context.Skills.AddRange(active2, active1, inactive);
+            await context.SaveChangesAsync();
+        }
+
+        await using (var context = CreateContext(dbName))
+        {
+            var repo = new SkillRepository(context);
+            var result = await repo.GetActiveWithTranslationsAsync();
+
+            result.Should().HaveCount(2);
+            result.Should().OnlyContain(s => s.IsActive);
+            result[0].Id.Should().Be(active1.Id);
+            result[1].Id.Should().Be(active2.Id);
+        }
+    }
+
+    [Fact]
     public async Task AddAsync_ShouldPersistSkill()
     {
         var dbName = Guid.NewGuid().ToString();

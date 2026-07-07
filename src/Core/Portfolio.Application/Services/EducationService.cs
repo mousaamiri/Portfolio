@@ -19,6 +19,15 @@ public class EducationService(IUnitOfWork unitOfWork) : IEducationService
         return Result<IReadOnlyList<EducationDto>>.Success(dtos);
     }
 
+    public async Task<Result<IReadOnlyList<EducationDto>>> GetPublicAsync(string languageCode, CancellationToken cancellationToken = default)
+    {
+        var language = ParseLanguage(languageCode);
+        var educations = await unitOfWork.Educations.GetActiveWithTranslationsAsync(cancellationToken);
+
+        var dtos = educations.Select(e => MapToDto(e, language)).ToList();
+        return Result<IReadOnlyList<EducationDto>>.Success(dtos);
+    }
+
     public async Task<Result<EducationDto>> GetByIdAsync(Guid id, string languageCode, CancellationToken cancellationToken = default)
     {
         var education = await unitOfWork.Educations.GetByIdWithTranslationsAsync(id, cancellationToken);
