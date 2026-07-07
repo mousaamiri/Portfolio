@@ -20,4 +20,13 @@ public class SkillRepository(AppDbContext context) : Repository<Skill>(context),
             .Include(s => s.Translations)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Skill>> GetActiveWithTranslationsAsync(CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Where(s => s.IsActive)
+            .Include(s => s.Translations)
+            .OrderBy(s => s.DisplayOrder)
+            .ToListAsync(cancellationToken);
+    }
 }

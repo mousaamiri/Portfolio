@@ -20,4 +20,13 @@ public class ProjectRepository(AppDbContext context) : Repository<Project>(conte
             .Include(p => p.Translations)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Project>> GetActiveWithTranslationsAsync(CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Where(p => p.IsActive)
+            .Include(p => p.Translations)
+            .OrderBy(p => p.DisplayOrder)
+            .ToListAsync(cancellationToken);
+    }
 }

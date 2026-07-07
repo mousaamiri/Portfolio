@@ -6,4 +6,5 @@ public interface IProjectRepository : IRepository<Project>
 {
     Task<Project?> GetByIdWithTranslationsAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Project>> GetAllWithTranslationsAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Project>> GetActiveWithTranslationsAsync(CancellationToken cancellationToken = default);
 }

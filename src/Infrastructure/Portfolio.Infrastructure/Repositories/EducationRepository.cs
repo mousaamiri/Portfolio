@@ -20,4 +20,13 @@ public class EducationRepository(AppDbContext context) : Repository<Education>(c
             .Include(e => e.Translations)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Education>> GetActiveWithTranslationsAsync(CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Where(e => e.IsActive)
+            .Include(e => e.Translations)
+            .OrderByDescending(e => e.StartDate)
+            .ToListAsync(cancellationToken);
+    }
 }

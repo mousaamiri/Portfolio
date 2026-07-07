@@ -39,7 +39,7 @@ public class EducationsControllerTests : IDisposable
         {
             new() { Id = Guid.NewGuid(), InstitutionName = "MIT", Degree = "BSc", FieldOfStudy = "CS", InstitutionLogo = "mit.png", InstitutionUrl = "https://mit.edu" }
         };
-        _mockService.Setup(s => s.GetAllAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        _mockService.Setup(s => s.GetPublicAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<EducationDto>>.Success(educations));
 
         var response = await _client.GetAsync("/api/public/educations");
@@ -53,13 +53,13 @@ public class EducationsControllerTests : IDisposable
     [Fact]
     public async Task GetAll_WithLangParam_ShouldPassLanguageToService()
     {
-        _mockService.Setup(s => s.GetAllAsync("fa", It.IsAny<CancellationToken>()))
+        _mockService.Setup(s => s.GetPublicAsync("fa", It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<EducationDto>>.Success(new List<EducationDto>()));
 
         var response = await _client.GetAsync("/api/public/educations?lang=fa");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        _mockService.Verify(s => s.GetAllAsync("fa", It.IsAny<CancellationToken>()), Times.Once);
+        _mockService.Verify(s => s.GetPublicAsync("fa", It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

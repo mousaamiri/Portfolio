@@ -143,6 +143,25 @@ public class ExperienceServiceTests
 
     #endregion
 
+    #region GetPublicAsync
+
+    [Fact]
+    public async Task GetPublicAsync_UsesActiveWithTranslationsRepositoryMethod()
+    {
+        var exp = CreateExperience(companyName: "Public Co");
+        _unitOfWorkMock.Setup(u => u.Experiences.GetActiveWithTranslationsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Experience> { exp });
+
+        var result = await _sut.GetPublicAsync("en");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().ContainSingle();
+        result.Value![0].CompanyName.Should().Be("Public Co");
+        _unitOfWorkMock.Verify(u => u.Experiences.GetActiveWithTranslationsAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    #endregion
+
     #region GetByIdAsync
 
     [Fact]

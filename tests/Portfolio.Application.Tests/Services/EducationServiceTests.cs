@@ -146,6 +146,25 @@ public class EducationServiceTests
 
     #endregion
 
+    #region GetPublicAsync
+
+    [Fact]
+    public async Task GetPublicAsync_UsesActiveWithTranslationsRepositoryMethod()
+    {
+        var edu = CreateEducation(institutionName: "Public Uni");
+        _unitOfWorkMock.Setup(u => u.Educations.GetActiveWithTranslationsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Education> { edu });
+
+        var result = await _sut.GetPublicAsync("en");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().ContainSingle();
+        result.Value![0].InstitutionName.Should().Be("Public Uni");
+        _unitOfWorkMock.Verify(u => u.Educations.GetActiveWithTranslationsAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    #endregion
+
     #region GetByIdAsync
 
     [Fact]

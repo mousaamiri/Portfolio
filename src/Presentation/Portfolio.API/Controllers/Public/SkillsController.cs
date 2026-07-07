@@ -13,7 +13,7 @@ public class SkillsController(ISkillService skillService) : PublicControllerBase
         [FromQuery] string? lang, CancellationToken ct)
     {
         var language = LanguageResolver.Resolve(lang, Request);
-        var result = await skillService.GetAllAsync(language, ct);
+        var result = await skillService.GetPublicAsync(language, ct);
         return result.ToOkResult();
     }
 

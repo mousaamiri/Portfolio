@@ -19,6 +19,15 @@ public class SkillService(IUnitOfWork unitOfWork) : ISkillService
         return Result<IReadOnlyList<SkillDto>>.Success(dtos);
     }
 
+    public async Task<Result<IReadOnlyList<SkillDto>>> GetPublicAsync(string languageCode, CancellationToken cancellationToken = default)
+    {
+        var language = ParseLanguage(languageCode);
+        var skills = await unitOfWork.Skills.GetActiveWithTranslationsAsync(cancellationToken);
+
+        var dtos = skills.Select(s => MapToDto(s, language)).ToList();
+        return Result<IReadOnlyList<SkillDto>>.Success(dtos);
+    }
+
     public async Task<Result<SkillDto>> GetByIdAsync(Guid id, string languageCode, CancellationToken cancellationToken = default)
     {
         var skill = await unitOfWork.Skills.GetByIdWithTranslationsAsync(id, cancellationToken);

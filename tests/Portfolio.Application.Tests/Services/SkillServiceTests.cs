@@ -137,6 +137,25 @@ public class SkillServiceTests
 
     #endregion
 
+    #region GetPublicAsync
+
+    [Fact]
+    public async Task GetPublicAsync_UsesActiveWithTranslationsRepositoryMethod()
+    {
+        var skill = CreateSkill(name: "Public Skill");
+        _unitOfWorkMock.Setup(u => u.Skills.GetActiveWithTranslationsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Skill> { skill });
+
+        var result = await _sut.GetPublicAsync("en");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().ContainSingle();
+        result.Value![0].Name.Should().Be("Public Skill");
+        _unitOfWorkMock.Verify(u => u.Skills.GetActiveWithTranslationsAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    #endregion
+
     #region GetByIdAsync
 
     [Fact]

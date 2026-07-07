@@ -6,4 +6,5 @@ public interface ISkillRepository : IRepository<Skill>
 {
     Task<Skill?> GetByIdWithTranslationsAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Skill>> GetAllWithTranslationsAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Skill>> GetActiveWithTranslationsAsync(CancellationToken cancellationToken = default);
 }

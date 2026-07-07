@@ -13,7 +13,7 @@ public class EducationsController(IEducationService educationService) : PublicCo
         [FromQuery] string? lang, CancellationToken ct)
     {
         var language = LanguageResolver.Resolve(lang, Request);
-        var result = await educationService.GetAllAsync(language, ct);
+        var result = await educationService.GetPublicAsync(language, ct);
         return result.ToOkResult();
     }
 
