@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Domain.Entities.Educations;
+using Portfolio.Domain.Enums;
 using Portfolio.Infrastructure.Data;
 using Portfolio.Infrastructure.Repositories;
 
@@ -27,6 +28,39 @@ public class EducationRepositoryTests
         CreatedAt = DateTime.UtcNow,
         IsActive = true
     };
+
+    [Fact]
+    public async Task GetAllWithTranslationsAsync_ShouldEagerLoadTranslations()
+    {
+        var dbName = Guid.NewGuid().ToString();
+        var education = CreateEducation();
+        education.Translations.Add(new EducationTranslation
+        {
+            Id = Guid.NewGuid(),
+            EducationId = education.Id,
+            Language = Language.En,
+            InstitutionName = "MIT",
+            Degree = "BSc",
+            FieldOfStudy = "CS",
+            Description = "desc"
+        });
+
+        await using (var context = CreateContext(dbName))
+        {
+            context.Educations.Add(education);
+            await context.SaveChangesAsync();
+        }
+
+        await using (var context = CreateContext(dbName))
+        {
+            var repo = new EducationRepository(context);
+            var result = await repo.GetAllWithTranslationsAsync();
+
+            result.Should().HaveCount(1);
+            result[0].Translations.Should().ContainSingle();
+            result[0].Translations.First().InstitutionName.Should().Be("MIT");
+        }
+    }
 
     [Fact]
     public async Task AddAsync_ShouldPersistEducation()

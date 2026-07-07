@@ -55,7 +55,7 @@ public class ProjectServiceTests
         var project2 = CreateProject(title: "Project Two");
         var projects = new List<Project> { project1, project2 };
 
-        _unitOfWorkMock.Setup(u => u.Projects.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(projects);
 
         var result = await _sut.GetAllAsync("en");
@@ -70,7 +70,7 @@ public class ProjectServiceTests
     public async Task GetAllAsync_WithData_MapsAllPropertiesCorrectly()
     {
         var project = CreateProject(title: "Mapped Project");
-        _unitOfWorkMock.Setup(u => u.Projects.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Project> { project });
 
         var result = await _sut.GetAllAsync("en");
@@ -92,7 +92,7 @@ public class ProjectServiceTests
     [Fact]
     public async Task GetAllAsync_WhenRepositoryReturnsEmpty_ReturnsEmptyList()
     {
-        _unitOfWorkMock.Setup(u => u.Projects.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Project>());
 
         var result = await _sut.GetAllAsync("en");
@@ -123,7 +123,7 @@ public class ProjectServiceTests
             Title = "عنوان فارسی", Description = "توضیحات فارسی", Technologies = "سی‌شارپ"
         });
 
-        _unitOfWorkMock.Setup(u => u.Projects.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Project> { project });
 
         var result = await _sut.GetAllAsync("fa");
@@ -137,7 +137,7 @@ public class ProjectServiceTests
     public async Task GetAllAsync_WhenTranslationMissing_ReturnsEmptyStrings()
     {
         var project = CreateProject(language: "En");
-        _unitOfWorkMock.Setup(u => u.Projects.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Project> { project });
 
         var result = await _sut.GetAllAsync("ar");
@@ -156,7 +156,7 @@ public class ProjectServiceTests
         var projectId = Guid.NewGuid();
         var project = CreateProject(id: projectId, title: "Found Project");
 
-        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdWithTranslationsAsync(projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(project);
 
         var result = await _sut.GetByIdAsync(projectId, "en");
@@ -200,7 +200,7 @@ public class ProjectServiceTests
             Title = "فارسی", Description = "توضیحات", Technologies = "سی‌شارپ"
         });
 
-        _unitOfWorkMock.Setup(u => u.Projects.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Projects.GetByIdWithTranslationsAsync(projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(project);
 
         var result = await _sut.GetByIdAsync(projectId, "fa");

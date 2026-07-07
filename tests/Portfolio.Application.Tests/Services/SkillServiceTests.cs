@@ -52,7 +52,7 @@ public class SkillServiceTests
     {
         var skill1 = CreateSkill(name: "C#");
         var skill2 = CreateSkill(name: "Go");
-        _unitOfWorkMock.Setup(u => u.Skills.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Skills.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Skill> { skill1, skill2 });
 
         var result = await _sut.GetAllAsync("en");
@@ -66,7 +66,7 @@ public class SkillServiceTests
     [Fact]
     public async Task GetAllAsync_WhenEmpty_ReturnsEmptyList()
     {
-        _unitOfWorkMock.Setup(u => u.Skills.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Skills.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Skill>());
 
         var result = await _sut.GetAllAsync("en");
@@ -79,7 +79,7 @@ public class SkillServiceTests
     public async Task GetAllAsync_MapsAllPropertiesCorrectly()
     {
         var skill = CreateSkill(name: "C#");
-        _unitOfWorkMock.Setup(u => u.Skills.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Skills.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Skill> { skill });
 
         var result = await _sut.GetAllAsync("en");
@@ -115,7 +115,7 @@ public class SkillServiceTests
             Name = "سی‌شارپ", Description = "زبان سی‌شارپ", Category = "بک‌اند"
         });
 
-        _unitOfWorkMock.Setup(u => u.Skills.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Skills.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Skill> { skill });
 
         var result = await _sut.GetAllAsync("fa");
@@ -127,7 +127,7 @@ public class SkillServiceTests
     public async Task GetAllAsync_WhenTranslationMissing_ReturnsEmptyStrings()
     {
         var skill = CreateSkill(language: "En");
-        _unitOfWorkMock.Setup(u => u.Skills.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Skills.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Skill> { skill });
 
         var result = await _sut.GetAllAsync("ar");
@@ -144,7 +144,7 @@ public class SkillServiceTests
     {
         var skillId = Guid.NewGuid();
         var skill = CreateSkill(id: skillId, name: "Found Skill");
-        _unitOfWorkMock.Setup(u => u.Skills.GetByIdAsync(skillId, It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Skills.GetByIdWithTranslationsAsync(skillId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(skill);
 
         var result = await _sut.GetByIdAsync(skillId, "en");

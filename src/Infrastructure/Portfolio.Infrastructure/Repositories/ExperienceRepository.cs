@@ -13,4 +13,11 @@ public class ExperienceRepository(AppDbContext context) : Repository<Experience>
             .Include(e => e.Translations)
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Experience>> GetAllWithTranslationsAsync(CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Include(e => e.Translations)
+            .ToListAsync(cancellationToken);
+    }
 }

@@ -54,7 +54,7 @@ public class ExperienceServiceTests
     {
         var exp1 = CreateExperience(companyName: "Company A");
         var exp2 = CreateExperience(companyName: "Company B");
-        _unitOfWorkMock.Setup(u => u.Experiences.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Experiences.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Experience> { exp1, exp2 });
 
         var result = await _sut.GetAllAsync("en");
@@ -68,7 +68,7 @@ public class ExperienceServiceTests
     [Fact]
     public async Task GetAllAsync_WhenEmpty_ReturnsEmptyList()
     {
-        _unitOfWorkMock.Setup(u => u.Experiences.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Experiences.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Experience>());
 
         var result = await _sut.GetAllAsync("en");
@@ -81,7 +81,7 @@ public class ExperienceServiceTests
     public async Task GetAllAsync_MapsAllPropertiesCorrectly()
     {
         var exp = CreateExperience(companyName: "Mapped Co");
-        _unitOfWorkMock.Setup(u => u.Experiences.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Experiences.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Experience> { exp });
 
         var result = await _sut.GetAllAsync("en");
@@ -119,7 +119,7 @@ public class ExperienceServiceTests
             CompanyName = "شرکت فارسی", JobTitle = "مهندس", Description = "توضیحات", Location = "تهران"
         });
 
-        _unitOfWorkMock.Setup(u => u.Experiences.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Experiences.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Experience> { exp });
 
         var result = await _sut.GetAllAsync("fa");
@@ -132,7 +132,7 @@ public class ExperienceServiceTests
     public async Task GetAllAsync_WhenTranslationMissing_ReturnsEmptyStrings()
     {
         var exp = CreateExperience(language: "En");
-        _unitOfWorkMock.Setup(u => u.Experiences.GetAllAsync(It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Experiences.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Experience> { exp });
 
         var result = await _sut.GetAllAsync("ar");
@@ -150,7 +150,7 @@ public class ExperienceServiceTests
     {
         var expId = Guid.NewGuid();
         var exp = CreateExperience(id: expId, companyName: "Found Co");
-        _unitOfWorkMock.Setup(u => u.Experiences.GetByIdAsync(expId, It.IsAny<CancellationToken>()))
+        _unitOfWorkMock.Setup(u => u.Experiences.GetByIdWithTranslationsAsync(expId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(exp);
 
         var result = await _sut.GetByIdAsync(expId, "en");

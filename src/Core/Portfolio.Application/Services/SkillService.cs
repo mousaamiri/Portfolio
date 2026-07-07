@@ -13,7 +13,7 @@ public class SkillService(IUnitOfWork unitOfWork) : ISkillService
     public async Task<Result<IReadOnlyList<SkillDto>>> GetAllAsync(string languageCode, CancellationToken cancellationToken = default)
     {
         var language = ParseLanguage(languageCode);
-        var skills = await unitOfWork.Skills.GetAllAsync(cancellationToken);
+        var skills = await unitOfWork.Skills.GetAllWithTranslationsAsync(cancellationToken);
 
         var dtos = skills.Select(s => MapToDto(s, language)).ToList();
         return Result<IReadOnlyList<SkillDto>>.Success(dtos);
@@ -21,7 +21,7 @@ public class SkillService(IUnitOfWork unitOfWork) : ISkillService
 
     public async Task<Result<SkillDto>> GetByIdAsync(Guid id, string languageCode, CancellationToken cancellationToken = default)
     {
-        var skill = await unitOfWork.Skills.GetByIdAsync(id, cancellationToken);
+        var skill = await unitOfWork.Skills.GetByIdWithTranslationsAsync(id, cancellationToken);
         if (skill is null)
             return Result<SkillDto>.Failure($"Skill with id '{id}' was not found.");
 

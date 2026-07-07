@@ -13,4 +13,11 @@ public class EducationRepository(AppDbContext context) : Repository<Education>(c
             .Include(e => e.Translations)
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Education>> GetAllWithTranslationsAsync(CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Include(e => e.Translations)
+            .ToListAsync(cancellationToken);
+    }
 }

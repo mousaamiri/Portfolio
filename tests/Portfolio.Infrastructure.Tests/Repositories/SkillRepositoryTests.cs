@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Domain.Entities.Skills;
+using Portfolio.Domain.Enums;
 using Portfolio.Infrastructure.Data;
 using Portfolio.Infrastructure.Repositories;
 
@@ -25,6 +26,38 @@ public class SkillRepositoryTests
         CreatedAt = DateTime.UtcNow,
         IsActive = true
     };
+
+    [Fact]
+    public async Task GetAllWithTranslationsAsync_ShouldEagerLoadTranslations()
+    {
+        var dbName = Guid.NewGuid().ToString();
+        var skill = CreateSkill();
+        skill.Translations.Add(new SkillTranslation
+        {
+            Id = Guid.NewGuid(),
+            SkillId = skill.Id,
+            Language = Language.En,
+            Name = "C#",
+            Description = "desc",
+            Category = "Backend"
+        });
+
+        await using (var context = CreateContext(dbName))
+        {
+            context.Skills.Add(skill);
+            await context.SaveChangesAsync();
+        }
+
+        await using (var context = CreateContext(dbName))
+        {
+            var repo = new SkillRepository(context);
+            var result = await repo.GetAllWithTranslationsAsync();
+
+            result.Should().HaveCount(1);
+            result[0].Translations.Should().ContainSingle();
+            result[0].Translations.First().Name.Should().Be("C#");
+        }
+    }
 
     [Fact]
     public async Task AddAsync_ShouldPersistSkill()

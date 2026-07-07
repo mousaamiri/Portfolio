@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Domain.Entities.Projects;
+using Portfolio.Domain.Enums;
 using Portfolio.Infrastructure.Data;
 using Portfolio.Infrastructure.Repositories;
 
@@ -26,6 +27,44 @@ public class ProjectRepositoryTests
         CreatedAt = DateTime.UtcNow,
         IsActive = true
     };
+
+    private static Project CreateProjectWithTranslation(string title)
+    {
+        var project = CreateProject();
+        project.Translations.Add(new ProjectTranslation
+        {
+            Id = Guid.NewGuid(),
+            ProjectId = project.Id,
+            Language = Language.En,
+            Title = title,
+            Description = "desc",
+            Technologies = "C#"
+        });
+        return project;
+    }
+
+    [Fact]
+    public async Task GetAllWithTranslationsAsync_ShouldEagerLoadTranslations()
+    {
+        var dbName = Guid.NewGuid().ToString();
+        var project = CreateProjectWithTranslation("Translated Project");
+
+        await using (var context = CreateContext(dbName))
+        {
+            context.Projects.Add(project);
+            await context.SaveChangesAsync();
+        }
+
+        await using (var context = CreateContext(dbName))
+        {
+            var repo = new ProjectRepository(context);
+            var result = await repo.GetAllWithTranslationsAsync();
+
+            result.Should().HaveCount(1);
+            result[0].Translations.Should().ContainSingle();
+            result[0].Translations.First().Title.Should().Be("Translated Project");
+        }
+    }
 
     [Fact]
     public async Task AddAsync_ShouldPersistProject()
