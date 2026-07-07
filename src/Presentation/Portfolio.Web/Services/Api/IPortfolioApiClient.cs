@@ -1,0 +1,15 @@
+namespace Portfolio.Web.Services.Api;
+
+/// <summary>
+/// Typed client over the public <c>Portfolio.API</c> read endpoints. Each call
+/// passes a resolved language code (<c>?lang</c>) and returns already-filtered,
+/// ordered data. Implementations degrade to an empty list on transport failure
+/// so the site still renders if the API is unavailable.
+/// </summary>
+public interface IPortfolioApiClient
+{
+    Task<IReadOnlyList<ProjectApiDto>> GetProjectsAsync(string lang, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<SkillApiDto>> GetSkillsAsync(string lang, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ExperienceApiDto>> GetExperiencesAsync(string lang, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<EducationApiDto>> GetEducationsAsync(string lang, CancellationToken cancellationToken = default);
+}
