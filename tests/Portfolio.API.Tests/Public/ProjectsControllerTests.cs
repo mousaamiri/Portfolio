@@ -37,8 +37,8 @@ public class ProjectsControllerTests : IDisposable
     {
         var projects = new List<ProjectDto>
         {
-            new() { Id = Guid.NewGuid(), Title = "Project 1", ImageUrl = "img1.png" },
-            new() { Id = Guid.NewGuid(), Title = "Project 2", ImageUrl = "img2.png" }
+            new() { Id = Guid.NewGuid(), Title = "Project 1", ThumbnailUrl = "img1.png" },
+            new() { Id = Guid.NewGuid(), Title = "Project 2", ThumbnailUrl = "img2.png" }
         };
         _mockService.Setup(s => s.GetPublicAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<ProjectDto>>.Success(projects));
@@ -68,7 +68,7 @@ public class ProjectsControllerTests : IDisposable
     public async Task GetById_ExistingId_ShouldReturn200()
     {
         var id = Guid.NewGuid();
-        var project = new ProjectDto { Id = id, Title = "Test", ImageUrl = "img.png" };
+        var project = new ProjectDto { Id = id, Title = "Test", ThumbnailUrl = "img.png" };
         _mockService.Setup(s => s.GetByIdAsync(id, It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<ProjectDto>.Success(project));
 

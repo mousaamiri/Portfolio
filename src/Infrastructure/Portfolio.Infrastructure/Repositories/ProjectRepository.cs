@@ -24,7 +24,7 @@ public class ProjectRepository(AppDbContext context) : Repository<Project>(conte
     public async Task<IReadOnlyList<Project>> GetActiveWithTranslationsAsync(CancellationToken cancellationToken = default)
     {
         return await DbSet
-            .Where(p => p.IsActive)
+            .Where(p => p.IsActive && p.IsPublished)
             .Include(p => p.Translations)
             .OrderBy(p => p.DisplayOrder)
             .ToListAsync(cancellationToken);

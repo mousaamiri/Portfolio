@@ -24,9 +24,12 @@ public class ProjectServiceTests
         var project = new Project
         {
             Id = id ?? Guid.NewGuid(),
-            ImageUrl = "https://example.com/image.png",
-            DemoUrl = "https://example.com/demo",
+            Slug = "test-project",
+            ThumbnailUrl = "https://example.com/image.png",
+            PreviewUrl = "https://example.com/demo",
             SourceCodeUrl = "https://github.com/test",
+            IsPublished = true,
+            StartedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             DisplayOrder = 1,
             IsActive = true,
             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
@@ -39,6 +42,7 @@ public class ProjectServiceTests
             ProjectId = project.Id,
             Language = lang,
             Title = title,
+            ShortDescription = "A short subtitle",
             Description = "A test project",
             Technologies = "C#, .NET"
         });
@@ -78,13 +82,17 @@ public class ProjectServiceTests
         result.IsSuccess.Should().BeTrue();
         var dto = result.Value![0];
         dto.Id.Should().Be(project.Id);
-        dto.ImageUrl.Should().Be(project.ImageUrl);
-        dto.DemoUrl.Should().Be(project.DemoUrl);
+        dto.Slug.Should().Be(project.Slug);
+        dto.ThumbnailUrl.Should().Be(project.ThumbnailUrl);
+        dto.PreviewUrl.Should().Be(project.PreviewUrl);
         dto.SourceCodeUrl.Should().Be(project.SourceCodeUrl);
+        dto.IsPublished.Should().Be(project.IsPublished);
+        dto.StartedAt.Should().Be(project.StartedAt);
         dto.DisplayOrder.Should().Be(project.DisplayOrder);
         dto.IsActive.Should().Be(project.IsActive);
         dto.CreatedAt.Should().Be(project.CreatedAt);
         dto.Title.Should().Be("Mapped Project");
+        dto.ShortDescription.Should().Be("A short subtitle");
         dto.Description.Should().Be("A test project");
         dto.Technologies.Should().Be("C#, .NET");
     }
@@ -107,7 +115,7 @@ public class ProjectServiceTests
         var project = new Project
         {
             Id = Guid.NewGuid(),
-            ImageUrl = "img.png",
+            ThumbnailUrl = "img.png",
             DisplayOrder = 1,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
@@ -183,7 +191,7 @@ public class ProjectServiceTests
         result.IsSuccess.Should().BeTrue();
         result.Value!.Id.Should().Be(projectId);
         result.Value.Title.Should().Be("Found Project");
-        result.Value.ImageUrl.Should().Be(project.ImageUrl);
+        result.Value.ThumbnailUrl.Should().Be(project.ThumbnailUrl);
     }
 
     [Fact]
@@ -205,7 +213,7 @@ public class ProjectServiceTests
         var projectId = Guid.NewGuid();
         var project = new Project
         {
-            Id = projectId, ImageUrl = "img.png", DisplayOrder = 1,
+            Id = projectId, ThumbnailUrl = "img.png", DisplayOrder = 1,
             IsActive = true, CreatedAt = DateTime.UtcNow
         };
         project.Translations.Add(new ProjectTranslation
@@ -237,8 +245,9 @@ public class ProjectServiceTests
     {
         var request = new CreateProjectRequest
         {
-            ImageUrl = "https://example.com/image.png",
-            DemoUrl = "https://example.com/demo",
+            Slug = "my-project",
+            ThumbnailUrl = "https://example.com/image.png",
+            PreviewUrl = "https://example.com/demo",
             SourceCodeUrl = "https://github.com/test",
             DisplayOrder = 1,
             Translations =
@@ -275,15 +284,18 @@ public class ProjectServiceTests
 
         var request = new CreateProjectRequest
         {
-            ImageUrl = "img.png",
-            DemoUrl = "demo.com",
+            Slug = "title-en",
+            ThumbnailUrl = "img.png",
+            PreviewUrl = "demo.com",
             SourceCodeUrl = "github.com",
+            IsClientProject = true,
+            IsFeatured = true,
             DisplayOrder = 5,
             Translations =
             [
                 new ProjectTranslationRequest
                 {
-                    LanguageCode = "en", Title = "Title EN",
+                    LanguageCode = "en", Title = "Title EN", ShortDescription = "Sub EN",
                     Description = "Desc EN", Technologies = "C#"
                 },
                 new ProjectTranslationRequest
@@ -297,11 +309,15 @@ public class ProjectServiceTests
         await _sut.CreateAsync(request);
 
         capturedProject.Should().NotBeNull();
-        capturedProject!.ImageUrl.Should().Be("img.png");
-        capturedProject.DemoUrl.Should().Be("demo.com");
+        capturedProject!.Slug.Should().Be("title-en");
+        capturedProject.ThumbnailUrl.Should().Be("img.png");
+        capturedProject.PreviewUrl.Should().Be("demo.com");
         capturedProject.SourceCodeUrl.Should().Be("github.com");
+        capturedProject.IsClientProject.Should().BeTrue();
+        capturedProject.IsFeatured.Should().BeTrue();
         capturedProject.DisplayOrder.Should().Be(5);
         capturedProject.Translations.Should().HaveCount(2);
+        capturedProject.Translations.First().ShortDescription.Should().Be("Sub EN");
     }
 
     #endregion
@@ -320,8 +336,9 @@ public class ProjectServiceTests
 
         var request = new UpdateProjectRequest
         {
-            ImageUrl = "new-image.png",
-            DemoUrl = "new-demo.com",
+            Slug = "updated-slug",
+            ThumbnailUrl = "new-image.png",
+            PreviewUrl = "new-demo.com",
             SourceCodeUrl = "new-github.com",
             DisplayOrder = 10,
             IsActive = false,
@@ -350,7 +367,7 @@ public class ProjectServiceTests
 
         var request = new UpdateProjectRequest
         {
-            ImageUrl = "img.png", DisplayOrder = 1, IsActive = true, Translations = []
+            Slug = "slug", ThumbnailUrl = "img.png", DisplayOrder = 1, IsActive = true, Translations = []
         };
 
         var result = await _sut.UpdateAsync(nonExistentId, request);
@@ -372,9 +389,11 @@ public class ProjectServiceTests
 
         var request = new UpdateProjectRequest
         {
-            ImageUrl = "updated.png",
-            DemoUrl = "updated-demo.com",
+            Slug = "updated-slug",
+            ThumbnailUrl = "updated.png",
+            PreviewUrl = "updated-demo.com",
             SourceCodeUrl = "updated-src.com",
+            IsClientProject = true,
             DisplayOrder = 99,
             IsActive = false,
             Translations =
@@ -388,9 +407,11 @@ public class ProjectServiceTests
 
         await _sut.UpdateAsync(projectId, request);
 
-        existingProject.ImageUrl.Should().Be("updated.png");
-        existingProject.DemoUrl.Should().Be("updated-demo.com");
+        existingProject.Slug.Should().Be("updated-slug");
+        existingProject.ThumbnailUrl.Should().Be("updated.png");
+        existingProject.PreviewUrl.Should().Be("updated-demo.com");
         existingProject.SourceCodeUrl.Should().Be("updated-src.com");
+        existingProject.IsClientProject.Should().BeTrue();
         existingProject.DisplayOrder.Should().Be(99);
         existingProject.IsActive.Should().BeFalse();
     }

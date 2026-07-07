@@ -20,9 +20,12 @@ public class ProjectRepositoryTests
     private static Project CreateProject() => new()
     {
         Id = Guid.NewGuid(),
-        ImageUrl = "project.png",
-        DemoUrl = "https://demo.com",
+        Slug = Guid.NewGuid().ToString(),
+        ThumbnailUrl = "project.png",
+        PreviewUrl = "https://demo.com",
         SourceCodeUrl = "https://github.com/test",
+        IsPublished = true,
+        StartedAt = new DateTime(2024, 1, 1),
         DisplayOrder = 1,
         CreatedAt = DateTime.UtcNow,
         IsActive = true
@@ -66,7 +69,7 @@ public class ProjectRepositoryTests
     }
 
     [Fact]
-    public async Task GetActiveWithTranslationsAsync_ShouldReturnOnlyActiveOrderedByDisplayOrder()
+    public async Task GetActiveWithTranslationsAsync_ShouldReturnOnlyActivePublishedOrderedByDisplayOrder()
     {
         var dbName = Guid.NewGuid().ToString();
 
@@ -77,10 +80,13 @@ public class ProjectRepositoryTests
         var inactive = CreateProject();
         inactive.DisplayOrder = 0;
         inactive.IsActive = false;
+        var unpublished = CreateProject();
+        unpublished.DisplayOrder = 0;
+        unpublished.IsPublished = false;
 
         await using (var context = CreateContext(dbName))
         {
-            context.Projects.AddRange(active2, active1, inactive);
+            context.Projects.AddRange(active2, active1, inactive, unpublished);
             await context.SaveChangesAsync();
         }
 
@@ -90,7 +96,7 @@ public class ProjectRepositoryTests
             var result = await repo.GetActiveWithTranslationsAsync();
 
             result.Should().HaveCount(2);
-            result.Should().OnlyContain(p => p.IsActive);
+            result.Should().OnlyContain(p => p.IsActive && p.IsPublished);
             result[0].Id.Should().Be(active1.Id);
             result[1].Id.Should().Be(active2.Id);
         }
@@ -113,7 +119,7 @@ public class ProjectRepositoryTests
         {
             var result = await context.Projects.FindAsync(project.Id);
             result.Should().NotBeNull();
-            result!.DemoUrl.Should().Be("https://demo.com");
+            result!.PreviewUrl.Should().Be("https://demo.com");
         }
     }
 
