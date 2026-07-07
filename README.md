@@ -2,6 +2,16 @@
 
 A multilingual portfolio website with admin panel, built with ASP.NET Core using Clean Architecture.
 
+---
+
+Portfolio is built for anyone who wants to showcase their work without touching code every time they finish a new project.
+New projects and content get added and edited entirely through an admin panel, and show up on the live site instantly — no front-end changes, no redeploy.
+This same dynamic behavior applies to every type of content on the site, so adding anything new always works the same simple way.
+
+---
+
+<!-- 👇 Paste your existing technical sections (installation, architecture, tech stack) below this line -->
+
 ## Tech Stack
 
 - **Backend:** .NET 10, ASP.NET Core Web API
