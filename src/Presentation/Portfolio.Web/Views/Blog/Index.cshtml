@@ -1,0 +1,80 @@
+@model List<BlogPostViewModel>
+@{
+    ViewData["Title"] = "Blog";
+    ViewData["ActivePage"] = "blog";
+
+    // Categories: "All" + distinct categories in first-appearance order (matches blog.js).
+    var categories = new List<string> { "All" };
+    foreach (var p in Model)
+    {
+        if (!categories.Contains(p.Category)) categories.Add(p.Category);
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/blog.css" />
+}
+
+@* ======================================================
+   TODO: Blog article grid — currently from MockDataService
+   Model: List<BlogPostViewModel> (metadata: title/excerpt/category/date/read-time)
+   Future: will be replaced by a real data source (out of scope for now)
+   Note: Blog is English-only in the static site (no parallel FA array, no
+   data-i18n). Filters + grid are server-rendered here for SEO/no-JS; blog.js
+   re-renders them identically and OWNS the reading modal + the full HTML article
+   bodies (its own `posts` array — the finished copy — left unchanged).
+   ====================================================== *@
+<section id="blog" class="blog-section">
+    <div class="container">
+
+        @* ===== HEADER ===== *@
+        <div class="about-eyebrow-row">
+            <span class="eyebrow">BLOG</span>
+            <span class="eyebrow-rule" aria-hidden="true"></span>
+        </div>
+        <h2 class="blog-heading">THOUGHTS, SYSTEMS &amp; ENGINEERING NOTES</h2>
+
+        @* ===== SEARCH ===== *@
+        <div class="blog-search-wrap">
+            <svg class="blog-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" class="blog-search" id="blog-search" placeholder="Search articles.." autocomplete="off" spellcheck="false" />
+        </div>
+
+        @* ===== FILTERS (server-rendered; blog.js re-renders identically) ===== *@
+        <div class="blog-filters" id="blog-filters" role="tablist" aria-label="Filter articles by category">
+            @for (var i = 0; i < categories.Count; i++)
+            {
+                var cat = categories[i];
+                var active = i == 0; // "All" active by default
+                <button class="blog-filter-btn@(active ? " is-active" : "")" role="tab" aria-selected="@(active ? "true" : "false")" data-category="@cat">@cat</button>
+            }
+        </div>
+
+        @* ===== GRID (server-rendered; blog.js re-renders + owns the modal) ===== *@
+        <div class="blog-grid" id="blog-grid">
+            @foreach (var p in Model)
+            {
+                <article class="blog-card" data-post-id="@p.Id" tabindex="0">
+                    <div class="blog-card-top">
+                        <span class="blog-card-meta">@p.DisplayDate</span>
+                        <span class="blog-card-meta blog-card-meta--sep">&middot;</span>
+                        <span class="blog-card-meta">@p.ReadTime MIN READ</span>
+                        <span class="blog-card-tag">@p.Category.ToUpperInvariant()</span>
+                    </div>
+                    <h3 class="blog-card-title">@p.Title</h3>
+                    <p class="blog-card-excerpt">@p.Excerpt</p>
+                    <span class="blog-card-link">Read <span class="blog-card-arrow">&rarr;</span></span>
+                </article>
+            }
+        </div>
+
+    </div>
+</section>
+@* Blog modal is created/destroyed dynamically by blog.js *@
+
+@section PageScripts {
+    <script src="~/js/pages/blog.js"></script>
+}

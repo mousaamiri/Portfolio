@@ -1,0 +1,11 @@
+@*
+    _Navigation.cshtml — navbar placeholder
+    ---------------------------------------------------------------------------
+    The static site ships an EMPTY <header id="navbar"> and lets
+    navbar-component.js build the full pill navbar (logo, links, theme toggle,
+    language switch, contact CTA, command-palette trigger, hamburger + mobile
+    panel) via innerHTML. We keep that faithful client-injected approach so the
+    ported navbar.js active-pill / scroll logic finds the elements it expects
+    (migration: nav targets come from window.__navConfig.routes in _Layout).
+*@
+<header class="navbar" id="navbar"></header>

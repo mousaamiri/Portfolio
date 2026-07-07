@@ -1,0 +1,55 @@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin — Education";
+    ViewData["AdminTitle"] = "Education";
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            "use strict";
+            try { if (sessionStorage.getItem("admin_auth") !== "1") { window.location.replace("/Admin/Login"); return; } } catch (e) {}
+            AdminSidebar.init("education");
+            if (window.lucide) lucide.createIcons();
+
+            AdminCRUD.init({
+                entityName: "Education",
+                title: "Education",
+                subtitle: "Manage your educational background",
+                store: AdminData.Education,
+                searchKeys: ["institution_en", "institution_fa", "degree_en", "degree_fa"],
+                columns: [
+                    {
+                        label: "Institution", key: "institution_en",
+                        render: function (e) {
+                            return '<div><div style="font-weight:600">' + AdminUtil.escapeHtml(e.institution_en) + '</div>' +
+                                '<div class="admin-cell-sub">' + AdminUtil.escapeHtml(e.institution_fa) + '</div></div>';
+                        }
+                    },
+                    {
+                        label: "Degree", key: "degree_en",
+                        render: function (e) {
+                            return '<div><div>' + AdminUtil.escapeHtml(e.degree_en) + '</div>' +
+                                '<div class="admin-cell-sub">' + AdminUtil.escapeHtml(e.degree_fa) + '</div></div>';
+                        }
+                    },
+                    {
+                        label: "Period", key: "startYear",
+                        render: function (e) { return e.startYear + ' — ' + (e.endYear || 'Present'); }
+                    },
+                    { label: "Score", key: "score" }
+                ],
+                formFields: [
+                    { key: "institution", label: "Institution", bilingual: true, required: true, placeholder: "University name" },
+                    { key: "degree", label: "Degree", bilingual: true, required: true, placeholder: "e.g. Bachelor of CS" },
+                    { key: "description", label: "Description", bilingual: true, type: "textarea", rows: 3, placeholder: "Description or achievements" },
+                    { type: "row", fields: [
+                        { key: "startYear", label: "Start Year", placeholder: "e.g. 2016", required: true },
+                        { key: "endYear", label: "End Year", placeholder: "e.g. 2020 (leave empty if current)" }
+                    ]},
+                    { key: "score", label: "Score / GPA", placeholder: "e.g. 18.5/20 or 3.8/4.0" }
+                ]
+            });
+        })();
+    </script>
+}

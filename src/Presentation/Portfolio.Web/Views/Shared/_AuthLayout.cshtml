@@ -1,0 +1,45 @@
+@*
+    _AuthLayout.cshtml — minimal standalone layout for the PUBLIC Login /
+    Forgot-Password pages (migration decision #4). These pages are NOT in the
+    nav/footer and load NO shell (no navbar, footer, command palette, accent
+    picker, or SPA router) — only tokens/base/rtl CSS + fonts + FOUC + the
+    client-side i18n runtime. Their forms are pure client-side simulations.
+*@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="~/images/favicon.svg" />
+    <title>@ViewData["Title"] — Portfolio</title>
+
+    @* FOUC-prevention: theme/dir/lang before paint (byte-for-byte from source) *@
+    <script>
+        (function(){var t;try{t=localStorage.getItem('portfolio-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var l;try{l=localStorage.getItem('portfolio-lang')}catch(e){}if(l==='fa'){document.documentElement.setAttribute('dir','rtl');document.documentElement.setAttribute('lang','fa')}})();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@@400;500;600;700;800&family=Instrument+Serif:ital@@1&family=JetBrains+Mono:wght@@400;500;700&display=swap" rel="stylesheet" />
+
+    @* Design tokens + base (identity) + page CSS + RTL — no shell CSS. *@
+    <link rel="stylesheet" href="~/css/tokens.css" />
+    <link rel="stylesheet" href="~/css/base.css" />
+    @RenderSection("Styles", required: false)
+    <link rel="stylesheet" href="~/css/rtl.css" />
+</head>
+<body data-i18n-title="@(ViewData["I18nTitle"] ?? "")">
+
+    <main id="page-content">
+        @RenderBody()
+    </main>
+
+    @* Minimal scripts: client-side i18n + the page's own simulated-form script. *@
+    <script src="~/js/translations.js"></script>
+    <script src="~/js/i18n.js"></script>
+    @RenderSection("PageScripts", required: false)
+    <script>
+        if (window.i18n) { window.i18n.translateElements(); }
+    </script>
+</body>
+</html>

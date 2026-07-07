@@ -1,20 +1,96 @@
+/* ==========================================================================
+   tokens.css — SINGLE source of truth for design tokens
+   --------------------------------------------------------------------------
+   Reconciliation (migration decision #3, see .claude/MIGRATION_DECISIONS.md):
+   - The static site's visual identity is canonical: amber accent, dark-first
+     surfaces, Inter / Instrument Serif / JetBrains Mono (Latin) + self-hosted
+     AzarMehr / Pinar (Farsi). Values ported from the static `style.css`.
+   - Light/dark is CENTRALIZED here: dark = :root default, light overrides in
+     one [data-theme="light"] block (moved out of the per-component files).
+   - The project's original semantic tokens (--color-*) are kept as ALIASES
+     that point at the identity tokens, so existing views/partials
+     (base/layout/components/Home Index) keep building and pick up the new
+     identity automatically instead of running a second, parallel palette.
+   ========================================================================== */
+
+/* ---- @font-face: Persian (RTL), self-hosted (from static style.css) ---- */
+@font-face {
+    font-family: "AzarMehr";
+    src: url("/fonts/AzarMehr-VF-FD[DSTY,KSHD,wght].woff2") format("woff2");
+    font-weight: 100 900;
+    font-display: swap;
+    unicode-range: U+0600-06FF, U+FB50-FDFF, U+FE70-FEFF, U+0660-0669, U+06F0-06F9, U+200C-200F, U+25CC, U+0020-007E;
+}
+
+@font-face {
+    font-family: "Pinar";
+    src: url("/fonts/Pinar-FD-VF[DSTY,KSHD,wght].woff2") format("woff2");
+    font-weight: 100 900;
+    font-display: swap;
+    unicode-range: U+0600-06FF, U+FB50-FDFF, U+FE70-FEFF, U+0660-0669, U+06F0-06F9, U+200C-200F, U+25CC, U+0020-007E;
+}
+
 :root {
-    /* ── Primitive Tokens ── */
-    --blue-400: #60A5FA;
-    --blue-500: #3B82F6;
-    --blue-600: #2563EB;
-    --blue-700: #1D4ED8;
-    --violet-400: #A78BFA;
-    --violet-500: #8B5CF6;
-    --slate-50: #F8FAFC;
+    /* ══════════════════════════════════════════════════════════════
+       IDENTITY TOKENS (canonical — from static site style.css)
+       Dark-first: :root holds the DARK palette; light overrides below.
+       ══════════════════════════════════════════════════════════════ */
+
+    /* --- color: base surfaces --- */
+    --bg: #0b0b0d;
+    --bg-elevated: #111113;
+    --card: #17171a;
+    --card-hover: #1c1c1f;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.16);
+
+    /* --- color: accent (swappable at runtime by theme-switcher.js) --- */
+    --accent: #f0a63b;
+    --accent-soft: rgba(240, 166, 59, 0.14);
+    --accent-strong: #ffc069;
+
+    /* --- color: secondary accents --- */
+    --pink: #ec4899;
+    --blue: #3b82f6;
+    --green: #22c55e;
+    --purple: #a855f7;
+    --teal: #14b8a6;
+
+    /* --- gradient --- */
+    --gradient-script: linear-gradient(90deg, #ff7ab6 0%, var(--accent) 100%);
+
+    /* --- color: text --- */
+    --text: #f2f1ec;
+    --text-muted: #9a9a9e;
+    --text-faint: #6b6b70;
+
+    /* --- radius / shadow (identity values win over the old scale) --- */
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-xl: 20px;
+    --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+    /* --- type --- */
+    --font-body: "Inter", -apple-system, sans-serif;
+    --font-heading: "Inter", -apple-system, sans-serif;
+    --font-script: "Instrument Serif", Georgia, serif;
+    --font-mono: "JetBrains Mono", "SF Mono", monospace;
+
+    /* --- layout --- */
+    --container-w: 1120px;
+    --gutter: 24px;
+
+    /* ══════════════════════════════════════════════════════════════
+       SCALE TOKENS (kept from the original project — still referenced
+       by base/layout/components and the existing Home view)
+       ══════════════════════════════════════════════════════════════ */
+
+    /* ── Primitive palette (kept for existing semantic aliases) ── */
     --slate-100: #F1F5F9;
     --slate-200: #E2E8F0;
     --slate-300: #CBD5E1;
     --slate-400: #94A3B8;
-    --slate-500: #64748B;
     --slate-700: #334155;
-    --slate-800: #1E293B;
-    --slate-900: #0F172A;
     --white: #FFFFFF;
     --black: #000000;
     --green-500: #22C55E;
@@ -31,7 +107,7 @@
     --space-16: 64px;
     --space-24: 96px;
 
-    /* ── Typography Scale ── */
+    /* ── Typography size scale ── */
     --text-xs: 0.75rem;
     --text-sm: 0.875rem;
     --text-base: 1rem;
@@ -40,80 +116,80 @@
     --text-2xl: 2rem;
     --text-3xl: 3rem;
 
-    /* ── Radius ── */
-    --radius-sm: 6px;
-    --radius-md: 8px;
+    /* ── Extra radii (identity set doesn't define these) ── */
     --radius-lg: 12px;
-    --radius-xl: 16px;
     --radius-full: 9999px;
 
-    /* ── Shadows ── */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
-    --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+    /* ── Shadows (generic scale, kept) ── */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.25);
 
     /* ── Transitions ── */
     --transition-fast: 150ms ease-out;
     --transition-base: 200ms ease-out;
     --transition-slow: 300ms ease-out;
 
-    /* ── Semantic Tokens (Light) ── */
-    --color-primary: var(--blue-600);
-    --color-primary-hover: var(--blue-700);
-    --color-primary-light: var(--blue-400);
-    --color-accent: var(--violet-500);
-    --color-bg: var(--white);
-    --color-bg-alt: var(--slate-50);
-    --color-surface: var(--white);
-    --color-text: var(--slate-900);
-    --color-text-secondary: var(--slate-500);
-    --color-text-tertiary: var(--slate-400);
-    --color-border: var(--slate-200);
-    --color-border-light: var(--slate-100);
-    --color-focus-ring: var(--blue-500);
-    --color-success: var(--green-500);
+    /* ══════════════════════════════════════════════════════════════
+       SEMANTIC ALIASES (original --color-* names → identity tokens)
+       Single source of truth: these only reference the tokens above,
+       so light/dark flips propagate automatically.
+       ══════════════════════════════════════════════════════════════ */
+    --color-primary: var(--accent);
+    --color-primary-hover: var(--accent-strong);
+    --color-primary-light: var(--accent-strong);
+    --color-accent: var(--accent);
+    --color-bg: var(--bg);
+    --color-bg-alt: var(--bg-elevated);
+    --color-surface: var(--card);
+    --color-text: var(--text);
+    --color-text-secondary: var(--text-muted);
+    --color-text-tertiary: var(--text-faint);
+    --color-border: var(--border);
+    --color-border-light: var(--border);
+    --color-focus-ring: var(--accent);
+    --color-success: var(--green);
     --color-error: var(--red-500);
 
-    /* ── Component Tokens ── */
-    --nav-bg: rgba(255, 255, 255, 0.85);
+    /* ── Component aliases ── */
+    --nav-bg: rgba(17, 17, 19, 0.85);
     --nav-blur: 12px;
-    --card-bg: var(--color-surface);
-    --card-border: var(--color-border);
-    --card-shadow: var(--shadow-md);
+    --card-bg: var(--card);
+    --card-border: var(--border);
+    --card-shadow: var(--shadow-card);
     --card-shadow-hover: var(--shadow-lg);
-    --badge-bg: var(--slate-100);
-    --badge-text: var(--slate-700);
-    --progress-bg: var(--slate-200);
-    --progress-fill: var(--color-primary);
-    --hero-gradient: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-alt) 100%);
+    --badge-bg: var(--bg-elevated);
+    --badge-text: var(--text-muted);
+    --progress-bg: var(--border);
+    --progress-fill: var(--accent);
+    --hero-gradient: linear-gradient(135deg, var(--bg) 0%, var(--bg-elevated) 100%);
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   LIGHT THEME — centralized identity overrides
+   (moved here from the static navbar.css root block so tokens live in
+   ONE place; component-specific light tweaks stay in their own files)
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+    --bg: #f5f5f0;
+    --bg-elevated: #eaeae5;
+    --card: #ffffff;
+    --card-hover: #fafaf8;
+    --border: rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.16);
+    --text: #1a1a1a;
+    --text-muted: #555555;
+    --text-faint: #888888;
+    --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.1);
+
+    --nav-bg: rgba(255, 255, 255, 0.85);
+    --badge-bg: var(--bg-elevated);
+}
+
+/* Explicit dark block kept for parity with the FOUC script, which always
+   writes an explicit data-theme. :root already carries the dark palette, so
+   this only needs to re-assert the nav surface at the elevated dark value. */
 [data-theme="dark"] {
-    --color-primary: var(--blue-400);
-    --color-primary-hover: var(--blue-500);
-    --color-primary-light: var(--blue-600);
-    --color-accent: var(--violet-400);
-    --color-bg: var(--slate-900);
-    --color-bg-alt: var(--slate-800);
-    --color-surface: var(--slate-800);
-    --color-text: var(--slate-100);
-    --color-text-secondary: var(--slate-400);
-    --color-text-tertiary: var(--slate-500);
-    --color-border: var(--slate-700);
-    --color-border-light: var(--slate-800);
-    --color-focus-ring: var(--blue-400);
-
-    --nav-bg: rgba(15, 23, 42, 0.85);
-    --card-bg: var(--slate-800);
-    --card-border: var(--slate-700);
-    --badge-bg: var(--slate-700);
-    --badge-text: var(--slate-300);
-    --progress-bg: var(--slate-700);
-    --hero-gradient: linear-gradient(135deg, var(--slate-900) 0%, var(--slate-800) 100%);
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2);
-    --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.25);
+    --nav-bg: rgba(17, 17, 19, 0.85);
 }
