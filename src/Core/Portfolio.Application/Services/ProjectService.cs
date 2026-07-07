@@ -43,9 +43,17 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         var project = new Project
         {
             Id = Guid.NewGuid(),
-            ImageUrl = request.ImageUrl,
-            DemoUrl = request.DemoUrl,
+            Slug = request.Slug,
+            ThumbnailUrl = request.ThumbnailUrl,
+            CoverImageUrl = request.CoverImageUrl,
+            PreviewUrl = request.PreviewUrl,
             SourceCodeUrl = request.SourceCodeUrl,
+            IsSourcePrivate = request.IsSourcePrivate,
+            IsClientProject = request.IsClientProject,
+            IsFeatured = request.IsFeatured,
+            IsPublished = request.IsPublished,
+            StartedAt = request.StartedAt,
+            CompletedAt = request.CompletedAt,
             DisplayOrder = request.DisplayOrder,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
@@ -59,8 +67,11 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
                 ProjectId = project.Id,
                 Language = ParseLanguage(t.LanguageCode),
                 Title = t.Title,
+                ShortDescription = t.ShortDescription,
                 Description = t.Description,
-                Technologies = t.Technologies
+                Technologies = t.Technologies,
+                MetaTitle = t.MetaTitle,
+                MetaDescription = t.MetaDescription
             });
         }
 
@@ -76,9 +87,17 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         if (project is null)
             return Result<bool>.Failure($"Project with id '{id}' was not found.");
 
-        project.ImageUrl = request.ImageUrl;
-        project.DemoUrl = request.DemoUrl;
+        project.Slug = request.Slug;
+        project.ThumbnailUrl = request.ThumbnailUrl;
+        project.CoverImageUrl = request.CoverImageUrl;
+        project.PreviewUrl = request.PreviewUrl;
         project.SourceCodeUrl = request.SourceCodeUrl;
+        project.IsSourcePrivate = request.IsSourcePrivate;
+        project.IsClientProject = request.IsClientProject;
+        project.IsFeatured = request.IsFeatured;
+        project.IsPublished = request.IsPublished;
+        project.StartedAt = request.StartedAt;
+        project.CompletedAt = request.CompletedAt;
         project.DisplayOrder = request.DisplayOrder;
         project.IsActive = request.IsActive;
         project.UpdatedAt = DateTime.UtcNow;
@@ -92,8 +111,11 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
                 ProjectId = project.Id,
                 Language = ParseLanguage(t.LanguageCode),
                 Title = t.Title,
+                ShortDescription = t.ShortDescription,
                 Description = t.Description,
-                Technologies = t.Technologies
+                Technologies = t.Technologies,
+                MetaTitle = t.MetaTitle,
+                MetaDescription = t.MetaDescription
             });
         }
 
@@ -128,15 +150,26 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         return new ProjectDto
         {
             Id = project.Id,
-            ImageUrl = project.ImageUrl,
-            DemoUrl = project.DemoUrl,
+            Slug = project.Slug,
+            ThumbnailUrl = project.ThumbnailUrl,
+            CoverImageUrl = project.CoverImageUrl,
+            PreviewUrl = project.PreviewUrl,
             SourceCodeUrl = project.SourceCodeUrl,
+            IsSourcePrivate = project.IsSourcePrivate,
+            IsClientProject = project.IsClientProject,
+            IsFeatured = project.IsFeatured,
+            IsPublished = project.IsPublished,
+            StartedAt = project.StartedAt,
+            CompletedAt = project.CompletedAt,
             DisplayOrder = project.DisplayOrder,
             IsActive = project.IsActive,
             CreatedAt = project.CreatedAt,
             Title = translation?.Title ?? string.Empty,
+            ShortDescription = translation?.ShortDescription ?? string.Empty,
             Description = translation?.Description,
-            Technologies = translation?.Technologies
+            Technologies = translation?.Technologies,
+            MetaTitle = translation?.MetaTitle,
+            MetaDescription = translation?.MetaDescription
         };
     }
 }

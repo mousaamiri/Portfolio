@@ -67,7 +67,7 @@ public class ProjectsControllerTests : IDisposable
     public async Task GetById_ExistingId_ShouldReturn200()
     {
         var id = Guid.NewGuid();
-        var project = new ProjectDto { Id = id, Title = "Test", ImageUrl = "img.png" };
+        var project = new ProjectDto { Id = id, Title = "Test", ThumbnailUrl = "img.png" };
         _mockService.Setup(s => s.GetByIdAsync(id, It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<ProjectDto>.Success(project));
 
@@ -102,7 +102,8 @@ public class ProjectsControllerTests : IDisposable
 
         var request = new CreateProjectRequest
         {
-            ImageUrl = "img.png",
+            Slug = "test-project",
+            ThumbnailUrl = "img.png",
             DisplayOrder = 1,
             Translations = [new() { LanguageCode = "en", Title = "Test" }]
         };
@@ -119,7 +120,7 @@ public class ProjectsControllerTests : IDisposable
     [Fact]
     public async Task Create_InvalidRequest_ShouldReturn400WithErrors()
     {
-        var request = new { ImageUrl = "", Translations = new List<object>() };
+        var request = new { ThumbnailUrl = "", Slug = "", Translations = new List<object>() };
 
         var response = await _client.PostAsJsonAsync("/api/admin/projects", request);
 
@@ -138,7 +139,8 @@ public class ProjectsControllerTests : IDisposable
 
         var request = new UpdateProjectRequest
         {
-            ImageUrl = "img.png",
+            Slug = "test-project",
+            ThumbnailUrl = "img.png",
             DisplayOrder = 1,
             IsActive = true,
             Translations = [new() { LanguageCode = "en", Title = "Updated" }]
@@ -160,7 +162,8 @@ public class ProjectsControllerTests : IDisposable
 
         var request = new UpdateProjectRequest
         {
-            ImageUrl = "img.png",
+            Slug = "test-project",
+            ThumbnailUrl = "img.png",
             DisplayOrder = 1,
             IsActive = true,
             Translations = [new() { LanguageCode = "en", Title = "Updated" }]

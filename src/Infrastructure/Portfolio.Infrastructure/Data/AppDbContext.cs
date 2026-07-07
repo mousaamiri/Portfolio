@@ -22,4 +22,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<Skill> Skills => Set<Skill>();
     public DbSet<SkillTranslation> SkillTranslations => Set<SkillTranslation>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Project>()
+            .HasIndex(p => p.Slug)
+            .IsUnique();
+    }
 }

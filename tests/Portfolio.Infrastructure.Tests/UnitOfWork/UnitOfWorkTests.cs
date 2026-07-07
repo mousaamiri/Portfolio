@@ -84,7 +84,7 @@ public class UnitOfWorkTests
         var project = new Project
         {
             Id = Guid.NewGuid(),
-            ImageUrl = "img.png",
+            ThumbnailUrl = "img.png",
             DisplayOrder = 1,
             CreatedAt = DateTime.UtcNow,
             IsActive = true
