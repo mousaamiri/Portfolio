@@ -1,0 +1,68 @@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin — Dashboard";
+    ViewData["AdminTitle"] = "Dashboard";
+}
+
+@* Admin dashboard — content is built client-side from the in-memory AdminData
+   store (data.js). Auth is the insecure demo gate (sessionStorage). *@
+@section Scripts {
+    <script>
+        (function () {
+            "use strict";
+            // Insecure demo gate — NOT real security (ported as-is).
+            try { if (sessionStorage.getItem("admin_auth") !== "1") { window.location.replace("/Admin/Login"); return; } } catch (e) {}
+            AdminSidebar.init("index");
+            if (window.lucide) lucide.createIcons();
+
+            var stats = [
+                { label: "Projects", count: AdminData.Projects.count(), icon: "folder-kanban", fg: "#f0a63b", bg: "rgba(240,166,59,0.12)", href: "/Admin/Projects" },
+                { label: "Articles", count: AdminData.Articles.count(), icon: "file-text", fg: "#3b82f6", bg: "rgba(59,130,246,0.12)", href: "/Admin/Articles" },
+                { label: "Experiences", count: AdminData.Experiences.count(), icon: "briefcase", fg: "#22c55e", bg: "rgba(34,197,94,0.12)", href: "/Admin/Experiences" },
+                { label: "Education", count: AdminData.Education.count(), icon: "graduation-cap", fg: "#a855f7", bg: "rgba(168,85,247,0.12)", href: "/Admin/Education" },
+                { label: "Skills", count: AdminData.Skills.count(), icon: "star", fg: "#14b8a6", bg: "rgba(20,184,166,0.12)", href: "/Admin/Skills" },
+                { label: "Testimonials", count: AdminData.Testimonials.count(), icon: "quote", fg: "#ec4899", bg: "rgba(236,72,153,0.12)", href: "/Admin/Testimonials" },
+                { label: "Messages", count: AdminData.Messages.count(), icon: "mail", fg: "#ef4444", bg: "rgba(239,68,68,0.12)", href: "/Admin/Messages", sub: AdminData.unreadMessages() + " unread" }
+            ];
+
+            var html = '<div class="admin-page-header"><div>';
+            html += '<h1 class="admin-page-title">Dashboard</h1>';
+            html += '<p class="admin-page-subtitle">Overview of your portfolio content</p>';
+            html += '</div></div>';
+
+            html += '<div class="admin-stats-grid">';
+            stats.forEach(function (s) {
+                html += '<a href="' + s.href + '" class="admin-stat-card">';
+                html += '<div class="admin-stat-header"><span class="admin-stat-label">' + s.label + '</span>';
+                html += '<div class="admin-stat-icon" style="background:' + s.bg + ';color:' + s.fg + '">';
+                html += '<i data-lucide="' + s.icon + '"></i></div></div>';
+                html += '<div class="admin-stat-value">' + s.count + '</div>';
+                if (s.sub) html += '<div class="admin-stat-sub">' + s.sub + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+
+            var msgs = AdminData.Messages.getAll().slice(0, 5);
+            if (msgs.length) {
+                html += '<div class="admin-table-wrap">';
+                html += '<div class="admin-table-toolbar"><span style="font-weight:600;font-size:14px;color:var(--text)">Recent Messages</span></div>';
+                html += '<table class="admin-table"><thead><tr>';
+                html += '<th>From</th><th>Subject</th><th>Date</th><th>Status</th>';
+                html += '</tr></thead><tbody>';
+                msgs.forEach(function (m) {
+                    var statusClass = m.isRead ? "admin-status--draft" : "admin-status--published";
+                    var statusText = m.isRead ? "Read" : "Unread";
+                    html += '<tr><td data-label="From">' + AdminUtil.escapeHtml(m.name) + '</td>';
+                    html += '<td data-label="Subject">' + AdminUtil.escapeHtml(m.subject) + '</td>';
+                    html += '<td data-label="Date">' + AdminUtil.escapeHtml(m.date) + '</td>';
+                    html += '<td data-label="Status"><span class="admin-status ' + statusClass + '"><span class="admin-status-dot"></span>' + statusText + '</span></td>';
+                    html += '</tr>';
+                });
+                html += '</tbody></table></div>';
+            }
+
+            document.getElementById("crudContent").innerHTML = html;
+            if (window.lucide) lucide.createIcons();
+        })();
+    </script>
+}

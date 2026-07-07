@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg" />
+<title>Portfolio — Experience</title>
+<script>
+(function(){var t;try{t=localStorage.getItem('portfolio-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var l;try{l=localStorage.getItem('portfolio-lang')}catch(e){}if(l==='fa'){document.documentElement.setAttribute('dir','rtl');document.documentElement.setAttribute('lang','fa')}})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+
+<link rel="stylesheet" href="../../shared/css/style.css" />
+<link rel="stylesheet" href="../../shared/css/navbar.css" />
+<link rel="stylesheet" href="../../shared/css/footer.css" />
+<link rel="stylesheet" href="experience.css" />
+<link rel="stylesheet" href="../../shared/css/rtl.css" />
+<link rel="stylesheet" href="../../shared/css/spa-transitions.css" />
+<link rel="stylesheet" href="../../shared/css/theme-switcher.css" />
+</head>
+<body data-i18n-title="exp.title">
+
+<!-- Navbar placeholder — filled by navbar-component.js -->
+<header class="navbar" id="navbar"></header>
+
+<main id="page-content">
+<section id="experience" class="experience-section">
+  <div class="container">
+
+    <!-- ================= SECTION 1: HEADER ================= -->
+    <div class="about-eyebrow-row">
+      <span class="eyebrow" data-i18n="exp.eyebrow">EXPERIENCE</span>
+      <span class="eyebrow-rule" aria-hidden="true"></span>
+    </div>
+    <h2 class="exp-heading" data-i18n="exp.heading">PROFESSIONAL ENGINEERING JOURNEY</h2>
+
+    <!-- ================= SECTION 2: IMPACT METRICS + CORE PRINCIPLES ================= -->
+    <div class="exp-impact-row">
+
+      <!-- Left: Impact Metrics 2x2 -->
+      <div class="exp-metrics-grid">
+        <div class="exp-metric-card">
+          <span class="exp-metric-tag exp-metric-tag--pink" data-i18n="exp.uptime">SERVICE UPTIME</span>
+          <span class="exp-metric-value">99.9%</span>
+          <p class="exp-metric-desc" data-i18n="exp.uptime_desc">Ensured high availability for mission-critical enterprise backend services.</p>
+        </div>
+        <div class="exp-metric-card">
+          <span class="exp-metric-tag exp-metric-tag--amber" data-i18n="exp.latency">API LATENCY</span>
+          <span class="exp-metric-value">~40%</span>
+          <p class="exp-metric-desc" data-i18n="exp.latency_desc">Optimized database access patterns and query performance across microservices.</p>
+        </div>
+        <div class="exp-metric-card">
+          <span class="exp-metric-tag exp-metric-tag--green" data-i18n="exp.coverage">CODE COVERAGE</span>
+          <span class="exp-metric-value">85%+</span>
+          <p class="exp-metric-desc" data-i18n="exp.coverage_desc">Maintained rigorous testing standards using JUnit and Mockito for reliability.</p>
+        </div>
+        <div class="exp-metric-card">
+          <span class="exp-metric-tag exp-metric-tag--amber" data-i18n="exp.scale">SCALE CAPACITY</span>
+          <span class="exp-metric-value">10x</span>
+          <p class="exp-metric-desc" data-i18n="exp.scale_desc">Architected components to handle exponential increases in concurrent processing.</p>
+        </div>
+      </div>
+
+      <!-- Right: Core Principles -->
+      <div class="exp-principles-card">
+        <div class="about-eyebrow-row">
+          <span class="eyebrow eyebrow--sm" data-i18n="exp.principles">CORE PRINCIPLES</span>
+          <span class="eyebrow-rule" aria-hidden="true"></span>
+        </div>
+
+        <ul class="exp-principles-list">
+          <li class="exp-principle-item">
+            <span class="exp-principle-bullet" aria-hidden="true"></span>
+            <div>
+              <span class="exp-principle-title" data-i18n="exp.principle_1_title">Scale-First Architecture</span>
+              <span class="exp-principle-desc" data-i18n="exp.principle_1_desc">Designing systems that are born to grow, focusing on horizontal scalability and decoupling.</span>
+            </div>
+          </li>
+          <li class="exp-principle-item">
+            <span class="exp-principle-bullet" aria-hidden="true"></span>
+            <div>
+              <span class="exp-principle-title" data-i18n="exp.principle_2_title">Performance Obsessed</span>
+              <span class="exp-principle-desc" data-i18n="exp.principle_2_desc">Every millisecond counts. Prioritizing low-latency execution and efficient resource utilization.</span>
+            </div>
+          </li>
+          <li class="exp-principle-item">
+            <span class="exp-principle-bullet" aria-hidden="true"></span>
+            <div>
+              <span class="exp-principle-title" data-i18n="exp.principle_3_title">Security by Design</span>
+              <span class="exp-principle-desc" data-i18n="exp.principle_3_desc">Integration of authentication, authorization, and data protection at the core of every service.</span>
+            </div>
+          </li>
+          <li class="exp-principle-item">
+            <span class="exp-principle-bullet" aria-hidden="true"></span>
+            <div>
+              <span class="exp-principle-title" data-i18n="exp.principle_4_title">Craft &amp; Maintainability</span>
+              <span class="exp-principle-desc" data-i18n="exp.principle_4_desc">Writing self-documenting code that is as easy to read as it is to extend.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- ================= SECTION 3: SUMMARY + PROFESSIONAL EXPERIENCE ================= -->
+    <div class="exp-main-row">
+
+      <!-- Left column: Summary + Education -->
+      <div class="exp-left-col">
+
+        <!-- Summary -->
+        <div class="exp-summary-block">
+          <div class="about-eyebrow-row">
+            <span class="eyebrow eyebrow--sm" data-i18n="exp.summary">SUMMARY</span>
+            <span class="eyebrow-rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="exp-summary-name">
+            <span class="exp-name-bullet" aria-hidden="true"></span>
+            <span>Jaya Vignesh</span>
+          </div>
+
+          <p class="exp-summary-text" data-i18n="exp.summary_text">
+            Backend engineer focused on designing and evolving Java-based distributed systems.
+            Experienced in building scalable RESTful APIs, modernizing legacy codebases, and
+            driving performance improvements across enterprise microservice architectures.
+          </p>
+        </div>
+
+        <!-- Education -->
+        <div class="exp-education-block">
+          <div class="about-eyebrow-row">
+            <span class="eyebrow eyebrow--sm" data-i18n="exp.education">EDUCATION</span>
+            <span class="eyebrow-rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="exp-edu-timeline">
+
+            <!-- B.Tech -->
+            <div class="exp-edu-entry">
+              <div class="exp-edu-node" aria-hidden="true">
+                <span class="exp-edu-circle"></span>
+                <span class="exp-edu-line"></span>
+              </div>
+              <div class="exp-edu-content">
+                <h4 class="exp-edu-title" data-i18n="exp.edu_btech">Bachelor of Technology (B.Tech) &ndash; Computer Science</h4>
+                <span class="exp-edu-year">2019 &ndash; 2023</span>
+                <p class="exp-edu-institution" data-i18n="exp.edu_btech_inst">Sri Manakula Vinayagar Engineering College, Puducherry</p>
+                <p class="exp-edu-score">CGPA: 7.76</p>
+                <div class="exp-edu-courses">
+                  <span class="exp-edu-course-tag" data-i18n="exp.edu_courses_ds">DATA STRUCTURES &amp; ALGORITHMS</span>
+                  <span class="exp-edu-course-tag" data-i18n="exp.edu_courses_dbms">DATABASE MANAGEMENT SYSTEMS</span>
+                  <span class="exp-edu-course-tag" data-i18n="exp.edu_courses_os">OPERATING SYSTEMS</span>
+                  <span class="exp-edu-course-tag" data-i18n="exp.edu_courses_cn">COMPUTER NETWORKS</span>
+                  <span class="exp-edu-course-tag" data-i18n="exp.edu_courses_web">WEB DEVELOPMENT</span>
+                  <span class="exp-edu-course-tag" data-i18n="exp.edu_courses_cloud">CLOUD COMPUTING</span>
+                  <span class="exp-edu-course-tag" data-i18n="exp.edu_courses_ml">MACHINE LEARNING</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- HSC -->
+            <div class="exp-edu-entry">
+              <div class="exp-edu-node" aria-hidden="true">
+                <span class="exp-edu-circle"></span>
+                <span class="exp-edu-line"></span>
+              </div>
+              <div class="exp-edu-content">
+                <h4 class="exp-edu-title" data-i18n="exp.edu_hsc">Higher Secondary (HSC) &ndash; Computer Science</h4>
+                <span class="exp-edu-year">2018 &ndash; 2019</span>
+                <p class="exp-edu-institution" data-i18n="exp.edu_hsc_inst">Amalorpavam Higher Secondary School</p>
+                <p class="exp-edu-score">Score: 65.1%</p>
+              </div>
+            </div>
+
+            <!-- SSLC -->
+            <div class="exp-edu-entry exp-edu-entry--last">
+              <div class="exp-edu-node" aria-hidden="true">
+                <span class="exp-edu-circle"></span>
+              </div>
+              <div class="exp-edu-content">
+                <h4 class="exp-edu-title" data-i18n="exp.edu_sslc">Secondary School (SSLC)</h4>
+                <span class="exp-edu-year">2016 &ndash; 2017</span>
+                <p class="exp-edu-institution" data-i18n="exp.edu_sslc_inst">Amalorpavam Higher Secondary School</p>
+                <p class="exp-edu-score">Score: 89.2%</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right column: Professional Experience -->
+      <div class="exp-right-col">
+
+        <div class="about-eyebrow-row">
+          <span class="eyebrow eyebrow--sm" data-i18n="exp.professional">PROFESSIONAL EXPERIENCE</span>
+          <span class="eyebrow-rule" aria-hidden="true"></span>
+        </div>
+
+        <div class="exp-job-header">
+          <div class="exp-job-title-row">
+            <span class="exp-name-bullet" aria-hidden="true"></span>
+            <h3 class="exp-job-title" data-i18n="exp.job_title">Software Engineer (Backend)</h3>
+          </div>
+          <span class="exp-job-date-badge" data-i18n="exp.job_date">2024 &ndash; Present</span>
+        </div>
+        <p class="exp-job-company" data-i18n="exp.job_company">Tata Consultancy Services (TCS), India</p>
+
+        <ol class="exp-job-list">
+          <li class="exp-job-item">
+            <span class="exp-job-num" aria-hidden="true">1</span>
+            <p data-i18n="exp.job_1">Designed, developed, and maintained <span class="highlight highlight--amber">RESTful backend services</span> using <span class="highlight highlight--amber">Java</span> and <span class="highlight highlight--amber">JAX-RS</span>, powering core business workflows within a large-scale enterprise microservice architecture.</p>
+          </li>
+          <li class="exp-job-item">
+            <span class="exp-job-num" aria-hidden="true">2</span>
+            <p data-i18n="exp.job_2">Spearheaded a major <span class="highlight highlight--pink">Java 8 to Java 21 migration</span>, leveraging virtual threads, pattern matching, and modern APIs to significantly boost runtime performance and developer productivity.</p>
+          </li>
+          <li class="exp-job-item">
+            <span class="exp-job-num" aria-hidden="true">3</span>
+            <p data-i18n="exp.job_3">Completely rewrote legacy test suites from scratch using modern <span class="highlight highlight--amber">JUnit</span> and <span class="highlight highlight--amber">Mockito</span> frameworks, achieving over 85% code coverage and reducing regression escape rate.</p>
+          </li>
+          <li class="exp-job-item">
+            <span class="exp-job-num" aria-hidden="true">4</span>
+            <p data-i18n="exp.job_4">Resolved critical <span class="highlight highlight--pink">database bottlenecks</span> by rewriting inefficient queries and restructuring ORM access patterns, resulting in approximately 40% reduction in average API latency.</p>
+          </li>
+          <li class="exp-job-item">
+            <span class="exp-job-num" aria-hidden="true">5</span>
+            <p data-i18n="exp.job_5">Mentored junior and fellow developers through structured <span class="highlight highlight--amber">code reviews</span>, pair programming sessions, and knowledge-sharing workshops on backend best practices.</p>
+          </li>
+          <li class="exp-job-item">
+            <span class="exp-job-num" aria-hidden="true">6</span>
+            <p data-i18n="exp.job_6">Proactively monitored and supported <span class="highlight highlight--amber">production backend services</span>, rapidly diagnosing and resolving incidents to uphold 99.9% service uptime SLAs.</p>
+          </li>
+          <li class="exp-job-item">
+            <span class="exp-job-num" aria-hidden="true">7</span>
+            <p data-i18n="exp.job_7">Refined <span class="highlight highlight--amber">API payloads</span> and contracts through iterative schema optimization, reducing response sizes and improving frontend integration efficiency.</p>
+          </li>
+          <li class="exp-job-item">
+            <span class="exp-job-num" aria-hidden="true">8</span>
+            <p data-i18n="exp.job_8">Assisted in refactoring <span class="highlight highlight--pink">legacy backend components</span> toward a cleaner, more modular service-oriented architecture, improving code maintainability and team velocity.</p>
+          </li>
+          <li class="exp-job-item">
+            <span class="exp-job-num" aria-hidden="true">9</span>
+            <p data-i18n="exp.job_9">Worked within secure enterprise environments, adhering to strict <span class="highlight highlight--amber">security protocols</span> and participating in internal audits and compliance reviews.</p>
+          </li>
+        </ol>
+
+        <!-- Stack -->
+        <div class="exp-stack-block">
+          <span class="eyebrow eyebrow--sm" data-i18n="exp.stack">STACK</span>
+          <div class="exp-stack-pills">
+            <span class="exp-stack-pill">JAVA</span>
+            <span class="exp-stack-pill">MYSQL</span>
+            <span class="exp-stack-pill">GIT</span>
+            <span class="exp-stack-pill">POSTMAN</span>
+            <span class="exp-stack-pill">VS CODE</span>
+            <span class="exp-stack-pill">ECLIPSE</span>
+            <span class="exp-stack-pill">BASH</span>
+            <span class="exp-stack-pill">JENKINS</span>
+            <span class="exp-stack-pill">FILEZILLA</span>
+            <span class="exp-stack-pill">SPRING BOOT</span>
+            <span class="exp-stack-pill">MAVEN</span>
+            <span class="exp-stack-pill">PUTTY</span>
+            <span class="exp-stack-pill">GITLAB</span>
+            <span class="exp-stack-pill">RED HAT ENTERPRISE LINUX</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ================= SECTION 4: TECHNICAL PROFICIENCY MATRIX ================= -->
+    <div class="exp-proficiency-block">
+      <div class="about-eyebrow-row">
+        <span class="eyebrow" data-i18n="exp.proficiency">TECHNICAL PROFICIENCY MATRIX</span>
+        <span class="eyebrow-rule" aria-hidden="true"></span>
+      </div>
+
+      <div class="exp-proficiency-grid">
+        <div class="exp-proficiency-card">
+          <div class="exp-proficiency-header">
+            <span class="exp-proficiency-bullet exp-proficiency-bullet--amber" aria-hidden="true"></span>
+            <h4 class="exp-proficiency-title" data-i18n="exp.mastery">MASTERY (CORE STACK)</h4>
+          </div>
+          <ul class="exp-proficiency-list">
+            <li>Java 21</li>
+            <li>Spring Boot</li>
+            <li>MySQL</li>
+            <li>RESTful APIs</li>
+            <li>Microservices</li>
+          </ul>
+        </div>
+
+        <div class="exp-proficiency-card">
+          <div class="exp-proficiency-header">
+            <span class="exp-proficiency-bullet exp-proficiency-bullet--pink" aria-hidden="true"></span>
+            <h4 class="exp-proficiency-title" data-i18n="exp.ecosystem">ECOSYSTEM &amp; TOOLS</h4>
+          </div>
+          <ul class="exp-proficiency-list">
+            <li>Git</li>
+            <li>Docker</li>
+            <li>Jenkins</li>
+            <li>Maven</li>
+            <li>Postman</li>
+            <li>Linux</li>
+            <li>JUnit</li>
+          </ul>
+        </div>
+
+        <div class="exp-proficiency-card">
+          <div class="exp-proficiency-header">
+            <span class="exp-proficiency-bullet exp-proficiency-bullet--purple" aria-hidden="true"></span>
+            <h4 class="exp-proficiency-title" data-i18n="exp.explorations">CURRENT EXPLORATIONS</h4>
+          </div>
+          <ul class="exp-proficiency-list">
+            <li>System Design</li>
+            <li>Cloud Native</li>
+            <li>Distributed Systems</li>
+            <li>Rust</li>
+            <li>LLM Integration</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 5: CLOSING CTA ================= -->
+    <div class="closing-cta-block">
+      <div class="closing-cta-eyebrow-row">
+        <span class="eyebrow" data-i18n="cta.inner_mechanics">INNER MECHANICS</span>
+      </div>
+      <h2 class="closing-cta-heading" data-i18n="cta.heading">
+        Where logic meets<br />
+        <span class="script-gradient">rhythm.</span>
+      </h2>
+
+      <div class="closing-cta-grid">
+        <div class="closing-cta-card">
+          <span class="eyebrow eyebrow--sm" data-i18n="cta.projects">PROJECTS</span>
+          <h4 class="closing-cta-card-title" data-i18n="cta.projects_title">ResumeIQ Platform</h4>
+          <p class="closing-cta-card-desc" data-i18n="cta.projects_desc">AI Resume Analysis &amp; ATS Intelligence Platform</p>
+          <a href="../work/work.html" class="closing-cta-link" data-i18n="cta.projects_link">View Work <span class="closing-cta-link-arrow">&rarr;</span></a>
+        </div>
+        <div class="closing-cta-card">
+          <span class="eyebrow eyebrow--sm" data-i18n="cta.writing">WRITING</span>
+          <h4 class="closing-cta-card-title" data-i18n="cta.writing_title">Java 21 Virtual Threads: Infinite Scaling Meets Da...</h4>
+          <span class="closing-cta-meta" data-i18n="cta.writing_meta">Published on May 26, 2026</span>
+          <p class="closing-cta-card-desc"></p>
+          <a href="../blog/blog.html" class="closing-cta-link" data-i18n="cta.writing_link">Read Article <span class="closing-cta-link-arrow">&rarr;</span></a>
+        </div>
+        <div class="closing-cta-card">
+          <span class="eyebrow eyebrow--sm" data-i18n="cta.network">NETWORK</span>
+          <h4 class="closing-cta-card-title closing-cta-card-title--large" data-i18n="cta.network_title">
+            Let's build <span class="script-gradient">together</span>
+          </h4>
+          <p class="closing-cta-card-desc" data-i18n="cta.network_desc">Reach out for collaborations or just to say hi.</p>
+          <a href="../contact/contact.html" class="closing-cta-link" data-i18n="cta.network_link">Connect <span class="closing-cta-link-arrow">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</main>
+
+<!-- GSAP bundle -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/SplitText.min.js"></script>
+
+<!-- Shared: navbar config + builder + behavior + command palette -->
+<script>
+  window.__navConfig = { basePath: '../../', currentPage: 'experience' };
+</script>
+<script src="../../shared/js/translations.js"></script>
+<script src="../../shared/js/i18n.js"></script>
+<script src="../../shared/js/navbar-component.js"></script>
+<script src="../../shared/js/text-reveal.js"></script>
+<script src="experience.js"></script>
+<script src="../../shared/js/navbar.js"></script>
+<script src="../../shared/js/command-palette.js"></script>
+<script src="../../shared/js/footer-component.js"></script>
+<script src="../../shared/js/theme-switcher.js"></script>
+<script>
+  if (window.i18n) {
+    window.i18n.translateElements();
+    window.i18n.updateLangSwitcher();
+  }
+</script>
+<script src="../../shared/js/spa-router.js"></script>
+
+</body>
+</html>

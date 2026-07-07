@@ -1,0 +1,188 @@
+@model ExperiencePageViewModel
+@{
+    ViewData["Title"] = "Experience";
+    ViewData["I18nTitle"] = "exp.title";
+    ViewData["ActivePage"] = "experience";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/experience.css" />
+}
+
+@* ======================================================
+   TODO: Experience page — currently from MockDataService
+   Model: ExperiencePageViewModel (metrics, principles, CV education, role, proficiency)
+   Future: will be replaced by a real data source (out of scope for now)
+   Note: text stays English-in-markup with data-i18n keys; translations.js → Farsi.
+   NOTE (Step 5): the Proficiency Matrix is NOT the About skills data — different
+   structure (name lists, no percentages), so it is modeled/rendered separately.
+   ====================================================== *@
+<section id="experience" class="experience-section">
+    <div class="container">
+
+        @* ===== SECTION 1: HEADER ===== *@
+        <div class="about-eyebrow-row">
+            <span class="eyebrow" data-i18n="exp.eyebrow">EXPERIENCE</span>
+            <span class="eyebrow-rule" aria-hidden="true"></span>
+        </div>
+        <h2 class="exp-heading" data-i18n="exp.heading">PROFESSIONAL ENGINEERING JOURNEY</h2>
+
+        @* ===== SECTION 2: IMPACT METRICS + CORE PRINCIPLES ===== *@
+        <div class="exp-impact-row">
+            <div class="exp-metrics-grid">
+                @foreach (var m in Model.Metrics)
+                {
+                    <div class="exp-metric-card">
+                        <span class="exp-metric-tag exp-metric-tag--@m.Color" data-i18n="@m.TagKey">@m.Tag</span>
+                        <span class="exp-metric-value">@m.Value</span>
+                        <p class="exp-metric-desc" data-i18n="@m.DescKey">@m.Desc</p>
+                    </div>
+                }
+            </div>
+
+            <div class="exp-principles-card">
+                <div class="about-eyebrow-row">
+                    <span class="eyebrow eyebrow--sm" data-i18n="exp.principles">CORE PRINCIPLES</span>
+                    <span class="eyebrow-rule" aria-hidden="true"></span>
+                </div>
+                <ul class="exp-principles-list">
+                    @foreach (var p in Model.Principles)
+                    {
+                        <li class="exp-principle-item">
+                            <span class="exp-principle-bullet" aria-hidden="true"></span>
+                            <div>
+                                <span class="exp-principle-title" data-i18n="@p.TitleKey">@p.Title</span>
+                                <span class="exp-principle-desc" data-i18n="@p.DescKey">@p.Desc</span>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        @* ===== SECTION 3: SUMMARY + EDUCATION + PROFESSIONAL EXPERIENCE ===== *@
+        <div class="exp-main-row">
+            <div class="exp-left-col">
+
+                <div class="exp-summary-block">
+                    <div class="about-eyebrow-row">
+                        <span class="eyebrow eyebrow--sm" data-i18n="exp.summary">SUMMARY</span>
+                        <span class="eyebrow-rule" aria-hidden="true"></span>
+                    </div>
+                    <div class="exp-summary-name">
+                        <span class="exp-name-bullet" aria-hidden="true"></span>
+                        <span>@Model.SummaryName</span>
+                    </div>
+                    <p class="exp-summary-text" data-i18n="@Model.SummaryTextKey">@Model.SummaryText</p>
+                </div>
+
+                <div class="exp-education-block">
+                    <div class="about-eyebrow-row">
+                        <span class="eyebrow eyebrow--sm" data-i18n="exp.education">EDUCATION</span>
+                        <span class="eyebrow-rule" aria-hidden="true"></span>
+                    </div>
+                    <div class="exp-edu-timeline">
+                        @foreach (var ed in Model.Education)
+                        {
+                            <div class="exp-edu-entry@(ed.IsLast ? " exp-edu-entry--last" : "")">
+                                <div class="exp-edu-node" aria-hidden="true">
+                                    <span class="exp-edu-circle"></span>
+                                    @if (!ed.IsLast)
+                                    {
+                                        <span class="exp-edu-line"></span>
+                                    }
+                                </div>
+                                <div class="exp-edu-content">
+                                    <h4 class="exp-edu-title" data-i18n="@ed.TitleKey">@ed.Title</h4>
+                                    <span class="exp-edu-year">@ed.Years</span>
+                                    <p class="exp-edu-institution" data-i18n="@ed.InstitutionKey">@ed.Institution</p>
+                                    <p class="exp-edu-score">@ed.Score</p>
+                                    @if (ed.Courses.Count > 0)
+                                    {
+                                        <div class="exp-edu-courses">
+                                            @foreach (var c in ed.Courses)
+                                            {
+                                                <span class="exp-edu-course-tag" data-i18n="@c.Key">@c.Text</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="exp-right-col">
+                <div class="about-eyebrow-row">
+                    <span class="eyebrow eyebrow--sm" data-i18n="exp.professional">PROFESSIONAL EXPERIENCE</span>
+                    <span class="eyebrow-rule" aria-hidden="true"></span>
+                </div>
+
+                <div class="exp-job-header">
+                    <div class="exp-job-title-row">
+                        <span class="exp-name-bullet" aria-hidden="true"></span>
+                        <h3 class="exp-job-title" data-i18n="@Model.JobTitleKey">@Model.JobTitle</h3>
+                    </div>
+                    <span class="exp-job-date-badge" data-i18n="@Model.JobDateKey">@Model.JobDate</span>
+                </div>
+                <p class="exp-job-company" data-i18n="@Model.JobCompanyKey">@Model.JobCompany</p>
+
+                <ol class="exp-job-list">
+                    @for (var i = 0; i < Model.JobBullets.Count; i++)
+                    {
+                        var b = Model.JobBullets[i];
+                        <li class="exp-job-item">
+                            <span class="exp-job-num" aria-hidden="true">@(i + 1)</span>
+                            <p data-i18n="@b.Key">@Html.Raw(b.Text)</p>
+                        </li>
+                    }
+                </ol>
+
+                <div class="exp-stack-block">
+                    <span class="eyebrow eyebrow--sm" data-i18n="exp.stack">STACK</span>
+                    <div class="exp-stack-pills">
+                        @foreach (var pill in Model.Stack)
+                        {
+                            <span class="exp-stack-pill">@pill</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ===== SECTION 4: TECHNICAL PROFICIENCY MATRIX ===== *@
+        <div class="exp-proficiency-block">
+            <div class="about-eyebrow-row">
+                <span class="eyebrow" data-i18n="exp.proficiency">TECHNICAL PROFICIENCY MATRIX</span>
+                <span class="eyebrow-rule" aria-hidden="true"></span>
+            </div>
+            <div class="exp-proficiency-grid">
+                @foreach (var pg in Model.Proficiency)
+                {
+                    <div class="exp-proficiency-card">
+                        <div class="exp-proficiency-header">
+                            <span class="exp-proficiency-bullet exp-proficiency-bullet--@pg.Color" aria-hidden="true"></span>
+                            <h4 class="exp-proficiency-title" data-i18n="@pg.TitleKey">@pg.Title</h4>
+                        </div>
+                        <ul class="exp-proficiency-list">
+                            @foreach (var item in pg.Items)
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    @* ===== SECTION 5: CLOSING CTA (shared partial) ===== *@
+    <partial name="Partials/_ClosingCta" />
+</section>
+
+@section PageScripts {
+    <script src="~/js/pages/experience.js"></script>
+}

@@ -1,0 +1,793 @@
+/* ==========================================================================
+   about.css — About section styles
+   --------------------------------------------------------------------------
+   Uses tokens defined in style.css (--bg, --amber, --card, --radius-xl, etc).
+   ========================================================================== */
+
+.about-section {
+  padding: 120px 0;
+}
+
+/* ================= SECTION 1: HEADER ================= */
+
+.about-eyebrow-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.eyebrow-rule {
+  display: inline-block;
+  width: 64px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.about-heading {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin: 0 0 72px;
+  max-width: 18ch;
+}
+
+/* ================= SECTION 2: BIO ROW ================= */
+
+.bio-row {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.bio-photo-col {
+  position: sticky;
+  top: 120px;
+}
+
+.bio-photo-frame {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+}
+
+.bio-photo-frame::before,
+.bio-photo-frame::after,
+.bio-photo-frame > .bio-photo {
+  display: block;
+}
+
+.bio-photo-frame::before,
+.bio-photo-frame::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--accent);
+  opacity: 0.85;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.bio-photo-frame::before {
+  top: 10px;
+  left: 10px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.bio-photo-frame::after {
+  bottom: 10px;
+  right: 10px;
+  border-left: none;
+  border-top: none;
+}
+
+.bio-photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.bio-content-col {
+  min-width: 0;
+}
+
+.bio-subheading {
+  font-size: clamp(22px, 2.6vw, 28px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+  margin: 0 0 28px;
+}
+
+.bio-subheading .accent {
+  color: var(--accent);
+}
+
+.bio-quote {
+  margin: 0 0 32px;
+  padding: 18px 22px;
+  background: var(--card);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-md);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.bio-paragraph {
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--text-muted);
+  margin: 0 0 18px;
+}
+
+.bio-paragraph .highlight {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.bio-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.bio-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bio-stat-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+  stroke-width: 2;
+}
+
+.bio-stat-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.bio-stat-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.bio-stat-value--mono {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 860px) {
+  .about-section {
+    padding: 80px 0;
+  }
+
+  .bio-row {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .bio-photo-col {
+    position: static;
+    max-width: 280px;
+  }
+
+  .about-heading {
+    margin-bottom: 40px;
+  }
+
+  .journey-block,
+  .footprint-block,
+  .skills-block,
+  .handson-block,
+  .interests-block,
+  .endorsements-block {
+    margin-top: 80px !important;
+  }
+
+  .interests-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .about-section {
+    padding: 60px 0;
+  }
+
+  .about-heading {
+    margin-bottom: 32px;
+  }
+
+  .bio-stats {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 24px;
+  }
+
+  .bio-quote {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .bio-paragraph {
+    font-size: 14px;
+  }
+
+  .journey-block,
+  .footprint-block,
+  .skills-block,
+  .handson-block,
+  .interests-block,
+  .endorsements-block {
+    margin-top: 56px !important;
+  }
+
+  .interests-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .interest-card {
+    padding: 20px 12px;
+  }
+
+  .tech-pill {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .pill-grid {
+    gap: 8px;
+  }
+
+  .footprint-card {
+    padding: 22px 16px;
+  }
+
+  .footprint-number {
+    font-size: 26px;
+  }
+
+  .footprint-grid {
+    gap: 12px;
+  }
+
+  .timeline {
+    margin-top: 40px;
+  }
+
+  .timeline-entry {
+    margin-bottom: 40px;
+  }
+}
+
+@media (max-width: 360px) {
+  .interests-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bio-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.eyebrow--sm {
+  font-size: 11px;
+}
+
+/* ==========================================================================
+   SECTION 3: JOURNEY (TIMELINE)
+   ========================================================================== */
+
+.journey-block {
+  margin-top: 140px;
+}
+
+.timeline {
+  position: relative;
+  margin-top: 64px;
+  padding: 8px 0;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0.5;
+  transform: translateX(-50%) scaleY(1);
+  transform-origin: top center;
+}
+
+.timeline-entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 64px 1fr;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 64px;
+  opacity: 1;
+}
+
+.timeline-entry:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-node {
+  grid-column: 2;
+  justify-self: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 0 0 6px var(--bg);
+}
+
+.timeline-node i {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+  stroke-width: 2;
+}
+
+.timeline-content {
+  text-align: left;
+}
+
+.timeline-content--right {
+  text-align: right;
+}
+
+.timeline-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.timeline-desc {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.timeline-year {
+  font-family: var(--font-mono);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.timeline-entry > .timeline-year:first-child {
+  text-align: right;
+}
+
+.timeline-year-mobile {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .timeline-line {
+    left: 26px;
+  }
+
+  .timeline-entry {
+    grid-template-columns: 52px 1fr;
+    gap: 20px;
+  }
+
+  .timeline-node {
+    grid-column: 1;
+    width: 44px;
+    height: 44px;
+  }
+
+  .timeline-content,
+  .timeline-content--right {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .timeline-year {
+    display: none;
+  }
+
+  .timeline-year-mobile {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+}
+
+/* ==========================================================================
+   SECTION 4: TECHNICAL FOOTPRINT
+   ========================================================================== */
+
+.footprint-block {
+  margin-top: 140px;
+}
+
+.footprint-grid {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.footprint-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px 20px;
+  text-align: center;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.footprint-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.footprint-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent-soft);
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footprint-icon i {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+  stroke-width: 2;
+}
+
+.footprint-number {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+}
+
+.footprint-label {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.footprint-card--has-tip {
+  overflow: visible;
+}
+
+.footprint-tip-trigger {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+  padding: 0;
+}
+
+.footprint-tip-trigger i {
+  width: 12px;
+  height: 12px;
+}
+
+.footprint-tip-trigger:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.footprint-tip-trigger::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  width: 220px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.footprint-tip-trigger:hover::after,
+.footprint-tip-trigger:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+@media (max-width: 860px) {
+  .footprint-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==========================================================================
+   SECTION 5: SKILLS
+   ========================================================================== */
+
+.skills-block {
+  margin-top: 140px;
+}
+
+.skills-grid {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.skills-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 26px 22px;
+}
+
+.skills-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+.skills-bullet {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.skills-bullet--amber { background: var(--accent); }
+.skills-bullet--pink { background: var(--pink); }
+.skills-bullet--blue { background: var(--blue); }
+.skills-bullet--green { background: var(--green); }
+
+.skill-row {
+  margin-bottom: 18px;
+}
+
+.skill-row:last-child {
+  margin-bottom: 0;
+}
+
+.skill-row-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.skill-row-top span:first-child {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.skill-pct {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.skill-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+
+.skill-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
+@media (max-width: 980px) {
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   SECTION 6: HANDS-ON (TECH PILLS)
+   ========================================================================== */
+
+.handson-block {
+  margin-top: 140px;
+}
+
+.pill-grid {
+  margin-top: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tech-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tech-pill i {
+  font-size: 18px;
+}
+
+.tech-pill:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft), 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   SECTION 7: INTERESTS
+   ========================================================================== */
+
+.interests-block {
+  margin-top: 140px;
+}
+
+.interests-grid {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.interest-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  --interest-color: var(--accent);
+}
+
+.interest-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--interest-color);
+}
+
+.interest-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--interest-color);
+  stroke-width: 1.75;
+}
+
+.interest-label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.interest-card:nth-child(6n + 1) { --interest-color: var(--accent); }
+.interest-card:nth-child(6n + 2) { --interest-color: var(--pink); }
+.interest-card:nth-child(6n + 3) { --interest-color: var(--blue); }
+.interest-card:nth-child(6n + 4) { --interest-color: var(--green); }
+.interest-card:nth-child(6n + 5) { --interest-color: var(--purple); }
+.interest-card:nth-child(6n + 6) { --interest-color: var(--teal); }
+
+@media (max-width: 980px) {
+  .endorsements-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .interests-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .endorsements-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Closing CTA styles are in shared/css/footer.css */

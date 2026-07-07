@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+<title>Admin — Skills</title>
+<script>
+(function(){var t;try{t=localStorage.getItem('portfolio-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t)})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../shared/css/style.css" />
+<link rel="stylesheet" href="css/admin.css" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+
+<aside class="admin-sidebar" id="adminSidebar"></aside>
+<div class="admin-sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main">
+  <header class="admin-header">
+    <button class="admin-hamburger" id="hamburgerBtn" aria-label="Toggle sidebar"><i data-lucide="menu"></i></button>
+    <span class="admin-header-title">Skills</span>
+    <div class="admin-header-right"></div>
+  </header>
+  <main class="admin-content" id="crudContent"></main>
+</div>
+
+<div id="toastContainer" class="admin-toast-container"></div>
+<div id="modalOverlay" class="admin-modal-overlay"><div class="admin-modal" id="modalContent"></div></div>
+
+<script src="js/data.js"></script>
+<script src="js/shared.js"></script>
+<script>
+(function () {
+  "use strict";
+  try { if (sessionStorage.getItem("admin_auth") !== "1") { window.location.replace("login.html"); return; } } catch(e) {}
+  AdminSidebar.init("skills");
+  if (window.lucide) lucide.createIcons();
+
+  AdminCRUD.init({
+    entityName: "Skill",
+    title: "Skills",
+    subtitle: "Manage your skill set",
+    store: AdminData.Skills,
+    searchKeys: ["name_en", "name_fa", "category"],
+    columns: [
+      {
+        label: "Name", key: "name_en",
+        render: function (s) {
+          return '<div><div style="font-weight:600">' + AdminUtil.escapeHtml(s.name_en) + '</div>' +
+            '<div class="admin-cell-sub">' + AdminUtil.escapeHtml(s.name_fa) + '</div></div>';
+        }
+      },
+      { label: "Category", key: "category" },
+      {
+        label: "Level", key: "level",
+        render: function (s) {
+          return '<div style="display:flex;align-items:center;gap:10px;min-width:120px">' +
+            '<div style="flex:1;height:6px;border-radius:3px;background:var(--border)">' +
+            '<div style="height:100%;width:' + s.level + '%;border-radius:3px;background:var(--accent)"></div></div>' +
+            '<span style="font-size:12px;color:var(--text-faint);min-width:32px">' + s.level + '%</span></div>';
+        }
+      }
+    ],
+    formFields: [
+      { key: "name", label: "Skill Name", bilingual: true, required: true, placeholder: "e.g. JavaScript" },
+      { type: "row", fields: [
+        { key: "category", label: "Category", type: "select", options: [
+          "Frontend", "Backend", "Tools", "Design", "Other"
+        ], defaultValue: "Frontend" },
+        { key: "level", label: "Level (%)", type: "number", min: 0, max: 100, placeholder: "0-100" }
+      ]}
+    ]
+  });
+})();
+</script>
+</body>
+</html>

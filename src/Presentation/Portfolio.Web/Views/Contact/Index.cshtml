@@ -1,0 +1,338 @@
+@model ContactViewModel
+@{
+    ViewData["Title"] = "Contact";
+    ViewData["I18nTitle"] = "contact.title";
+    ViewData["ActivePage"] = "contact";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/contact.css" />
+}
+
+@* ======================================================
+   TODO: Contact page — currently from MockDataService (ContactViewModel + FaqItemViewModel)
+   Future: will be replaced by a real data source (out of scope for now)
+   NOTE: the contact FORM is a PURE CLIENT-SIDE SIMULATION (contact.js: validate →
+   spinner → setTimeout → fake success, form.reset). There is deliberately NO
+   server POST/binding. The admin-only Messages inbox is separate (Step 10).
+   Text stays English-in-markup with data-i18n keys; translations.js → Farsi.
+   ====================================================== *@
+<section id="contact" class="contact-section">
+    <div class="container">
+
+        @* ===== SECTION 1: HEADER ===== *@
+        <div class="about-eyebrow-row">
+            <span class="eyebrow" data-i18n="contact.eyebrow">CONTACT</span>
+            <span class="eyebrow-rule" aria-hidden="true"></span>
+        </div>
+        <h1 class="contact-heading" data-i18n="contact.heading">LET'S BUILD SOMETHING EXTRAORDINARY</h1>
+
+        @* ===== SECTION 2: INFO + MAP ===== *@
+        <div class="contact-info-map">
+            <div class="contact-info-card">
+                <h2 class="contact-info-title" data-i18n="contact.info_title">Ready to bring your ideas to life?</h2>
+
+                <div class="contact-availability-badge">
+                    <span class="contact-avail-dot"></span>
+                    <span data-i18n="contact.available">Available for new opportunities</span>
+                </div>
+
+                <p class="contact-info-desc" data-i18n="contact.info_desc">
+                    Whether you have a product idea, a full-time role, or just want to chat about
+                    technology, I'm always open to interesting conversations. I usually reply within
+                    24 hours.
+                </p>
+
+                <div class="contact-local-time">
+                    <svg class="contact-clock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span class="contact-time-label" data-i18n="contact.local_time">My Local Time:</span>
+                    <span class="contact-time-value" id="localTime">--</span>
+                </div>
+            </div>
+
+            <div class="contact-map-card">
+                <div class="contact-map-visual">
+                    <div class="contact-map-placeholder">
+                        <svg class="contact-map-grid" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="0" y1="50" x2="400" y2="50" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                            <line x1="0" y1="100" x2="400" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                            <line x1="0" y1="150" x2="400" y2="150" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                            <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                            <line x1="0" y1="250" x2="400" y2="250" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                            <line x1="80" y1="0" x2="80" y2="300" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                            <line x1="160" y1="0" x2="160" y2="300" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                            <line x1="240" y1="0" x2="240" y2="300" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                            <line x1="320" y1="0" x2="320" y2="300" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                            <path d="M180 60 C200 55, 260 50, 280 65 C300 80, 310 100, 300 130 C295 150, 285 160, 275 180 C265 200, 250 220, 240 240 C235 250, 225 258, 220 260 C215 255, 210 245, 205 235 C195 215, 185 195, 180 175 C175 155, 170 135, 172 115 C174 95, 176 75, 180 60Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                            <circle cx="240" cy="200" r="6" fill="#22c55e" opacity="0.9"/>
+                            <circle cx="240" cy="200" r="12" fill="#22c55e" opacity="0.15"/>
+                            <circle cx="240" cy="200" r="20" fill="#22c55e" opacity="0.06"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="contact-map-info">
+                    <div class="contact-map-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <span data-i18n="contact.based_in">BASED IN</span>
+                    </div>
+                    <div class="contact-map-location" data-i18n="contact.location">Tamilnadu</div>
+                    <div class="contact-map-country"><span data-i18n="contact.country">India</span> <span class="contact-map-code">IN</span></div>
+                </div>
+            </div>
+        </div>
+
+        @* ===== SECTION 3: CONTACT DETAIL CARDS ===== *@
+        <div class="contact-details-grid">
+
+            <div class="contact-detail-card">
+                <div class="contact-detail-header">
+                    <span class="contact-detail-label" data-i18n="contact.direct_email">DIRECT EMAIL</span>
+                    <button class="contact-copy-btn" data-copy="@Model.Email" aria-label="Copy email address">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                        </svg>
+                    </button>
+                </div>
+                <a href="mailto:@Model.Email" class="contact-detail-value">@Model.Email</a>
+                <div class="contact-detail-decoration" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" width="48" height="48" opacity="0.06">
+                        <rect width="20" height="16" x="2" y="4" rx="2"/>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="contact-detail-card">
+                <div class="contact-detail-header">
+                    <span class="contact-detail-label" data-i18n="contact.network">NETWORK</span>
+                </div>
+                <div class="contact-social-icons">
+                    <a href="@Model.GitHubUrl" class="contact-social-btn" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                            <path d="M9 18c-4.51 2-5-2-7-2"/>
+                        </svg>
+                    </a>
+                    <a href="@Model.LinkedInUrl" class="contact-social-btn" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                            <rect width="4" height="12" x="2" y="9"/>
+                            <circle cx="4" cy="4" r="2"/>
+                        </svg>
+                    </a>
+                    <a href="@Model.InstagramUrl" class="contact-social-btn" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                        </svg>
+                    </a>
+                    <button class="contact-social-btn contact-social-more" aria-label="More social links">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                            <circle cx="5" cy="12" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="19" cy="12" r="2"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="contact-detail-card">
+                <div class="contact-detail-header">
+                    <span class="contact-detail-label" data-i18n="contact.phone">PHONE</span>
+                    <button class="contact-copy-btn" data-copy="@Model.Phone" aria-label="Copy phone number">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                        </svg>
+                    </button>
+                </div>
+                <span class="contact-detail-value contact-detail-masked">*** ***** *****</span>
+                <div class="contact-detail-decoration" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" width="48" height="48" opacity="0.06">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                </div>
+            </div>
+
+        </div>
+
+        @* ===== SECTION 4: FORM (client-side simulation) + FAQ ===== *@
+        <div class="contact-form-faq">
+
+            <div class="contact-form-block">
+                <div class="about-eyebrow-row">
+                    <span class="eyebrow" data-i18n="contact.send_message">SEND A MESSAGE</span>
+                    <span class="eyebrow-rule" aria-hidden="true"></span>
+                </div>
+
+                <div class="contact-interest-pills">
+                    <button class="contact-pill active" data-interest="general" data-i18n="contact.general">General Inquiry</button>
+                    <button class="contact-pill" data-interest="job" data-i18n="contact.job">Job Opportunity</button>
+                    <button class="contact-pill" data-interest="freelance" data-i18n="contact.freelance">Freelance Project</button>
+                </div>
+
+                @* novalidate: contact.js validates + fake-submits; no server POST in this phase. *@
+                <form class="contact-form" id="contactForm" novalidate>
+                    <div class="contact-form-row">
+                        <div class="contact-form-group">
+                            <label class="contact-form-label" for="contactName" data-i18n="contact.name_label">NAME</label>
+                            <input type="text" id="contactName" name="name" class="contact-input" placeholder="Your name" data-i18n-placeholder="contact.name_placeholder" required />
+                        </div>
+                        <div class="contact-form-group">
+                            <label class="contact-form-label" for="contactEmail" data-i18n="contact.email_label">EMAIL</label>
+                            <input type="email" id="contactEmail" name="email" class="contact-input" placeholder="you@@email.com" data-i18n-placeholder="contact.email_placeholder" required />
+                        </div>
+                    </div>
+
+                    <div class="contact-form-group">
+                        <label class="contact-form-label" for="contactSubject" data-i18n="contact.subject_label">SUBJECT</label>
+                        <input type="text" id="contactSubject" name="subject" class="contact-input" placeholder="What's this about?" data-i18n-placeholder="contact.subject_placeholder" />
+                    </div>
+
+                    <div class="contact-form-group">
+                        <label class="contact-form-label" for="contactMessage" data-i18n="contact.message_label">MESSAGE</label>
+                        <textarea id="contactMessage" name="message" class="contact-input contact-textarea" placeholder="Tell me about your idea..." data-i18n-placeholder="contact.message_placeholder" rows="5" required></textarea>
+                    </div>
+
+                    <button type="submit" class="contact-submit-btn">
+                        <span data-i18n="contact.submit">Send Message</span>
+                        <span class="contact-submit-arrow">&rarr;</span>
+                    </button>
+
+                    <div class="contact-form-feedback" id="formFeedback" aria-live="polite"></div>
+                </form>
+            </div>
+
+            <div class="contact-faq-block">
+                <div class="about-eyebrow-row">
+                    <span class="eyebrow" data-i18n="contact.faqs">FAQS</span>
+                    <span class="eyebrow-rule" aria-hidden="true"></span>
+                </div>
+
+                <div class="contact-faq-list">
+                    @foreach (var faq in Model.Faqs)
+                    {
+                        <div class="contact-faq-item">
+                            <button class="contact-faq-toggle" aria-expanded="false">
+                                <span data-i18n="@faq.QuestionKey">@faq.Question</span>
+                                <svg class="contact-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </button>
+                            <div class="contact-faq-answer">
+                                <p data-i18n="@faq.AnswerKey">@faq.Answer</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    @* ===== SECTION 5: CLOSING CTA (Contact variant — "Visitors" guestbook card,
+         different from About/Work/Experience, so kept inline not via _ClosingCta) ===== *@
+    <div class="closing-cta-block">
+        <div class="closing-cta-eyebrow-row">
+            <span class="eyebrow" data-i18n="cta.inner_mechanics">INNER MECHANICS</span>
+        </div>
+        <h2 class="closing-cta-heading">
+            Where logic meets<br />
+            <span class="script-gradient">rhythm.</span>
+        </h2>
+
+        <div class="closing-cta-grid">
+
+            <div class="closing-cta-card">
+                <div class="closing-cta-github-header">
+                    <svg class="closing-cta-github-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                        <path d="M9 18c-4.51 2-5-2-7-2"/>
+                    </svg>
+                    <span class="closing-cta-github-name" data-i18n="cta.github_name">Jayavignesh's Github</span>
+                </div>
+                <div class="closing-cta-latest-push">
+                    <span class="closing-cta-latest-label" data-i18n="cta.latest_push">LATEST PUSH</span>
+                    <span class="closing-cta-latest-badge" data-i18n="cta.ago">17h ago</span>
+                </div>
+                <p class="closing-cta-commit-msg" data-i18n="cta.pushed_updates">Pushed repository updates</p>
+                <div class="closing-cta-commit-files">
+                    <span class="closing-cta-file-badge">i-wiki</span>
+                    <span class="closing-cta-file-badge">doca2f5</span>
+                </div>
+                <div class="closing-cta-github-stats">
+                    <div>
+                        <span class="closing-cta-stat-number">13</span>
+                        <span class="closing-cta-stat-label" data-i18n="cta.public_repos">PUBLIC REPOS</span>
+                    </div>
+                    <div>
+                        <span class="closing-cta-stat-number">8</span>
+                        <span class="closing-cta-stat-label" data-i18n="cta.followers">FOLLOWERS</span>
+                    </div>
+                </div>
+                <div class="closing-cta-social-row">
+                    <a href="#" aria-label="GitHub">
+                        <svg class="closing-cta-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                            <path d="M9 18c-4.51 2-5-2-7-2"/>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="LinkedIn">
+                        <svg class="closing-cta-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                            <rect width="4" height="12" x="2" y="9"/>
+                            <circle cx="4" cy="4" r="2"/>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="X (Twitter)">
+                        <svg class="closing-cta-social-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="closing-cta-card">
+                <span class="eyebrow eyebrow--sm" data-i18n="cta.writing">WRITING</span>
+                <h4 class="closing-cta-card-title" data-i18n="cta.article_title">Java 21 Virtual Threads: Infinite Scaling Meets Da...</h4>
+                <span class="closing-cta-meta" data-i18n="cta.published_date">Published on May 26, 2026</span>
+                <a asp-controller="Blog" asp-action="Index" class="closing-cta-link">
+                    <span data-i18n="cta.read_article">Read Article</span>
+                    <span class="closing-cta-link-arrow">&rarr;</span>
+                </a>
+            </div>
+
+            <div class="closing-cta-card">
+                <span class="eyebrow eyebrow--sm" data-i18n="cta.visitors">VISITORS</span>
+                <h4 class="closing-cta-card-title--large">
+                    Leave your<br />
+                    <span class="script-gradient">signature</span>
+                </h4>
+                <p class="closing-cta-card-desc" data-i18n="cta.let_me_know">Let me know you were here.</p>
+                <div class="closing-cta-avatars">
+                    <span class="closing-cta-avatar">C</span>
+                    <span class="closing-cta-avatar" style="background: var(--pink)">C</span>
+                    <span class="closing-cta-avatar" style="background: var(--blue)">G</span>
+                    <span class="closing-cta-avatar-count" data-i18n="cta.join_others">Join 13 others</span>
+                </div>
+                <a href="#" class="closing-cta-link">
+                    <span data-i18n="cta.sign_guestbook">Sign Guestbook</span>
+                    <span class="closing-cta-link-arrow">&rarr;</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section PageScripts {
+    <script src="~/js/pages/contact.js"></script>
+}

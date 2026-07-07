@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg" />
+<title>Portfolio — About</title>
+<script>
+(function(){var t;try{t=localStorage.getItem('portfolio-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var l;try{l=localStorage.getItem('portfolio-lang')}catch(e){}if(l==='fa'){document.documentElement.setAttribute('dir','rtl');document.documentElement.setAttribute('lang','fa')}})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="preconnect" href="https://unpkg.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" /></noscript>
+
+<link rel="stylesheet" href="../../shared/css/style.css" />
+<link rel="stylesheet" href="../../shared/css/navbar.css" />
+<link rel="stylesheet" href="../../shared/css/footer.css" />
+<link rel="stylesheet" href="about.css" />
+<link rel="stylesheet" href="../../shared/css/rtl.css" />
+<link rel="stylesheet" href="../../shared/css/spa-transitions.css" />
+<link rel="stylesheet" href="../../shared/css/theme-switcher.css" />
+</head>
+<body data-i18n-title="about.title">
+
+<!-- Navbar placeholder — filled by navbar-component.js -->
+<header class="navbar" id="navbar"></header>
+
+<main id="page-content">
+<section id="about" class="about-section">
+  <div class="container">
+
+    <!-- ================= SECTION 1: HEADER ================= -->
+    <div class="about-eyebrow-row">
+      <span class="eyebrow" data-i18n="about.eyebrow">ABOUT</span>
+      <span class="eyebrow-rule" aria-hidden="true"></span>
+    </div>
+    <h2 class="about-heading" data-i18n="about.heading">THE ENGINEER BEHIND THE CODE</h2>
+
+    <!-- ================= SECTION 2: BIO ROW ================= -->
+    <div class="bio-row">
+
+      <!-- Left: portrait -->
+      <div class="bio-photo-col">
+        <div class="bio-photo-frame">
+          <img
+            class="bio-photo"
+            src="../../assets/about-portrait.jpg"
+            alt="Mousa — portrait photo"
+            width="400"
+            height="500"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+      </div>
+
+      <!-- Right: bio content -->
+      <div class="bio-content-col">
+        <h3 class="bio-subheading"><span data-i18n="about.bio_subheading">Engineering with Purpose.</span> <span class="accent" data-i18n="about.bio_accent">Driven by Curiosity.</span></h3>
+
+        <blockquote class="bio-quote" data-i18n="about.bio_quote">
+          I believe the best code is the code you can explain to someone who
+          didn't write it.
+        </blockquote>
+
+        <p class="bio-paragraph" data-i18n="about.bio_p1">
+          I studied <span class="highlight">Computer Science</span> at
+          <span class="highlight">State University</span>, where I first
+          fell in love with the gap between "it compiles" and "it actually
+          works." Coursework in distributed systems and algorithms gave me
+          the fundamentals, but it was late nights debugging side projects
+          that taught me how to think like an engineer.
+        </p>
+        <p class="bio-paragraph" data-i18n="about.bio_p2">
+          My first role was as a <span class="highlight">Backend Developer</span>
+          at <span class="highlight">Acme Systems</span>, where I helped
+          rebuild a legacy monolith into a set of maintainable services. That
+          project is where I picked up real
+          <span class="highlight">DevOps</span> instincts — the difference
+          between code that works on my machine and code that survives
+          production.
+        </p>
+        <p class="bio-paragraph" data-i18n="about.bio_p3">
+          Today I focus on <span class="highlight">Cloud Architecture</span>
+          and building systems that scale without drama. I'm drawn to
+          problems at the intersection of performance and simplicity — the
+          kind of engineering that disappears when it's done right.
+        </p>
+
+        <!-- Stat badges -->
+        <div class="bio-stats">
+          <div class="bio-stat">
+            <i data-lucide="briefcase" class="bio-stat-icon"></i>
+            <span class="bio-stat-label" data-i18n="about.stat_role">ROLE</span>
+            <span class="bio-stat-value" data-i18n="about.stat_role_value">Software Engineer</span>
+          </div>
+          <div class="bio-stat">
+            <i data-lucide="calendar-clock" class="bio-stat-icon"></i>
+            <span class="bio-stat-label" data-i18n="about.stat_experience">EXPERIENCE</span>
+            <span class="bio-stat-value" data-i18n="about.stat_experience_value">3+ Years</span>
+          </div>
+          <div class="bio-stat">
+            <i data-lucide="cake" class="bio-stat-icon"></i>
+            <span class="bio-stat-label" data-i18n="about.stat_age">AGE</span>
+            <span class="bio-stat-value bio-stat-value--mono" id="live-age">--</span>
+          </div>
+          <div class="bio-stat">
+            <i data-lucide="graduation-cap" class="bio-stat-icon"></i>
+            <span class="bio-stat-label" data-i18n="about.stat_degree">DEGREE</span>
+            <span class="bio-stat-value" data-i18n="about.stat_degree_value">B.S. Computer Science</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 3: JOURNEY (TIMELINE) ================= -->
+    <div class="journey-block">
+      <div class="about-eyebrow-row">
+        <span class="eyebrow" data-i18n="about.journey">JOURNEY</span>
+        <span class="eyebrow-rule" aria-hidden="true"></span>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-line" aria-hidden="true"></div>
+
+        <div class="timeline-entry" data-timeline-item>
+          <div class="timeline-content timeline-content--right">
+            <span class="timeline-year-mobile">2016</span>
+            <h4 class="timeline-title" data-i18n="about.journey_1_title">Started Computer Science Degree</h4>
+            <p class="timeline-desc" data-i18n="about.journey_1_desc">Enrolled at State University, drawn in by a first-year
+              course that turned out to be the start of everything.</p>
+          </div>
+          <div class="timeline-node"><i data-lucide="graduation-cap"></i></div>
+          <div class="timeline-year">2016</div>
+        </div>
+
+        <div class="timeline-entry" data-timeline-item>
+          <div class="timeline-year">2018</div>
+          <div class="timeline-node"><i data-lucide="briefcase"></i></div>
+          <div class="timeline-content">
+            <span class="timeline-year-mobile">2018</span>
+            <h4 class="timeline-title" data-i18n="about.journey_2_title">First Software Internship</h4>
+            <p class="timeline-desc" data-i18n="about.journey_2_desc">Joined a small team as an intern, shipping real
+              features to real users for the first time.</p>
+          </div>
+        </div>
+
+        <div class="timeline-entry" data-timeline-item>
+          <div class="timeline-content timeline-content--right">
+            <span class="timeline-year-mobile">2019</span>
+            <h4 class="timeline-title" data-i18n="about.journey_3_title">Graduated & First Full-Time Role</h4>
+            <p class="timeline-desc" data-i18n="about.journey_3_desc">Graduated with a B.S. in Computer Science and joined
+              Acme Systems as a Backend Developer.</p>
+          </div>
+          <div class="timeline-node"><i data-lucide="award"></i></div>
+          <div class="timeline-year">2019</div>
+        </div>
+
+        <div class="timeline-entry" data-timeline-item>
+          <div class="timeline-year">2021</div>
+          <div class="timeline-node"><i data-lucide="rocket"></i></div>
+          <div class="timeline-content">
+            <span class="timeline-year-mobile">2021</span>
+            <h4 class="timeline-title" data-i18n="about.journey_4_title">Led First Major Project Launch</h4>
+            <p class="timeline-desc" data-i18n="about.journey_4_desc">Owned the migration from a legacy monolith to a set
+              of independently deployable services.</p>
+          </div>
+        </div>
+
+        <div class="timeline-entry" data-timeline-item>
+          <div class="timeline-content timeline-content--right">
+            <span class="timeline-year-mobile">2022</span>
+            <h4 class="timeline-title" data-i18n="about.journey_5_title">Earned Cloud Certification</h4>
+            <p class="timeline-desc" data-i18n="about.journey_5_desc">Formalized years of hands-on infrastructure work with
+              a professional cloud architecture certification.</p>
+          </div>
+          <div class="timeline-node"><i data-lucide="badge-check"></i></div>
+          <div class="timeline-year">2022</div>
+        </div>
+
+        <div class="timeline-entry" data-timeline-item>
+          <div class="timeline-year">2024</div>
+          <div class="timeline-node"><i data-lucide="trending-up"></i></div>
+          <div class="timeline-content">
+            <span class="timeline-year-mobile">2024</span>
+            <h4 class="timeline-title" data-i18n="about.journey_6_title">Promoted to Senior Engineer</h4>
+            <p class="timeline-desc" data-i18n="about.journey_6_desc">Now focused on cloud architecture and mentoring the
+              next round of engineers joining the team.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 4: TECHNICAL FOOTPRINT ================= -->
+    <div class="footprint-block">
+      <div class="about-eyebrow-row">
+        <span class="eyebrow" data-i18n="about.footprint">TECHNICAL FOOTPRINT</span>
+        <span class="eyebrow-rule" aria-hidden="true"></span>
+      </div>
+
+      <div class="footprint-grid">
+        <div class="footprint-card">
+          <div class="footprint-icon"><i data-lucide="folder-check"></i></div>
+          <div class="footprint-number" data-count-target="48">0</div>
+          <div class="footprint-label" data-i18n="about.footprint_projects">Projects Completed</div>
+        </div>
+        <div class="footprint-card">
+          <div class="footprint-icon"><i data-lucide="code-2"></i></div>
+          <div class="footprint-number" data-count-target="120000" data-suffix="+">0</div>
+          <div class="footprint-label" data-i18n="about.footprint_lines">Lines of Code</div>
+        </div>
+        <div class="footprint-card">
+          <div class="footprint-icon"><i data-lucide="git-commit-horizontal"></i></div>
+          <div class="footprint-number" data-count-target="1500" data-suffix="+">0</div>
+          <div class="footprint-label" data-i18n="about.footprint_commits">Commits</div>
+        </div>
+        <div class="footprint-card">
+          <div class="footprint-icon"><i data-lucide="calendar"></i></div>
+          <div class="footprint-number" data-count-target="3" data-suffix="+">0</div>
+          <div class="footprint-label" data-i18n="about.footprint_years">Years Experience</div>
+        </div>
+        <div class="footprint-card">
+          <div class="footprint-icon"><i data-lucide="layers"></i></div>
+          <div class="footprint-number" data-count-target="25" data-suffix="+">0</div>
+          <div class="footprint-label" data-i18n="about.footprint_techs">Technologies Used</div>
+        </div>
+        <div class="footprint-card">
+          <div class="footprint-icon"><i data-lucide="coffee"></i></div>
+          <div class="footprint-number" data-count-target="999" data-suffix="+">0</div>
+          <div class="footprint-label" data-i18n="about.footprint_coffee">Cups of Coffee</div>
+        </div>
+        <div class="footprint-card footprint-card--has-tip">
+          <button
+            class="footprint-tip-trigger"
+            type="button"
+            aria-label="What counts as a certification"
+            data-tooltip="PLACEHOLDER: includes vendor cloud certs and one internal
+              engineering certification track."
+          >
+            <i data-lucide="info"></i>
+          </button>
+          <div class="footprint-icon"><i data-lucide="badge-check"></i></div>
+          <div class="footprint-number" data-count-target="6">0</div>
+          <div class="footprint-label" data-i18n="about.footprint_certs">Certifications</div>
+        </div>
+        <div class="footprint-card">
+          <div class="footprint-icon"><i data-lucide="upload-cloud"></i></div>
+          <div class="footprint-number" data-count-target="150" data-suffix="+">0</div>
+          <div class="footprint-label" data-i18n="about.footprint_deploys">Deployments</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 5: SKILLS ================= -->
+    <div class="skills-block">
+      <div class="about-eyebrow-row">
+        <span class="eyebrow" data-i18n="about.skills">SKILLS</span>
+        <span class="eyebrow-rule" aria-hidden="true"></span>
+      </div>
+
+      <div class="skills-grid">
+        <div class="skills-card">
+          <div class="skills-card-title" data-i18n="about.skills_backend">
+            <span class="skills-bullet skills-bullet--amber" aria-hidden="true"></span>
+            BACKEND
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>Java</span><span class="skill-pct">90%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="90"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>Node.js</span><span class="skill-pct">85%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="85"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>Python</span><span class="skill-pct">80%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="80"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>Spring Boot</span><span class="skill-pct">88%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="88"></div></div>
+          </div>
+        </div>
+
+        <div class="skills-card">
+          <div class="skills-card-title" data-i18n="about.skills_frontend">
+            <span class="skills-bullet skills-bullet--pink" aria-hidden="true"></span>
+            FRONTEND
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>React</span><span class="skill-pct">90%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="90"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>JavaScript</span><span class="skill-pct">92%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="92"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>HTML/CSS</span><span class="skill-pct">95%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="95"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>TypeScript</span><span class="skill-pct">78%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="78"></div></div>
+          </div>
+        </div>
+
+        <div class="skills-card">
+          <div class="skills-card-title" data-i18n="about.skills_database">
+            <span class="skills-bullet skills-bullet--blue" aria-hidden="true"></span>
+            DATABASE
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>PostgreSQL</span><span class="skill-pct">85%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="85"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>MongoDB</span><span class="skill-pct">75%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="75"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>MySQL</span><span class="skill-pct">80%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="80"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>Redis</span><span class="skill-pct">70%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="70"></div></div>
+          </div>
+        </div>
+
+        <div class="skills-card">
+          <div class="skills-card-title" data-i18n="about.skills_tools">
+            <span class="skills-bullet skills-bullet--green" aria-hidden="true"></span>
+            TOOLS
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>Git</span><span class="skill-pct">95%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="95"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>Docker</span><span class="skill-pct">82%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="82"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>AWS</span><span class="skill-pct">78%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="78"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top"><span>Linux</span><span class="skill-pct">85%</span></div>
+            <div class="skill-bar"><div class="skill-bar-fill" data-target-width="85"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 6: HANDS-ON ================= -->
+    <div class="handson-block">
+      <div class="about-eyebrow-row">
+        <span class="eyebrow" data-i18n="about.handson">HANDS-ON</span>
+        <span class="eyebrow-rule" aria-hidden="true"></span>
+      </div>
+
+      <div class="pill-grid">
+        <div class="tech-pill"><i class="devicon-git-plain colored"></i><span>Git</span></div>
+        <div class="tech-pill"><i class="devicon-java-plain colored"></i><span>Java</span></div>
+        <div class="tech-pill"><i class="devicon-eclipse-plain colored"></i><span>Eclipse</span></div>
+        <div class="tech-pill"><i class="devicon-amazonwebservices-plain colored"></i><span>AWS</span></div>
+        <div class="tech-pill"><i class="devicon-azure-plain colored"></i><span>Azure</span></div>
+        <div class="tech-pill"><i class="devicon-googlecloud-plain colored"></i><span>Google Cloud</span></div>
+        <div class="tech-pill"><i class="devicon-spring-plain colored"></i><span>Spring Boot</span></div>
+        <div class="tech-pill"><i class="devicon-github-original colored"></i><span>GitHub</span></div>
+        <div class="tech-pill"><i class="devicon-python-plain colored"></i><span>Python</span></div>
+        <div class="tech-pill"><i class="devicon-react-original colored"></i><span>React</span></div>
+        <div class="tech-pill"><i class="devicon-linux-plain colored"></i><span>Linux</span></div>
+        <div class="tech-pill"><i class="devicon-docker-plain colored"></i><span>Docker</span></div>
+        <div class="tech-pill"><i class="devicon-maven-plain colored"></i><span>Maven</span></div>
+        <div class="tech-pill"><i class="devicon-figma-plain colored"></i><span>Figma</span></div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 7: INTERESTS ================= -->
+    <div class="interests-block">
+      <div class="about-eyebrow-row">
+        <span class="eyebrow" data-i18n="about.interests">INTERESTS</span>
+        <span class="eyebrow-rule" aria-hidden="true"></span>
+      </div>
+
+      <div class="interests-grid">
+        <div class="interest-card"><i data-lucide="code" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_coding">Coding</span></div>
+        <div class="interest-card"><i data-lucide="music" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_music">Music</span></div>
+        <div class="interest-card"><i data-lucide="gamepad-2" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_gaming">Gaming</span></div>
+        <div class="interest-card"><i data-lucide="bug" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_debugging">Debugging</span></div>
+        <div class="interest-card"><i data-lucide="book-open" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_reading">Reading</span></div>
+        <div class="interest-card"><i data-lucide="camera" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_photography">Photography</span></div>
+        <div class="interest-card"><i data-lucide="mountain" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_hiking">Hiking</span></div>
+        <div class="interest-card"><i data-lucide="puzzle" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_chess">Chess</span></div>
+        <div class="interest-card"><i data-lucide="chef-hat" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_cooking">Cooking</span></div>
+        <div class="interest-card"><i data-lucide="plane" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_travel">Travel</span></div>
+        <div class="interest-card"><i data-lucide="clapperboard" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_movies">Movies</span></div>
+        <div class="interest-card"><i data-lucide="dumbbell" class="interest-icon"></i><span class="interest-label" data-i18n="about.interest_fitness">Fitness</span></div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 8: ENDORSEMENTS ================= -->
+    <div class="endorsements-block">
+      <div class="about-eyebrow-row">
+        <span class="eyebrow" data-i18n="about.endorsements">ENDORSEMENTS</span>
+        <span class="eyebrow-rule" aria-hidden="true"></span>
+      </div>
+
+      <div class="endorsements-row">
+        <div class="endorsement-card">
+          <div class="endorsement-quote-mask">
+            <p class="endorsement-quote" data-i18n="about.endorsement_1">"One of the most reliable engineers I've worked
+              with — hands things off knowing they'll be handled properly, no
+              follow-up needed."</p>
+          </div>
+          <div class="endorsement-person">
+            <div class="endorsement-avatar" style="--avatar-color: var(--accent)">JD</div>
+            <div>
+              <div class="endorsement-name" data-i18n="about.endorsement_1_name">Jane Doe</div>
+              <div class="endorsement-role" data-i18n="about.endorsement_1_role">Engineering Manager, Acme Systems</div>
+            </div>
+          </div>
+        </div>
+        <div class="endorsement-card">
+          <div class="endorsement-quote-mask">
+            <p class="endorsement-quote" data-i18n="about.endorsement_2">"Explains complex systems in a way that actually
+              makes sense. Turned a confusing migration into something the whole
+              team understood."</p>
+          </div>
+          <div class="endorsement-person">
+            <div class="endorsement-avatar" style="--avatar-color: #ec4899">MS</div>
+            <div>
+              <div class="endorsement-name" data-i18n="about.endorsement_2_name">Mark Smith</div>
+              <div class="endorsement-role" data-i18n="about.endorsement_2_role">Senior Product Manager, Acme Systems</div>
+            </div>
+          </div>
+        </div>
+        <div class="endorsement-card">
+          <div class="endorsement-quote-mask">
+            <p class="endorsement-quote" data-i18n="about.endorsement_3">"Great instincts for when to move fast and when
+              to slow down. That balance is rare and it shows in the quality of
+              the work."</p>
+          </div>
+          <div class="endorsement-person">
+            <div class="endorsement-avatar" style="--avatar-color: #3b82f6">AL</div>
+            <div>
+              <div class="endorsement-name" data-i18n="about.endorsement_3_name">Amara Lee</div>
+              <div class="endorsement-role" data-i18n="about.endorsement_3_role">Tech Lead, Acme Systems</div>
+            </div>
+          </div>
+        </div>
+        <div class="endorsement-card">
+          <div class="endorsement-quote-mask">
+            <p class="endorsement-quote" data-i18n="about.endorsement_4">"Mentored two juniors on my team this year.
+              Patient, clear, and genuinely invested in people growing, not just
+              shipping."</p>
+          </div>
+          <div class="endorsement-person">
+            <div class="endorsement-avatar" style="--avatar-color: #22c55e">RK</div>
+            <div>
+              <div class="endorsement-name" data-i18n="about.endorsement_4_name">Ravi Kumar</div>
+              <div class="endorsement-role" data-i18n="about.endorsement_4_role">Director of Engineering, Acme Systems</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 9: CLOSING CTA ================= -->
+    <div class="closing-cta-block">
+      <div class="closing-cta-eyebrow-row">
+        <span class="eyebrow" data-i18n="cta.inner_mechanics">INNER MECHANICS</span>
+      </div>
+      <h2 class="closing-cta-heading">
+        Where logic meets<br />
+        <span class="script-gradient">rhythm.</span>
+      </h2>
+
+      <div class="closing-cta-grid">
+        <div class="closing-cta-card">
+          <span class="eyebrow eyebrow--sm" data-i18n="cta.projects">PROJECTS</span>
+          <h4 class="closing-cta-card-title" data-i18n="cta.resumeiq">ResumeIQ Platform</h4>
+          <p class="closing-cta-card-desc" data-i18n="cta.resumeiq_desc">AI Resume Analysis & ATS Intelligence Platform</p>
+          <a href="../work/work.html" class="closing-cta-link"><span data-i18n="cta.view_work">View Work</span> <span class="closing-cta-link-arrow">&rarr;</span></a>
+        </div>
+        <div class="closing-cta-card">
+          <span class="eyebrow eyebrow--sm" data-i18n="cta.writing">WRITING</span>
+          <h4 class="closing-cta-card-title" data-i18n="cta.article_title">Java 21 Virtual Threads: Infinite Scaling Meets Da...</h4>
+          <span class="closing-cta-meta" data-i18n="cta.published_date">Published on May 26, 2026</span>
+          <a href="../blog/blog.html" class="closing-cta-link"><span data-i18n="cta.read_article">Read Article</span> <span class="closing-cta-link-arrow">&rarr;</span></a>
+        </div>
+        <div class="closing-cta-card">
+          <span class="eyebrow eyebrow--sm" data-i18n="cta.network">NETWORK</span>
+          <h4 class="closing-cta-card-title closing-cta-card-title--large">
+            Let's build<br /><span class="script-gradient">together</span>
+          </h4>
+          <p class="closing-cta-card-desc" data-i18n="cta.collab_desc">Reach out for collaborations or just to say hi.</p>
+          <a href="../contact/contact.html" class="closing-cta-link"><span data-i18n="cta.connect">Connect</span> <span class="closing-cta-link-arrow">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</main>
+
+<!-- GSAP bundle -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/SplitText.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<!-- Shared: navbar config + builder + behavior + command palette -->
+<script>
+  window.__navConfig = { basePath: '../../', currentPage: 'about' };
+</script>
+<script src="../../shared/js/translations.js"></script>
+<script src="../../shared/js/i18n.js"></script>
+<script src="../../shared/js/navbar-component.js"></script>
+<script src="../../shared/js/text-reveal.js"></script>
+<script src="about.js"></script>
+<script src="about-reveal-init.js"></script>
+<script src="../../shared/js/navbar.js"></script>
+<script src="../../shared/js/command-palette.js"></script>
+<script src="../../shared/js/footer-component.js"></script>
+<script src="../../shared/js/theme-switcher.js"></script>
+<script>
+  if (window.i18n) {
+    window.i18n.translateElements();
+    window.i18n.updateLangSwitcher();
+  }
+</script>
+<script src="../../shared/js/spa-router.js"></script>
+</body>
+</html>
