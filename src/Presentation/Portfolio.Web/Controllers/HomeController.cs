@@ -11,8 +11,10 @@ public class HomeController(IPortfolioApiClient api) : Controller
     {
         var language = WebLanguage.Resolve(lang);
 
-        // TODO(E4): hero copy (name/role/bio/socials/resume/learning) still comes
-        // from MockDataService until the Profile entity exists on the backend.
+        // Hero now comes from the Profile entity (Portfolio.API). Until a profile is
+        // seeded, fall back to the mock hero so the page still renders (retired once
+        // real content is seeded in F1).
+        var profile = await api.GetProfileAsync(language, cancellationToken);
         var hero = MockDataService.GetHomeViewModel();
 
         var projects = await api.GetProjectsAsync(language, cancellationToken);
@@ -22,17 +24,17 @@ public class HomeController(IPortfolioApiClient api) : Controller
 
         var model = new HomeViewModel
         {
-            FullName = hero.FullName,
-            JobTitle = hero.JobTitle,
-            Bio = hero.Bio,
-            ResumeUrlEn = hero.ResumeUrlEn,
-            ResumeUrlFa = hero.ResumeUrlFa,
-            GitHubUrl = hero.GitHubUrl,
-            InstagramUrl = hero.InstagramUrl,
-            LinkedInUrl = hero.LinkedInUrl,
-            LearningTitle = hero.LearningTitle,
-            LearningDesc = hero.LearningDesc,
-            LearningDate = hero.LearningDate,
+            FullName = profile?.FullName ?? hero.FullName,
+            JobTitle = profile?.JobTitle ?? hero.JobTitle,
+            Bio = profile?.Bio ?? hero.Bio,
+            ResumeUrlEn = profile?.ResumeUrlEn ?? hero.ResumeUrlEn,
+            ResumeUrlFa = profile?.ResumeUrlFa ?? hero.ResumeUrlFa,
+            GitHubUrl = profile?.GitHubUrl ?? hero.GitHubUrl,
+            InstagramUrl = profile?.InstagramUrl ?? hero.InstagramUrl,
+            LinkedInUrl = profile?.LinkedInUrl ?? hero.LinkedInUrl,
+            LearningTitle = profile?.LearningTitle ?? hero.LearningTitle,
+            LearningDesc = profile?.LearningDesc ?? hero.LearningDesc,
+            LearningDate = profile?.LearningDate ?? hero.LearningDate,
             Projects = projects.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Skills = skills.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Experiences = experiences.Select(ApiViewModelMapper.ToViewModel).ToList(),

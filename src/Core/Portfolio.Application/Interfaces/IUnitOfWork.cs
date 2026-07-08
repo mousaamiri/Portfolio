@@ -8,6 +8,7 @@ public interface IUnitOfWork : IDisposable
     ISkillRepository Skills { get; }
     IArticleRepository Articles { get; }
     IMessageRepository Messages { get; }
+    IProfileRepository Profiles { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
