@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Domain.Admins;
+using Portfolio.Domain.Entities.Articles;
 using Portfolio.Domain.Entities.Educations;
 using Portfolio.Domain.Entities.Experiences;
 using Portfolio.Domain.Entities.Projects;
@@ -23,12 +24,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Skill> Skills => Set<Skill>();
     public DbSet<SkillTranslation> SkillTranslations => Set<SkillTranslation>();
 
+    public DbSet<Article> Articles => Set<Article>();
+    public DbSet<ArticleTranslation> ArticleTranslations => Set<ArticleTranslation>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Project>()
             .HasIndex(p => p.Slug)
+            .IsUnique();
+
+        modelBuilder.Entity<Article>()
+            .HasIndex(a => a.Slug)
             .IsUnique();
     }
 }
