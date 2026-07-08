@@ -21,6 +21,8 @@ public interface IPortfolioApiClient
 
     Task<IReadOnlyList<TimelineEntryApiDto>> GetTimelineAsync(string lang, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<InterestApiDto>> GetInterestsAsync(string lang, CancellationToken cancellationToken = default);
+
     /// <summary>Submits a contact-form message to the public API. Returns true on success.</summary>
     Task<bool> SendMessageAsync(ContactMessageRequest request, CancellationToken cancellationToken = default);
 }

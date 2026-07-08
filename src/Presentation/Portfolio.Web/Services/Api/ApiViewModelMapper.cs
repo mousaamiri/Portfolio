@@ -98,6 +98,12 @@ public static class ApiViewModelMapper
         Icon = dto.Icon
     };
 
+    public static InterestViewModel ToViewModel(InterestApiDto dto) => new()
+    {
+        Icon = dto.Icon,
+        Label = dto.Label
+    };
+
     public static BlogPostViewModel ToViewModel(ArticleApiDto dto) => new()
     {
         Id = dto.Slug,

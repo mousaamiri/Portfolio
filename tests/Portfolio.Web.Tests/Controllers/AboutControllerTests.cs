@@ -20,6 +20,8 @@ public class AboutControllerTests
             .ReturnsAsync([new EducationApiDto { InstitutionName = "State University", Degree = "BSc", FieldOfStudy = "CS", Gpa = 18.2 }]);
         _api.Setup(a => a.GetTimelineAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync([new TimelineEntryApiDto { Year = "2024", Icon = "rocket", Title = "Built portfolio", Description = "d" }]);
+        _api.Setup(a => a.GetInterestsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new InterestApiDto { Icon = "code", Label = "Coding" }]);
 
         _sut = new AboutController(_api.Object);
     }
@@ -72,14 +74,24 @@ public class AboutControllerTests
     }
 
     [Fact]
+    public async Task Index_InterestsComeFromApi()
+    {
+        var model = await InvokeAsync();
+
+        model.Interests.Should().ContainSingle();
+        model.Interests[0].Label.Should().Be("Coding");
+        model.Interests[0].Icon.Should().Be("code");
+        _api.Verify(a => a.GetInterestsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task Index_MockedSectionsStillPopulated()
     {
         var model = await InvokeAsync();
 
-        // Footprint / Interests / Endorsements have no backend entity yet
-        // (wired later in the E-phase), so they remain mock-backed and non-empty.
+        // Footprint / Endorsements have no backend entity yet (wired later),
+        // so they remain mock-backed and non-empty.
         model.Footprint.Should().NotBeEmpty();
-        model.Interests.Should().NotBeEmpty();
         model.Endorsements.Should().NotBeEmpty();
     }
 }
