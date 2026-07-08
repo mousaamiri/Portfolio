@@ -1,7 +1,79 @@
+@model List<Portfolio.Web.Models.Admin.ProjectListItem>
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Admin — Projects";
     ViewData["AdminTitle"] = "Projects";
+}
+
+<div class="admin-page-header">
+    <div>
+        <h1 class="admin-page-title">Projects</h1>
+        <p class="admin-page-subtitle">Manage your portfolio projects</p>
+    </div>
+    <a asp-controller="Admin" asp-action="ProjectCreate" class="admin-btn admin-btn--primary">
+        <i data-lucide="plus"></i><span>New Project</span>
+    </a>
+</div>
+
+@if (TempData["AdminMessage"] is string msg)
+{
+    <div class="admin-toast admin-toast--inline" role="status">@msg</div>
+}
+
+@if (Model.Count == 0)
+{
+    <div class="admin-empty">
+        <p>No projects yet.</p>
+        <a asp-controller="Admin" asp-action="ProjectCreate" class="admin-btn admin-btn--primary admin-btn--sm">Create the first one</a>
+    </div>
+}
+else
+{
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Slug</th>
+                <th>Technologies</th>
+                <th>Status</th>
+                <th style="text-align:right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td style="font-weight:600">@p.Title</td>
+                    <td><code>@p.Slug</code></td>
+                    <td>
+                        @if (string.IsNullOrWhiteSpace(p.Technologies))
+                        {
+                            <span style="color:var(--text-faint)">—</span>
+                        }
+                        else
+                        {
+                            @foreach (var t in p.Technologies.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Take(3))
+                            {
+                                <span class="admin-tag" style="font-size:11px;padding:2px 7px">@t</span>
+                            }
+                        }
+                    </td>
+                    <td>
+                        <span class="admin-status @(p.IsPublished ? "admin-status--published" : "admin-status--draft")">
+                            <span class="admin-status-dot"></span>@(p.IsPublished ? "Published" : "Draft")
+                        </span>
+                    </td>
+                    <td style="text-align:right;white-space:nowrap">
+                        <a asp-controller="Admin" asp-action="ProjectEdit" asp-route-id="@p.Id" class="admin-btn admin-btn--ghost admin-btn--sm">Edit</a>
+                        <form asp-controller="Admin" asp-action="ProjectDelete" asp-route-id="@p.Id" method="post" style="display:inline"
+                              onsubmit="return confirm('Delete this project? This cannot be undone.');">
+                            <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 @section Scripts {
@@ -10,56 +82,6 @@
             "use strict";
             AdminSidebar.init("projects");
             if (window.lucide) lucide.createIcons();
-
-            AdminCRUD.init({
-                entityName: "Project",
-                title: "Projects",
-                subtitle: "Manage your portfolio projects",
-                store: AdminData.Projects,
-                searchKeys: ["title_en", "title_fa", "subtitle_en", "subtitle_fa"],
-                columns: [
-                    {
-                        label: "Title", key: "title_en",
-                        render: function (p) {
-                            return '<div><div style="font-weight:600">' + AdminUtil.escapeHtml(p.title_en) + '</div>' +
-                                '<div class="admin-cell-sub">' + AdminUtil.escapeHtml(p.title_fa) + '</div></div>';
-                        }
-                    },
-                    {
-                        label: "Technologies", key: "techs",
-                        render: function (p) {
-                            if (!p.techs || !p.techs.length) return '<span style="color:var(--text-faint)">—</span>';
-                            var shown = p.techs.slice(0, 3).map(function (t) {
-                                return '<span class="admin-tag" style="font-size:11px;padding:2px 7px">' + AdminUtil.escapeHtml(t) + '</span>';
-                            }).join('');
-                            if (p.techs.length > 3) shown += '<span style="font-size:11px;color:var(--text-faint)">+' + (p.techs.length - 3) + '</span>';
-                            return '<div style="display:flex;flex-wrap:wrap;gap:4px">' + shown + '</div>';
-                        }
-                    },
-                    {
-                        label: "Status", key: "status",
-                        render: function (p) {
-                            var cls = p.status === "published" ? "admin-status--published" : "admin-status--draft";
-                            var txt = p.status === "published" ? "Published" : "Draft";
-                            return '<span class="admin-status ' + cls + '"><span class="admin-status-dot"></span>' + txt + '</span>';
-                        }
-                    }
-                ],
-                formFields: [
-                    { key: "title", label: "Title", bilingual: true, required: true, placeholder: "Project name" },
-                    { key: "subtitle", label: "Short Description", bilingual: true, placeholder: "One-line description" },
-                    { key: "description", label: "Full Description", bilingual: true, type: "textarea", rows: 4, placeholder: "Detailed description" },
-                    { key: "techs", label: "Technologies", type: "tags", placeholder: "Add technology and press Enter", hint: "Press Enter or comma to add" },
-                    { type: "row", fields: [
-                        { key: "demoUrl", label: "Demo URL", placeholder: "https://..." },
-                        { key: "githubUrl", label: "GitHub URL", placeholder: "https://github.com/..." }
-                    ]},
-                    { key: "status", label: "Status", type: "select", options: [
-                        { value: "published", label: "Published" },
-                        { value: "draft", label: "Draft" }
-                    ], defaultValue: "published" }
-                ]
-            });
         })();
     </script>
 }

@@ -117,4 +117,121 @@ public class AdminControllerTests
             .Which.ActionName.Should().Be("Login");
         _authService.Verify(a => a.SignOutAsync(It.IsAny<HttpContext>(), "Cookies", It.IsAny<AuthenticationProperties>()), Times.Once);
     }
+
+    // ── Projects CRUD ──
+
+    [Fact]
+    public async Task Projects_ReturnsListFromApi()
+    {
+        _adminApi.Setup(a => a.GetProjectsAsync("en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new ProjectApiDto { Id = Guid.NewGuid(), Slug = "vitastic", Title = "Vitastic", IsPublished = true }]);
+
+        var result = await _sut.Projects(CancellationToken.None) as ViewResult;
+        var model = (List<Portfolio.Web.Models.Admin.ProjectListItem>)result!.Model!;
+
+        model.Should().ContainSingle();
+        model[0].Slug.Should().Be("vitastic");
+        model[0].Title.Should().Be("Vitastic");
+    }
+
+    [Fact]
+    public async Task ProjectCreate_Post_Valid_CreatesAndRedirects()
+    {
+        _adminApi.Setup(a => a.CreateProjectAsync(It.IsAny<CreateProjectApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+
+        var model = new Portfolio.Web.Models.Admin.ProjectFormModel
+        {
+            Slug = "new-proj", ThumbnailUrl = "t.jpg", TitleEn = "New"
+        };
+
+        var result = await _sut.ProjectCreate(model, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Projects");
+        _adminApi.Verify(a => a.CreateProjectAsync(
+            It.Is<CreateProjectApiRequest>(r => r.Slug == "new-proj" && r.Translations.Count == 1 && r.Translations[0].Title == "New"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ProjectCreate_Post_ApiFailure_ReturnsFormWithError()
+    {
+        _adminApi.Setup(a => a.CreateProjectAsync(It.IsAny<CreateProjectApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Guid?)null);
+
+        var model = new Portfolio.Web.Models.Admin.ProjectFormModel { Slug = "dup", ThumbnailUrl = "t", TitleEn = "X" };
+
+        var result = await _sut.ProjectCreate(model, CancellationToken.None);
+
+        var view = result.Should().BeOfType<ViewResult>().Subject;
+        view.ViewName.Should().Be("ProjectForm");
+        _sut.ModelState.IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ProjectCreate_Post_InvalidModel_DoesNotCallApi()
+    {
+        _sut.ModelState.AddModelError("Slug", "Required");
+
+        var result = await _sut.ProjectCreate(new Portfolio.Web.Models.Admin.ProjectFormModel(), CancellationToken.None);
+
+        result.Should().BeOfType<ViewResult>();
+        _adminApi.Verify(a => a.CreateProjectAsync(It.IsAny<CreateProjectApiRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ProjectEdit_Get_BuildsBilingualForm()
+    {
+        var id = Guid.NewGuid();
+        _adminApi.Setup(a => a.GetProjectBothLanguagesAsync(id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((
+                new ProjectApiDto { Id = id, Slug = "vitastic", Title = "Vitastic", ShortDescription = "LMS" },
+                new ProjectApiDto { Id = id, Slug = "vitastic", Title = "ویتاستیک", ShortDescription = "سامانه" }));
+
+        var result = await _sut.ProjectEdit(id, CancellationToken.None) as ViewResult;
+        var model = (Portfolio.Web.Models.Admin.ProjectFormModel)result!.Model!;
+
+        model.TitleEn.Should().Be("Vitastic");
+        model.TitleFa.Should().Be("ویتاستیک");
+        model.IsEdit.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ProjectEdit_Get_NotFound_Returns404()
+    {
+        var id = Guid.NewGuid();
+        _adminApi.Setup(a => a.GetProjectBothLanguagesAsync(id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(((ProjectApiDto?)null, (ProjectApiDto?)null));
+
+        var result = await _sut.ProjectEdit(id, CancellationToken.None);
+
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Fact]
+    public async Task ProjectEdit_Post_Valid_UpdatesAndRedirects()
+    {
+        var id = Guid.NewGuid();
+        _adminApi.Setup(a => a.UpdateProjectAsync(id, It.IsAny<UpdateProjectApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var model = new Portfolio.Web.Models.Admin.ProjectFormModel { Id = id, Slug = "s", ThumbnailUrl = "t", TitleEn = "Updated", IsActive = true };
+
+        var result = await _sut.ProjectEdit(id, model, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Projects");
+        _adminApi.Verify(a => a.UpdateProjectAsync(id, It.Is<UpdateProjectApiRequest>(r => r.Translations[0].Title == "Updated"), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ProjectDelete_Post_DeletesAndRedirects()
+    {
+        var id = Guid.NewGuid();
+        _adminApi.Setup(a => a.DeleteProjectAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        var result = await _sut.ProjectDelete(id, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Projects");
+        _adminApi.Verify(a => a.DeleteProjectAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+    }
 }

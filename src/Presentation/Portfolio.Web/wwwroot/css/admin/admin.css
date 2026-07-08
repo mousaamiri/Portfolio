@@ -415,3 +415,37 @@ table.admin-table { width: 100%; border-collapse: collapse; }
 @media (max-width: 480px) {
   .admin-stats-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Phase 3: server-rendered admin CRUD forms ── */
+.admin-form-section {
+    margin: 22px 0 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+}
+.admin-form-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 22px;
+    margin: 12px 0;
+}
+.admin-form-error {
+    display: block;
+    color: #ef4444;
+    font-size: 12.5px;
+    margin-top: 4px;
+}
+.admin-form-error:empty { display: none; }
+.admin-toast--inline {
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 9px 14px;
+    border-radius: var(--radius-sm, 10px);
+    background: var(--accent-soft, rgba(240,166,59,.14));
+    color: var(--text);
+    font-size: 13.5px;
+}

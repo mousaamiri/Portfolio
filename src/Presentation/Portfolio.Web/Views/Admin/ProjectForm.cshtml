@@ -1,0 +1,135 @@
+@model Portfolio.Web.Models.Admin.ProjectFormModel
+@{
+    Layout = "_AdminLayout";
+    var isEdit = Model.IsEdit;
+    ViewData["Title"] = isEdit ? "Admin — Edit Project" : "Admin — New Project";
+    ViewData["AdminTitle"] = isEdit ? "Edit Project" : "New Project";
+    var formAction = isEdit ? "ProjectEdit" : "ProjectCreate";
+}
+
+<div class="admin-page-header">
+    <div>
+        <h1 class="admin-page-title">@(isEdit ? "Edit Project" : "New Project")</h1>
+        <p class="admin-page-subtitle">@(isEdit ? Model.Slug : "Add a project to your portfolio")</p>
+    </div>
+    <a asp-controller="Admin" asp-action="Projects" class="admin-btn admin-btn--ghost">Back to list</a>
+</div>
+
+<form asp-controller="Admin" asp-action="@formAction" asp-route-id="@Model.Id" method="post" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="admin-form-error"></div>
+    @if (isEdit)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="Slug"></label>
+            <input class="admin-form-input" asp-for="Slug" placeholder="my-project" />
+            <span class="admin-form-hint">Lowercase, hyphen-separated. Used in the public URL.</span>
+            <span class="admin-form-error" asp-validation-for="Slug"></span>
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="DisplayOrder"></label>
+            <input class="admin-form-input" asp-for="DisplayOrder" type="number" />
+        </div>
+    </div>
+
+    <h3 class="admin-form-section">English</h3>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="TitleEn"></label>
+        <input class="admin-form-input" asp-for="TitleEn" placeholder="Project name" />
+        <span class="admin-form-error" asp-validation-for="TitleEn"></span>
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="ShortDescriptionEn"></label>
+        <input class="admin-form-input" asp-for="ShortDescriptionEn" placeholder="One-line description" />
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="DescriptionEn"></label>
+        <textarea class="admin-form-textarea" asp-for="DescriptionEn" rows="4"></textarea>
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="TechnologiesEn"></label>
+        <input class="admin-form-input" asp-for="TechnologiesEn" placeholder="C#, .NET, PostgreSQL" />
+        <span class="admin-form-hint">Comma-separated.</span>
+    </div>
+
+    <h3 class="admin-form-section">Persian (optional)</h3>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="TitleFa"></label>
+        <input class="admin-form-input admin-form-input--rtl" asp-for="TitleFa" dir="rtl" placeholder="نام پروژه" />
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="ShortDescriptionFa"></label>
+        <input class="admin-form-input admin-form-input--rtl" asp-for="ShortDescriptionFa" dir="rtl" />
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="DescriptionFa"></label>
+        <textarea class="admin-form-textarea admin-form-input--rtl" asp-for="DescriptionFa" dir="rtl" rows="4"></textarea>
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="TechnologiesFa"></label>
+        <input class="admin-form-input admin-form-input--rtl" asp-for="TechnologiesFa" dir="rtl" />
+    </div>
+
+    <h3 class="admin-form-section">Links &amp; media</h3>
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="ThumbnailUrl"></label>
+            <input class="admin-form-input" asp-for="ThumbnailUrl" placeholder="/images/projects/slug.jpg" />
+            <span class="admin-form-error" asp-validation-for="ThumbnailUrl"></span>
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="CoverImageUrl"></label>
+            <input class="admin-form-input" asp-for="CoverImageUrl" />
+        </div>
+    </div>
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="PreviewUrl"></label>
+            <input class="admin-form-input" asp-for="PreviewUrl" placeholder="https://..." />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="SourceCodeUrl"></label>
+            <input class="admin-form-input" asp-for="SourceCodeUrl" placeholder="https://github.com/..." />
+        </div>
+    </div>
+
+    <h3 class="admin-form-section">Dates &amp; flags</h3>
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="StartedAt"></label>
+            <input class="admin-form-input" asp-for="StartedAt" type="date" />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="CompletedAt"></label>
+            <input class="admin-form-input" asp-for="CompletedAt" type="date" />
+        </div>
+    </div>
+    <div class="admin-form-checks">
+        <label class="admin-check"><input type="checkbox" asp-for="IsPublished" /> <span>@Html.DisplayNameFor(m => m.IsPublished)</span></label>
+        <label class="admin-check"><input type="checkbox" asp-for="IsFeatured" /> <span>@Html.DisplayNameFor(m => m.IsFeatured)</span></label>
+        <label class="admin-check"><input type="checkbox" asp-for="IsClientProject" /> <span>@Html.DisplayNameFor(m => m.IsClientProject)</span></label>
+        <label class="admin-check"><input type="checkbox" asp-for="IsSourcePrivate" /> <span>@Html.DisplayNameFor(m => m.IsSourcePrivate)</span></label>
+        @if (isEdit)
+        {
+            <label class="admin-check"><input type="checkbox" asp-for="IsActive" /> <span>@Html.DisplayNameFor(m => m.IsActive)</span></label>
+        }
+    </div>
+
+    <div class="admin-form-actions">
+        <a asp-controller="Admin" asp-action="Projects" class="admin-btn admin-btn--ghost">Cancel</a>
+        <button type="submit" class="admin-btn admin-btn--primary">@(isEdit ? "Save changes" : "Create project")</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        (function () {
+            "use strict";
+            AdminSidebar.init("projects");
+            if (window.lucide) lucide.createIcons();
+        })();
+    </script>
+}
