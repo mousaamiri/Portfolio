@@ -10,16 +10,23 @@ public class ExperienceController(IPortfolioApiClient api) : Controller
     {
         var language = WebLanguage.Resolve(lang);
 
-        // Professional history, impact metrics, core principles and the proficiency
-        // matrix all come from Portfolio.API. The remaining page content (summary,
-        // CV-style education, single-role fallback block) has no backend entity yet
-        // and stays mocked. TODO: model those if the owner wants them dynamic.
+        // Impact metrics, core principles, proficiency matrix and professional history
+        // all come from Portfolio.API; the Summary name/text come from the Profile
+        // entity. The static site's fabricated CV-education / single-role / Stack are
+        // intentionally left empty (no real equivalent) and hidden by the view.
         var model = MockDataService.GetExperiencePageViewModel();
 
+        var profile = await api.GetProfileAsync(language, cancellationToken);
         var experiences = await api.GetExperiencesAsync(language, cancellationToken);
         var metrics = await api.GetImpactMetricsAsync(language, cancellationToken);
         var principles = await api.GetPrinciplesAsync(language, cancellationToken);
         var proficiency = await api.GetProficienciesAsync(language, cancellationToken);
+
+        if (profile is not null)
+        {
+            model.SummaryName = profile.FullName;
+            model.SummaryText = profile.Bio ?? string.Empty;
+        }
 
         model.ProfessionalHistory = experiences.Select(ApiViewModelMapper.ToViewModel).ToList();
         model.Metrics = metrics.Select(ApiViewModelMapper.ToViewModel).ToList();

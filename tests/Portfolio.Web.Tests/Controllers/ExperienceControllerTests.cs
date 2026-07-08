@@ -44,16 +44,27 @@ public class ExperienceControllerTests
     }
 
     [Fact]
-    public async Task Index_WhenApiEmpty_ProfessionalHistoryEmptyForFallback()
+    public async Task Index_WhenApiEmpty_ProfessionalHistoryEmpty()
     {
-        _api.Setup(a => a.GetExperiencesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
-
         var model = await InvokeAsync();
 
         model.ProfessionalHistory.Should().BeEmpty();
-        // The static fallback role block is still available on the model.
-        model.JobTitle.Should().NotBeNullOrWhiteSpace();
+        // No fabricated fallback role/education/stack any more.
+        model.JobTitle.Should().BeEmpty();
+        model.Education.Should().BeEmpty();
+        model.Stack.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Index_SummaryComesFromProfile()
+    {
+        _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ProfileApiDto { FullName = "Mousa Amiri", Bio = "Backend developer." });
+
+        var model = await InvokeAsync();
+
+        model.SummaryName.Should().Be("Mousa Amiri");
+        model.SummaryText.Should().Be("Backend developer.");
     }
 
     [Fact]
@@ -81,15 +92,14 @@ public class ExperienceControllerTests
     }
 
     [Fact]
-    public async Task Index_MockedSectionsStillPopulated()
+    public async Task Index_NoFabricatedTemplateContent()
     {
-        _api.Setup(a => a.GetExperiencesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
-
         var model = await InvokeAsync();
 
-        // CV-style Education / Stack have no backend entity yet, so they stay mocked.
-        model.Education.Should().NotBeEmpty();
-        model.Stack.Should().NotBeEmpty();
+        // The fabricated "Jaya Vignesh / TCS" CV education, single-role and stack
+        // were removed; these stay empty until real content exists.
+        model.Education.Should().BeEmpty();
+        model.Stack.Should().BeEmpty();
+        model.JobBullets.Should().BeEmpty();
     }
 }

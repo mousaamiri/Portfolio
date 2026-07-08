@@ -19,10 +19,10 @@ public class ExperiencePageViewModel
     // falls back to the single static role block below.
     public List<ExperienceViewModel> ProfessionalHistory { get; set; } = [];
 
-    // Summary
-    public string SummaryName { get; init; } = string.Empty;        // static
+    // Summary — name/text now sourced from the Profile entity (settable).
+    public string SummaryName { get; set; } = string.Empty;
     public string SummaryTextKey { get; init; } = "exp.summary_text";
-    public string SummaryText { get; init; } = string.Empty;
+    public string SummaryText { get; set; } = string.Empty;
 
     // CV-style education timeline
     public List<ExperienceEducationViewModel> Education { get; init; } = [];

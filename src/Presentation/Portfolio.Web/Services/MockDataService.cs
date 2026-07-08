@@ -72,74 +72,12 @@ public static class MockDataService
     // until real testimonials exist, per PERSONAL_INFO.md.
 
     // ── Experience page aggregate ──
-    // NOTE (Step 5): the Experience "Technical Proficiency Matrix" is NOT the
-    // same data as the About skills grid (it has no percentages — just titled
-    // name lists), so it is modeled separately rather than reusing SkillViewModel.
-    public static ExperiencePageViewModel GetExperiencePageViewModel() => new()
-    {
-        // Metrics, Principles and the Proficiency matrix now come from Portfolio.API
-        // (assigned in ExperienceController; their mock lists were retired in E9).
-        // Summary / CV education / single-role block / Stack stay mock+TODO.
-        SummaryName = "Jaya Vignesh",
-        SummaryText = "Backend engineer focused on designing and evolving Java-based distributed systems. " +
-                      "Experienced in building scalable RESTful APIs, modernizing legacy codebases, and " +
-                      "driving performance improvements across enterprise microservice architectures.",
-        Education =
-        [
-            new()
-            {
-                TitleKey = "exp.edu_btech", Title = "Bachelor of Technology (B.Tech) – Computer Science",
-                Years = "2019 – 2023",
-                InstitutionKey = "exp.edu_btech_inst", Institution = "Sri Manakula Vinayagar Engineering College, Puducherry",
-                Score = "CGPA: 7.76",
-                Courses =
-                [
-                    new() { Key = "exp.edu_courses_ds", Text = "DATA STRUCTURES & ALGORITHMS" },
-                    new() { Key = "exp.edu_courses_dbms", Text = "DATABASE MANAGEMENT SYSTEMS" },
-                    new() { Key = "exp.edu_courses_os", Text = "OPERATING SYSTEMS" },
-                    new() { Key = "exp.edu_courses_cn", Text = "COMPUTER NETWORKS" },
-                    new() { Key = "exp.edu_courses_web", Text = "WEB DEVELOPMENT" },
-                    new() { Key = "exp.edu_courses_cloud", Text = "CLOUD COMPUTING" },
-                    new() { Key = "exp.edu_courses_ml", Text = "MACHINE LEARNING" }
-                ]
-            },
-            new()
-            {
-                TitleKey = "exp.edu_hsc", Title = "Higher Secondary (HSC) – Computer Science",
-                Years = "2018 – 2019",
-                InstitutionKey = "exp.edu_hsc_inst", Institution = "Amalorpavam Higher Secondary School",
-                Score = "Score: 65.1%"
-            },
-            new()
-            {
-                TitleKey = "exp.edu_sslc", Title = "Secondary School (SSLC)",
-                Years = "2016 – 2017",
-                InstitutionKey = "exp.edu_sslc_inst", Institution = "Amalorpavam Higher Secondary School",
-                Score = "Score: 89.2%", IsLast = true
-            }
-        ],
-        JobTitle = "Software Engineer (Backend)",
-        JobDate = "2024 – Present",
-        JobCompany = "Tata Consultancy Services (TCS), India",
-        JobBullets =
-        [
-            new() { Key = "exp.job_1", Text = "Designed, developed, and maintained <span class=\"highlight highlight--amber\">RESTful backend services</span> using <span class=\"highlight highlight--amber\">Java</span> and <span class=\"highlight highlight--amber\">JAX-RS</span>, powering core business workflows within a large-scale enterprise microservice architecture." },
-            new() { Key = "exp.job_2", Text = "Spearheaded a major <span class=\"highlight highlight--pink\">Java 8 to Java 21 migration</span>, leveraging virtual threads, pattern matching, and modern APIs to significantly boost runtime performance and developer productivity." },
-            new() { Key = "exp.job_3", Text = "Completely rewrote legacy test suites from scratch using modern <span class=\"highlight highlight--amber\">JUnit</span> and <span class=\"highlight highlight--amber\">Mockito</span> frameworks, achieving over 85% code coverage and reducing regression escape rate." },
-            new() { Key = "exp.job_4", Text = "Resolved critical <span class=\"highlight highlight--pink\">database bottlenecks</span> by rewriting inefficient queries and restructuring ORM access patterns, resulting in approximately 40% reduction in average API latency." },
-            new() { Key = "exp.job_5", Text = "Mentored junior and fellow developers through structured <span class=\"highlight highlight--amber\">code reviews</span>, pair programming sessions, and knowledge-sharing workshops on backend best practices." },
-            new() { Key = "exp.job_6", Text = "Proactively monitored and supported <span class=\"highlight highlight--amber\">production backend services</span>, rapidly diagnosing and resolving incidents to uphold 99.9% service uptime SLAs." },
-            new() { Key = "exp.job_7", Text = "Refined <span class=\"highlight highlight--amber\">API payloads</span> and contracts through iterative schema optimization, reducing response sizes and improving frontend integration efficiency." },
-            new() { Key = "exp.job_8", Text = "Assisted in refactoring <span class=\"highlight highlight--pink\">legacy backend components</span> toward a cleaner, more modular service-oriented architecture, improving code maintainability and team velocity." },
-            new() { Key = "exp.job_9", Text = "Worked within secure enterprise environments, adhering to strict <span class=\"highlight highlight--amber\">security protocols</span> and participating in internal audits and compliance reviews." }
-        ],
-        Stack =
-        [
-            "JAVA", "MYSQL", "GIT", "POSTMAN", "VS CODE", "ECLIPSE", "BASH",
-            "JENKINS", "FILEZILLA", "SPRING BOOT", "MAVEN", "PUTTY", "GITLAB",
-            "RED HAT ENTERPRISE LINUX"
-        ]
-    };
+    // Metrics / Principles / Proficiency come from Portfolio.API and Summary from the
+    // Profile entity (assigned in ExperienceController). The static site's CV-style
+    // Education, single-role block and Stack were fabricated template data
+    // ("Jaya Vignesh / TCS") with no real equivalent, so they are intentionally left
+    // empty — the view hides those sections when there's nothing real to show.
+    public static ExperiencePageViewModel GetExperiencePageViewModel() => new();
 
     // ── Contact page ──
     // Structured contact config only. The FAQ list is served by Portfolio.API

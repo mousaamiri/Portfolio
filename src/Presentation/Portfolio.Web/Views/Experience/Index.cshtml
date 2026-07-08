@@ -64,53 +64,59 @@
         <div class="exp-main-row">
             <div class="exp-left-col">
 
-                <div class="exp-summary-block">
-                    <div class="about-eyebrow-row">
-                        <span class="eyebrow eyebrow--sm" data-i18n="exp.summary">SUMMARY</span>
-                        <span class="eyebrow-rule" aria-hidden="true"></span>
+                @if (!string.IsNullOrWhiteSpace(Model.SummaryText))
+                {
+                    <div class="exp-summary-block">
+                        <div class="about-eyebrow-row">
+                            <span class="eyebrow eyebrow--sm" data-i18n="exp.summary">SUMMARY</span>
+                            <span class="eyebrow-rule" aria-hidden="true"></span>
+                        </div>
+                        <div class="exp-summary-name">
+                            <span class="exp-name-bullet" aria-hidden="true"></span>
+                            <span>@Model.SummaryName</span>
+                        </div>
+                        <p class="exp-summary-text">@Model.SummaryText</p>
                     </div>
-                    <div class="exp-summary-name">
-                        <span class="exp-name-bullet" aria-hidden="true"></span>
-                        <span>@Model.SummaryName</span>
-                    </div>
-                    <p class="exp-summary-text" data-i18n="@Model.SummaryTextKey">@Model.SummaryText</p>
-                </div>
+                }
 
-                <div class="exp-education-block">
-                    <div class="about-eyebrow-row">
-                        <span class="eyebrow eyebrow--sm" data-i18n="exp.education">EDUCATION</span>
-                        <span class="eyebrow-rule" aria-hidden="true"></span>
-                    </div>
-                    <div class="exp-edu-timeline">
-                        @foreach (var ed in Model.Education)
-                        {
-                            <div class="exp-edu-entry@(ed.IsLast ? " exp-edu-entry--last" : "")">
-                                <div class="exp-edu-node" aria-hidden="true">
-                                    <span class="exp-edu-circle"></span>
-                                    @if (!ed.IsLast)
-                                    {
-                                        <span class="exp-edu-line"></span>
-                                    }
+                @if (Model.Education.Count > 0)
+                {
+                    <div class="exp-education-block">
+                        <div class="about-eyebrow-row">
+                            <span class="eyebrow eyebrow--sm" data-i18n="exp.education">EDUCATION</span>
+                            <span class="eyebrow-rule" aria-hidden="true"></span>
+                        </div>
+                        <div class="exp-edu-timeline">
+                            @foreach (var ed in Model.Education)
+                            {
+                                <div class="exp-edu-entry@(ed.IsLast ? " exp-edu-entry--last" : "")">
+                                    <div class="exp-edu-node" aria-hidden="true">
+                                        <span class="exp-edu-circle"></span>
+                                        @if (!ed.IsLast)
+                                        {
+                                            <span class="exp-edu-line"></span>
+                                        }
+                                    </div>
+                                    <div class="exp-edu-content">
+                                        <h4 class="exp-edu-title" data-i18n="@ed.TitleKey">@ed.Title</h4>
+                                        <span class="exp-edu-year">@ed.Years</span>
+                                        <p class="exp-edu-institution" data-i18n="@ed.InstitutionKey">@ed.Institution</p>
+                                        <p class="exp-edu-score">@ed.Score</p>
+                                        @if (ed.Courses.Count > 0)
+                                        {
+                                            <div class="exp-edu-courses">
+                                                @foreach (var c in ed.Courses)
+                                                {
+                                                    <span class="exp-edu-course-tag" data-i18n="@c.Key">@c.Text</span>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
-                                <div class="exp-edu-content">
-                                    <h4 class="exp-edu-title" data-i18n="@ed.TitleKey">@ed.Title</h4>
-                                    <span class="exp-edu-year">@ed.Years</span>
-                                    <p class="exp-edu-institution" data-i18n="@ed.InstitutionKey">@ed.Institution</p>
-                                    <p class="exp-edu-score">@ed.Score</p>
-                                    @if (ed.Courses.Count > 0)
-                                    {
-                                        <div class="exp-edu-courses">
-                                            @foreach (var c in ed.Courses)
-                                            {
-                                                <span class="exp-edu-course-tag" data-i18n="@c.Key">@c.Text</span>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
-                </div>
+                }
 
             </div>
 
@@ -140,9 +146,9 @@
                         }
                     }
                 }
-                else
+                else if (!string.IsNullOrWhiteSpace(Model.JobTitle))
                 {
-                    @* Fallback single static role (no real experience recorded yet). *@
+                    @* Optional static single-role fallback (only shown if configured). *@
                     <div class="exp-job-header">
                         <div class="exp-job-title-row">
                             <span class="exp-name-bullet" aria-hidden="true"></span>
@@ -163,15 +169,22 @@
                         }
                     </ol>
 
-                    <div class="exp-stack-block">
-                        <span class="eyebrow eyebrow--sm" data-i18n="exp.stack">STACK</span>
-                        <div class="exp-stack-pills">
-                            @foreach (var pill in Model.Stack)
-                            {
-                                <span class="exp-stack-pill">@pill</span>
-                            }
+                    @if (Model.Stack.Count > 0)
+                    {
+                        <div class="exp-stack-block">
+                            <span class="eyebrow eyebrow--sm" data-i18n="exp.stack">STACK</span>
+                            <div class="exp-stack-pills">
+                                @foreach (var pill in Model.Stack)
+                                {
+                                    <span class="exp-stack-pill">@pill</span>
+                                }
+                            </div>
                         </div>
-                    </div>
+                    }
+                }
+                else
+                {
+                    <p class="exp-job-empty" data-i18n="exp.no_history">Professional history will appear here soon.</p>
                 }
             </div>
         </div>
