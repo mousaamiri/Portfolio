@@ -4,6 +4,7 @@ using Portfolio.Domain.Entities.Articles;
 using Portfolio.Domain.Entities.Educations;
 using Portfolio.Domain.Entities.Experiences;
 using Portfolio.Domain.Entities.Faqs;
+using Portfolio.Domain.Entities.Interests;
 using Portfolio.Domain.Entities.Messages;
 using Portfolio.Domain.Entities.Profiles;
 using Portfolio.Domain.Entities.Projects;
@@ -41,6 +42,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<TimelineEntry> TimelineEntries => Set<TimelineEntry>();
     public DbSet<TimelineEntryTranslation> TimelineEntryTranslations => Set<TimelineEntryTranslation>();
+
+    public DbSet<Interest> Interests => Set<Interest>();
+    public DbSet<InterestTranslation> InterestTranslations => Set<InterestTranslation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -54,9 +54,8 @@ public static class MockDataService
         PortraitUrl = "/images/about-portrait.jpg",
         PortraitAlt = "Mousa — portrait photo",
         Footprint = GetFootprint(),
-        Interests = GetInterests(),
         Endorsements = GetEndorsements()
-        // Skills + Education + Journey now come from Portfolio.API (see AboutController).
+        // Skills + Education + Journey + Interests now come from Portfolio.API (see AboutController).
     };
 
     // Journey/timeline is served by Portfolio.API (About page). The mock journey
@@ -76,21 +75,8 @@ public static class MockDataService
         new() { Icon = "upload-cloud", CountTarget = 150, Suffix = "+", Label = "Deployments", LabelKey = "about.footprint_deploys" }
     ];
 
-    private static List<InterestViewModel> GetInterests() =>
-    [
-        new() { Icon = "code", Label = "Coding", LabelKey = "about.interest_coding" },
-        new() { Icon = "music", Label = "Music", LabelKey = "about.interest_music" },
-        new() { Icon = "gamepad-2", Label = "Gaming", LabelKey = "about.interest_gaming" },
-        new() { Icon = "bug", Label = "Debugging", LabelKey = "about.interest_debugging" },
-        new() { Icon = "book-open", Label = "Reading", LabelKey = "about.interest_reading" },
-        new() { Icon = "camera", Label = "Photography", LabelKey = "about.interest_photography" },
-        new() { Icon = "mountain", Label = "Hiking", LabelKey = "about.interest_hiking" },
-        new() { Icon = "puzzle", Label = "Chess", LabelKey = "about.interest_chess" },
-        new() { Icon = "chef-hat", Label = "Cooking", LabelKey = "about.interest_cooking" },
-        new() { Icon = "plane", Label = "Travel", LabelKey = "about.interest_travel" },
-        new() { Icon = "clapperboard", Label = "Movies", LabelKey = "about.interest_movies" },
-        new() { Icon = "dumbbell", Label = "Fitness", LabelKey = "about.interest_fitness" }
-    ];
+    // Interests are served by Portfolio.API (About page). The mock interest list
+    // was retired in E7.
 
     private static List<EndorsementViewModel> GetEndorsements() =>
     [

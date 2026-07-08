@@ -11,6 +11,7 @@ public interface IUnitOfWork : IDisposable
     IProfileRepository Profiles { get; }
     IFaqRepository Faqs { get; }
     ITimelineEntryRepository TimelineEntries { get; }
+    IInterestRepository Interests { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

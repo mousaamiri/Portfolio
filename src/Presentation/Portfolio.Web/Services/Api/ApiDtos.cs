@@ -133,3 +133,13 @@ public class TimelineEntryApiDto
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
 }
+
+public class InterestApiDto
+{
+    public Guid Id { get; set; }
+    public string Icon { get; set; } = string.Empty;
+    public int DisplayOrder { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string Label { get; set; } = string.Empty;
+}
