@@ -18,6 +18,8 @@ public class AboutControllerTests
             .ReturnsAsync([new SkillApiDto { Name = "C#", Category = "Backend", Proficiency = 85, IconUrl = "csharp.svg" }]);
         _api.Setup(a => a.GetEducationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync([new EducationApiDto { InstitutionName = "State University", Degree = "BSc", FieldOfStudy = "CS", Gpa = 18.2 }]);
+        _api.Setup(a => a.GetTimelineAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new TimelineEntryApiDto { Year = "2024", Icon = "rocket", Title = "Built portfolio", Description = "d" }]);
 
         _sut = new AboutController(_api.Object);
     }
@@ -59,13 +61,23 @@ public class AboutControllerTests
     }
 
     [Fact]
+    public async Task Index_JourneyComesFromApi()
+    {
+        var model = await InvokeAsync();
+
+        model.Journey.Should().ContainSingle();
+        model.Journey[0].Year.Should().Be("2024");
+        model.Journey[0].Title.Should().Be("Built portfolio");
+        _api.Verify(a => a.GetTimelineAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task Index_MockedSectionsStillPopulated()
     {
         var model = await InvokeAsync();
 
-        // Journey / Footprint / Interests / Endorsements have no backend entity
-        // yet (wired in the E-phase), so they remain mock-backed and non-empty.
-        model.Journey.Should().NotBeEmpty();
+        // Footprint / Interests / Endorsements have no backend entity yet
+        // (wired later in the E-phase), so they remain mock-backed and non-empty.
         model.Footprint.Should().NotBeEmpty();
         model.Interests.Should().NotBeEmpty();
         model.Endorsements.Should().NotBeEmpty();

@@ -90,6 +90,14 @@ public static class ApiViewModelMapper
         Answer = dto.Answer
     };
 
+    public static TimelineEntryViewModel ToViewModel(TimelineEntryApiDto dto) => new()
+    {
+        Year = dto.Year,
+        Title = dto.Title,
+        Description = dto.Description ?? string.Empty,
+        Icon = dto.Icon
+    };
+
     public static BlogPostViewModel ToViewModel(ArticleApiDto dto) => new()
     {
         Id = dto.Slug,

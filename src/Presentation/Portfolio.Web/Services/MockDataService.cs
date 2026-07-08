@@ -53,34 +53,14 @@ public static class MockDataService
         DegreeValue = "B.S. Computer Science",
         PortraitUrl = "/images/about-portrait.jpg",
         PortraitAlt = "Mousa — portrait photo",
-        Journey = GetJourney(),
         Footprint = GetFootprint(),
         Interests = GetInterests(),
         Endorsements = GetEndorsements()
-        // Skills + Education now come from Portfolio.API (see AboutController).
+        // Skills + Education + Journey now come from Portfolio.API (see AboutController).
     };
 
-    private static List<TimelineEntryViewModel> GetJourney() =>
-    [
-        new() { Year = "2016", Icon = "graduation-cap", TitleKey = "about.journey_1_title", DescKey = "about.journey_1_desc",
-                Title = "Started Computer Science Degree",
-                Description = "Enrolled at State University, drawn in by a first-year course that turned out to be the start of everything." },
-        new() { Year = "2018", Icon = "briefcase", TitleKey = "about.journey_2_title", DescKey = "about.journey_2_desc",
-                Title = "First Software Internship",
-                Description = "Joined a small team as an intern, shipping real features to real users for the first time." },
-        new() { Year = "2019", Icon = "award", TitleKey = "about.journey_3_title", DescKey = "about.journey_3_desc",
-                Title = "Graduated & First Full-Time Role",
-                Description = "Graduated with a B.S. in Computer Science and joined Acme Systems as a Backend Developer." },
-        new() { Year = "2021", Icon = "rocket", TitleKey = "about.journey_4_title", DescKey = "about.journey_4_desc",
-                Title = "Led First Major Project Launch",
-                Description = "Owned the migration from a legacy monolith to a set of independently deployable services." },
-        new() { Year = "2022", Icon = "badge-check", TitleKey = "about.journey_5_title", DescKey = "about.journey_5_desc",
-                Title = "Earned Cloud Certification",
-                Description = "Formalized years of hands-on infrastructure work with a professional cloud architecture certification." },
-        new() { Year = "2024", Icon = "trending-up", TitleKey = "about.journey_6_title", DescKey = "about.journey_6_desc",
-                Title = "Promoted to Senior Engineer",
-                Description = "Now focused on cloud architecture and mentoring the next round of engineers joining the team." }
-    ];
+    // Journey/timeline is served by Portfolio.API (About page). The mock journey
+    // list was retired in E6.
 
     private static List<StatCounterViewModel> GetFootprint() =>
     [
