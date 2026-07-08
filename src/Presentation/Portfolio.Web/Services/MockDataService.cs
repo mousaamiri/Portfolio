@@ -231,29 +231,14 @@ public static class MockDataService
     };
 
     // ── Contact page ──
-    // Structured contact config + FAQ list. The form itself stays a client-side
-    // simulation (contact.js); no server submission in this phase.
+    // Structured contact config only. The FAQ list is served by Portfolio.API
+    // (retired here in E5); contact info stays mocked pending Profile coverage.
     public static ContactViewModel GetContactViewModel() => new()
     {
         Email = "hello@jayavignesh.dev",
         Phone = "+91 00000 00000",
         GitHubUrl = "https://github.com/jayavignesh",
         LinkedInUrl = "https://linkedin.com/in/jayavignesh",
-        InstagramUrl = "https://instagram.com/jayavignesh",
-        Faqs =
-        [
-            new() { QuestionKey = "contact.faq_1_q", AnswerKey = "contact.faq_1_a",
-                    Question = "What services do you offer?",
-                    Answer = "I specialize in full-stack development, system architecture, backend engineering with Java/Spring Boot, cloud infrastructure (AWS, Azure, GCP), and building scalable distributed systems. I also consult on performance optimization and DevOps practices." },
-            new() { QuestionKey = "contact.faq_2_q", AnswerKey = "contact.faq_2_a",
-                    Question = "Are you available for freelance work?",
-                    Answer = "Yes, I'm open to freelance and contract opportunities. I prefer projects where I can make a meaningful impact, whether it's building something from scratch or optimizing existing systems. Feel free to reach out with your project details." },
-            new() { QuestionKey = "contact.faq_3_q", AnswerKey = "contact.faq_3_a",
-                    Question = "What is your preferred tech stack?",
-                    Answer = "My primary stack includes Java, Spring Boot, React, Python, and cloud services (AWS/Azure/GCP). For databases, I work with PostgreSQL, MongoDB, and Redis. I also have experience with Docker, Kubernetes, and CI/CD pipelines." },
-            new() { QuestionKey = "contact.faq_4_q", AnswerKey = "contact.faq_4_a",
-                    Question = "Do you work remotely?",
-                    Answer = "Absolutely. I've been working remotely for several years and am comfortable with async communication, distributed teams, and remote collaboration tools. I'm flexible with time zones and can adjust my schedule for overlap with your team." }
-        ]
+        InstagramUrl = "https://instagram.com/jayavignesh"
     };
 }

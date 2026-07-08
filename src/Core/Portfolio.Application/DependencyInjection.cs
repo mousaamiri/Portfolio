@@ -15,6 +15,7 @@ public static class DependencyInjection
         services.AddScoped<IArticleService, ArticleService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<IFaqService, FaqService>();
 
         return services;
     }

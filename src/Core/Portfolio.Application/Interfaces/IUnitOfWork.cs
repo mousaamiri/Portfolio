@@ -9,6 +9,7 @@ public interface IUnitOfWork : IDisposable
     IArticleRepository Articles { get; }
     IMessageRepository Messages { get; }
     IProfileRepository Profiles { get; }
+    IFaqRepository Faqs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

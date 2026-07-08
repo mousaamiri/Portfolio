@@ -3,6 +3,7 @@ using Portfolio.Domain.Admins;
 using Portfolio.Domain.Entities.Articles;
 using Portfolio.Domain.Entities.Educations;
 using Portfolio.Domain.Entities.Experiences;
+using Portfolio.Domain.Entities.Faqs;
 using Portfolio.Domain.Entities.Messages;
 using Portfolio.Domain.Entities.Profiles;
 using Portfolio.Domain.Entities.Projects;
@@ -33,6 +34,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<Profile> Profiles => Set<Profile>();
     public DbSet<ProfileTranslation> ProfileTranslations => Set<ProfileTranslation>();
+
+    public DbSet<Faq> Faqs => Set<Faq>();
+    public DbSet<FaqTranslation> FaqTranslations => Set<FaqTranslation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
