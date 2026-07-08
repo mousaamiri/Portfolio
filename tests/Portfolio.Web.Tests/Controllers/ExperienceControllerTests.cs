@@ -14,6 +14,13 @@ public class ExperienceControllerTests
 
     public ExperienceControllerTests()
     {
+        // Real client never returns null; default all reads to empty so each test
+        // only sets up what it asserts.
+        _api.Setup(a => a.GetExperiencesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _api.Setup(a => a.GetImpactMetricsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _api.Setup(a => a.GetPrinciplesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _api.Setup(a => a.GetProficienciesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
+
         _sut = new ExperienceController(_api.Object);
     }
 
@@ -50,6 +57,30 @@ public class ExperienceControllerTests
     }
 
     [Fact]
+    public async Task Index_MetricsPrinciplesProficiencyComeFromApi()
+    {
+        _api.Setup(a => a.GetExperiencesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _api.Setup(a => a.GetImpactMetricsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new ImpactMetricApiDto { Value = "99.9%", Tag = "UPTIME", Color = "pink" }]);
+        _api.Setup(a => a.GetPrinciplesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new PrincipleApiDto { Title = "Scale-First", Description = "d" }]);
+        _api.Setup(a => a.GetProficienciesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new ProficiencyGroupApiDto { Title = "MASTERY", Color = "amber", Items = "Java 21, Spring Boot" }]);
+
+        var model = await InvokeAsync();
+
+        model.Metrics.Should().ContainSingle();
+        model.Metrics[0].Value.Should().Be("99.9%");
+        model.Principles.Should().ContainSingle();
+        model.Principles[0].Title.Should().Be("Scale-First");
+        model.Proficiency.Should().ContainSingle();
+        model.Proficiency[0].Items.Should().BeEquivalentTo("Java 21", "Spring Boot");
+        _api.Verify(a => a.GetImpactMetricsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        _api.Verify(a => a.GetPrinciplesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        _api.Verify(a => a.GetProficienciesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task Index_MockedSectionsStillPopulated()
     {
         _api.Setup(a => a.GetExperiencesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -57,9 +88,8 @@ public class ExperienceControllerTests
 
         var model = await InvokeAsync();
 
-        model.Metrics.Should().NotBeEmpty();
-        model.Principles.Should().NotBeEmpty();
-        model.Proficiency.Should().NotBeEmpty();
+        // CV-style Education / Stack have no backend entity yet, so they stay mocked.
         model.Education.Should().NotBeEmpty();
+        model.Stack.Should().NotBeEmpty();
     }
 }

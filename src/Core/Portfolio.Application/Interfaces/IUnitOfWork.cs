@@ -13,6 +13,9 @@ public interface IUnitOfWork : IDisposable
     ITimelineEntryRepository TimelineEntries { get; }
     IInterestRepository Interests { get; }
     IStatCounterRepository StatCounters { get; }
+    IImpactMetricRepository ImpactMetrics { get; }
+    IPrincipleRepository Principles { get; }
+    IProficiencyGroupRepository ProficiencyGroups { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

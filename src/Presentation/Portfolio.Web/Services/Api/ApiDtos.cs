@@ -157,3 +157,36 @@ public class StatCounterApiDto
     public string? TipText { get; set; }
     public string? TipAriaLabel { get; set; }
 }
+
+public class ImpactMetricApiDto
+{
+    public Guid Id { get; set; }
+    public string Value { get; set; } = string.Empty;
+    public string Color { get; set; } = "amber";
+    public int DisplayOrder { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string Tag { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+}
+
+public class PrincipleApiDto
+{
+    public Guid Id { get; set; }
+    public int DisplayOrder { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+}
+
+public class ProficiencyGroupApiDto
+{
+    public Guid Id { get; set; }
+    public string Color { get; set; } = "amber";
+    public int DisplayOrder { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Items { get; set; } = string.Empty;
+}

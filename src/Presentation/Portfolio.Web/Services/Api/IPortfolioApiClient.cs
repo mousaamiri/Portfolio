@@ -25,6 +25,10 @@ public interface IPortfolioApiClient
 
     Task<IReadOnlyList<StatCounterApiDto>> GetStatsAsync(string lang, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<ImpactMetricApiDto>> GetImpactMetricsAsync(string lang, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<PrincipleApiDto>> GetPrinciplesAsync(string lang, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ProficiencyGroupApiDto>> GetProficienciesAsync(string lang, CancellationToken cancellationToken = default);
+
     /// <summary>Submits a contact-form message to the public API. Returns true on success.</summary>
     Task<bool> SendMessageAsync(ContactMessageRequest request, CancellationToken cancellationToken = default);
 }
