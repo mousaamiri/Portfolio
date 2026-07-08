@@ -32,60 +32,9 @@ public static class MockDataService
     // Projects are served by Portfolio.API (Home + Work). The static six-project
     // mock list and GetWorkProjects() were removed in D2.
 
-    // Blog — article metadata (title/excerpt/category/date/read-time). Mirrors
-    // the 16 posts in blog.js, which still owns the full HTML article bodies and
-    // the reading modal. English-only (the static Blog has no FA / data-i18n).
-    public static List<BlogPostViewModel> GetBlogPosts() =>
-    [
-        new() { Id = 1, Category = "Java", Date = new DateTime(2026, 5, 26), ReadTime = 3,
-                Title = "Java 21 Virtual Threads: Infinite Scaling Meets Database Bottlenecks",
-                Excerpt = "Virtual threads solve the thread-per-request scaling limit, but they shift the bottleneck directly to your relational database connection pool. Here is why it happens and how to fix it." },
-        new() { Id = 2, Category = "Java", Date = new DateTime(2026, 5, 26), ReadTime = 3,
-                Title = "Virtual Threads vs. OS Threads in Java 21: A Deep Dive",
-                Excerpt = "Understand the fundamental architectural differences between OS-managed platform threads and JVM-managed virtual threads, and when to use each in your Java applications." },
-        new() { Id = 3, Category = "Java", Date = new DateTime(2026, 3, 29), ReadTime = 1,
-                Title = "Java Upgrades Are Architectural Events",
-                Excerpt = "Upgrading Java is never just about the JVM. It exposes architectural weaknesses, hidden coupling, and long-standing assumptions." },
-        new() { Id = 4, Category = "Architecture", Date = new DateTime(2025, 12, 6), ReadTime = 2,
-                Title = "When Microservices Become an Organizational Bug",
-                Excerpt = "Microservices don't fail at scale — teams do. A blunt look at how service boundaries expose complexity, slow delivery, and hide responsibility." },
-        new() { Id = 5, Category = "Quality", Date = new DateTime(2025, 12, 5), ReadTime = 2,
-                Title = "Code Coverage Is Not Test Quality",
-                Excerpt = "High coverage numbers often hide fragile systems. This post explains why meaningful tests look like in real backend services and why branches matter more than percentages." },
-        new() { Id = 6, Category = "Code Quality", Date = new DateTime(2025, 11, 22), ReadTime = 2,
-                Title = "Cognitive Complexity Is a Smell, Not a Metric",
-                Excerpt = "Static analysis gives numbers. Production gives pain. This article explains why cognitive complexity always predicts expensive thinking." },
-        new() { Id = 7, Category = "API Design", Date = new DateTime(2025, 11, 12), ReadTime = 2,
-                Title = "Why Most Backend APIs Are Designed Backwards",
-                Excerpt = "APIs often expose databases instead of intent. This post explains how backend engineers leak internal models, and how to design APIs that survive change." },
-        new() { Id = 8, Category = "Spring", Date = new DateTime(2025, 11, 10), ReadTime = 2,
-                Title = "Spring Boot Magic Ends at the First Incident",
-                Excerpt = "Auto-configuration helps — until it hides behavior. This post explains where Spring Boot shines, and where core Spring knowledge becomes mandatory." },
-        new() { Id = 9, Category = "Java", Date = new DateTime(2025, 10, 14), ReadTime = 2,
-                Title = "JPA Is Not Slow — Your Mental Model Is",
-                Excerpt = "JPA doesn't randomly hit the database. It does exactly what you told it to do. This post fixes common ORM misconceptions at code level." },
-        new() { Id = 10, Category = "Java", Date = new DateTime(2025, 10, 3), ReadTime = 2,
-                Title = "Why Java 8 Still Runs Half the World",
-                Excerpt = "New LTS versions exist — yet Java 8 refuses to die. This post explains enterprise risk, tooling inertia, and why upgrades are rarely just technical." },
-        new() { Id = 11, Category = "Spring Core", Date = new DateTime(2025, 9, 19), ReadTime = 2,
-                Title = "Annotations Are Not Magic",
-                Excerpt = "@Component doesn't register anything by itself. This article walks through what Spring actually does — from scanning to bean instantiation." },
-        new() { Id = 12, Category = "Testing", Date = new DateTime(2025, 9, 5), ReadTime = 2,
-                Title = "Why 90% Coverage Still Means Zero Confidence",
-                Excerpt = "Coverage measures execution, not correctness. This post explains why high-coverage systems still fear releases, and how to test behavior instead of lines." },
-        new() { Id = 13, Category = "Testing", Date = new DateTime(2025, 8, 21), ReadTime = 2,
-                Title = "Mocking Everything Is a Design Smell",
-                Excerpt = "If every dependency needs mocking, the design is already lying. This post explains when mocks help — and when they hurt." },
-        new() { Id = 14, Category = "Systems", Date = new DateTime(2025, 8, 7), ReadTime = 2,
-                Title = "DDoS Is Not a Network Problem",
-                Excerpt = "Most DDoS discussions stop at bandwidth. This post explains why application asymmetry and state are the real vulnerabilities." },
-        new() { Id = 15, Category = "Career", Date = new DateTime(2025, 7, 15), ReadTime = 3,
-                Title = "Being a Senior Engineer Is About Saying No",
-                Excerpt = "Senior engineers don't write more code. They prevent unnecessary code from existing. This post explains why judgment beats speed." },
-        new() { Id = 16, Category = "Thinking", Date = new DateTime(2025, 7, 4), ReadTime = 2,
-                Title = "Clean Code Alone Doesn't Survive Production",
-                Excerpt = "Clean code is readable. Production code is negotiable under pressure. This post explores the gap between theory and reality." }
-    ];
+    // Articles are served by Portfolio.API (Blog page). The mock article-metadata
+    // list was retired in E1b. (blog.js still owns the client-side grid + reading
+    // modal from its own hardcoded post array — see BlogController TODO.)
 
     // Skills are served by Portfolio.API (About page). The mock skill list was
     // retired in D3.
