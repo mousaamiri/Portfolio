@@ -43,6 +43,38 @@ public class ContactControllerTests
     }
 
     [Fact]
+    public async Task Index_ContactInfoComesFromProfile()
+    {
+        _api.Setup(a => a.GetFaqsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ProfileApiDto
+            {
+                Email = "mousa.amiri.dev@gmail.com",
+                GitHubUrl = "https://github.com/mousaamiri"
+            });
+
+        var result = await _sut.Index(null, CancellationToken.None) as ViewResult;
+        var model = (ContactViewModel)result!.Model!;
+
+        model.Email.Should().Be("mousa.amiri.dev@gmail.com");
+        model.GitHubUrl.Should().Be("https://github.com/mousaamiri");
+        model.Phone.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Index_WhenNoProfile_FallsBackToMockContactInfo()
+    {
+        _api.Setup(a => a.GetFaqsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ProfileApiDto?)null);
+
+        var result = await _sut.Index(null, CancellationToken.None) as ViewResult;
+        var model = (ContactViewModel)result!.Model!;
+
+        model.Email.Should().NotBeNullOrWhiteSpace();
+    }
+
+    [Fact]
     public async Task Submit_ValidForm_ForwardsToApiAndReturnsSuccess()
     {
         _api.Setup(a => a.SendMessageAsync(It.IsAny<ContactMessageRequest>(), It.IsAny<CancellationToken>()))
