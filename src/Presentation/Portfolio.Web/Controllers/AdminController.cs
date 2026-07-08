@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Web.Models;
+using Portfolio.Web.Models.Admin;
+using Portfolio.Web.Services.Admin;
 using Portfolio.Web.Services.Api;
 
 namespace Portfolio.Web.Controllers;
@@ -18,7 +20,72 @@ public class AdminController(IAdminApiClient adminApi) : Controller
 {
     public IActionResult Index() => View();          // dashboard
 
-    public IActionResult Projects() => View();
+    // ── Projects (real CRUD via Portfolio.API) ──
+    public async Task<IActionResult> Projects(CancellationToken cancellationToken)
+    {
+        var projects = await adminApi.GetProjectsAsync("en", cancellationToken);
+        var model = projects.Select(AdminProjectMapper.ToListItem).ToList();
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult ProjectCreate() => View("ProjectForm", new ProjectFormModel());
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProjectCreate(ProjectFormModel model, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+            return View("ProjectForm", model);
+
+        var id = await adminApi.CreateProjectAsync(AdminProjectMapper.ToCreateRequest(model), cancellationToken);
+        if (id is null)
+        {
+            ModelState.AddModelError(string.Empty, "Could not create the project. The slug may already be in use.");
+            return View("ProjectForm", model);
+        }
+
+        TempData["AdminMessage"] = "Project created.";
+        return RedirectToAction(nameof(Projects));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ProjectEdit(Guid id, CancellationToken cancellationToken)
+    {
+        var (en, fa) = await adminApi.GetProjectBothLanguagesAsync(id, cancellationToken);
+        if (en is null)
+            return NotFound();
+
+        return View("ProjectForm", AdminProjectMapper.ToFormModel(en, fa));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProjectEdit(Guid id, ProjectFormModel model, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+            return View("ProjectForm", model);
+
+        var ok = await adminApi.UpdateProjectAsync(id, AdminProjectMapper.ToUpdateRequest(model), cancellationToken);
+        if (!ok)
+        {
+            ModelState.AddModelError(string.Empty, "Could not update the project.");
+            return View("ProjectForm", model);
+        }
+
+        TempData["AdminMessage"] = "Project updated.";
+        return RedirectToAction(nameof(Projects));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProjectDelete(Guid id, CancellationToken cancellationToken)
+    {
+        var ok = await adminApi.DeleteProjectAsync(id, cancellationToken);
+        TempData["AdminMessage"] = ok ? "Project deleted." : "Could not delete the project.";
+        return RedirectToAction(nameof(Projects));
+    }
+
     public IActionResult Articles() => View();
     public IActionResult Experiences() => View();
     public IActionResult Education() => View();

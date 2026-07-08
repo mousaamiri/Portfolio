@@ -81,6 +81,13 @@ public class AdminApiClient(HttpClient httpClient, ILogger<AdminApiClient> logge
         }
     }
 
+    public async Task<(ProjectApiDto? En, ProjectApiDto? Fa)> GetProjectBothLanguagesAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var en = await GetProjectAsync(id, "en", cancellationToken);
+        var fa = await GetProjectAsync(id, "fa", cancellationToken);
+        return (en, fa);
+    }
+
     public async Task<Guid?> CreateProjectAsync(CreateProjectApiRequest request, CancellationToken cancellationToken = default)
     {
         try

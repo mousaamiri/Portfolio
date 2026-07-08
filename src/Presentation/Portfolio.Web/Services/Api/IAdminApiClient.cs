@@ -20,6 +20,8 @@ public interface IAdminApiClient
     // ── Projects (admin CRUD) ──
     Task<IReadOnlyList<ProjectApiDto>> GetProjectsAsync(string lang, CancellationToken cancellationToken = default);
     Task<ProjectApiDto?> GetProjectAsync(Guid id, string lang, CancellationToken cancellationToken = default);
+    /// <summary>Fetches a project in both EN and FA (for the bilingual edit form).</summary>
+    Task<(ProjectApiDto? En, ProjectApiDto? Fa)> GetProjectBothLanguagesAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Guid?> CreateProjectAsync(CreateProjectApiRequest request, CancellationToken cancellationToken = default);
     Task<bool> UpdateProjectAsync(Guid id, UpdateProjectApiRequest request, CancellationToken cancellationToken = default);
     Task<bool> DeleteProjectAsync(Guid id, CancellationToken cancellationToken = default);
