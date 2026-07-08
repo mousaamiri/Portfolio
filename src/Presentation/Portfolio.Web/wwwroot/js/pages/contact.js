@@ -179,33 +179,61 @@
       var activePill = document.querySelector(".contact-pill.active");
       var interest = activePill ? activePill.getAttribute("data-interest") : "general";
 
-      // Simulate submission (replace with actual API call)
+      // Real submission — POST to the server, which forwards to Portfolio.API
+      // and persists the message (admin inbox). Same UI as before on success.
       var submitBtn = form.querySelector(".contact-submit-btn");
       var originalText = submitBtn.innerHTML;
       submitBtn.innerHTML = "Sending...";
       submitBtn.disabled = true;
 
-      setTimeout(function () {
+      function showError(msg) {
         if (feedback) {
-          feedback.textContent = window.i18n ? window.i18n.t("contact.success", "Message sent successfully! I'll get back to you soon.") : "Message sent successfully! I'll get back to you soon.";
-          feedback.className = "contact-form-feedback success";
+          feedback.textContent = msg;
+          feedback.className = "contact-form-feedback error";
         }
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
-        form.reset();
+      }
 
-        // Re-select default pill
-        pills.forEach(function (p) { p.classList.remove("active"); });
-        if (pills.length > 0) pills[0].classList.add("active");
-
-        // Clear feedback after a few seconds
-        setTimeout(function () {
-          if (feedback) {
-            feedback.textContent = "";
-            feedback.className = "contact-form-feedback";
+      fetch("/Contact/Submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.value.trim(),
+          email: email.value.trim(),
+          message: message.value.trim(),
+          interest: interest
+        })
+      })
+        .then(function (res) { return res.ok ? res.json() : { success: false }; })
+        .then(function (data) {
+          if (!data || !data.success) {
+            showError(window.i18n ? window.i18n.t("contact.error_generic", "Something went wrong. Please try again.") : "Something went wrong. Please try again.");
+            return;
           }
-        }, 5000);
-      }, 1500);
+          if (feedback) {
+            feedback.textContent = window.i18n ? window.i18n.t("contact.success", "Message sent successfully! I'll get back to you soon.") : "Message sent successfully! I'll get back to you soon.";
+            feedback.className = "contact-form-feedback success";
+          }
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+          form.reset();
+
+          // Re-select default pill
+          pills.forEach(function (p) { p.classList.remove("active"); });
+          if (pills.length > 0) pills[0].classList.add("active");
+
+          // Clear feedback after a few seconds
+          setTimeout(function () {
+            if (feedback) {
+              feedback.textContent = "";
+              feedback.className = "contact-form-feedback";
+            }
+          }, 5000);
+        })
+        .catch(function () {
+          showError(window.i18n ? window.i18n.t("contact.error_generic", "Something went wrong. Please try again.") : "Something went wrong. Please try again.");
+        });
     });
   }
 })();
