@@ -25,6 +25,22 @@ public class PortfolioApiClient(HttpClient httpClient, ILogger<PortfolioApiClien
     public Task<IReadOnlyList<ArticleApiDto>> GetArticlesAsync(string lang, CancellationToken cancellationToken = default)
         => GetListAsync<ArticleApiDto>("articles", lang, cancellationToken);
 
+    public async Task<ProfileApiDto?> GetProfileAsync(string lang, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<ApiResponse<ProfileApiDto>>(
+                $"api/public/profile?lang={lang}", cancellationToken);
+
+            return response?.Data;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
+        {
+            logger.LogWarning(ex, "Failed to fetch profile from Portfolio.API; returning null.");
+            return null;
+        }
+    }
+
     public async Task<bool> SendMessageAsync(ContactMessageRequest request, CancellationToken cancellationToken = default)
     {
         try

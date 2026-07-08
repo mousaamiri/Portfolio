@@ -91,3 +91,23 @@ public class ArticleApiDto
     public string? Excerpt { get; set; }
     public string? Body { get; set; }
 }
+
+public class ProfileApiDto
+{
+    public Guid Id { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string? GitHubUrl { get; set; }
+    public string? LinkedInUrl { get; set; }
+    public string? InstagramUrl { get; set; }
+    public string? WebsiteUrl { get; set; }
+    public string? ResumeUrlEn { get; set; }
+    public string? ResumeUrlFa { get; set; }
+    public string? PortraitUrl { get; set; }
+    public string? LearningDate { get; set; }
+    public string FullName { get; set; } = string.Empty;
+    public string JobTitle { get; set; } = string.Empty;
+    public string? Tagline { get; set; }
+    public string? Bio { get; set; }
+    public string? LearningTitle { get; set; }
+    public string? LearningDesc { get; set; }
+}

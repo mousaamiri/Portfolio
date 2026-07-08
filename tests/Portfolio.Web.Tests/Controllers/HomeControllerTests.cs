@@ -107,5 +107,29 @@ public class HomeControllerTests
         model.Projects[0].ImageUrl.Should().Be("p.png");
     }
 
+    [Fact]
+    public async Task Index_UsesProfileHeroWhenAvailable()
+    {
+        _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ProfileApiDto { FullName = "Mousa Amiri", JobTitle = "Backend Dev", Bio = "bio" });
+
+        var model = await InvokeIndexAsync();
+
+        model.FullName.Should().Be("Mousa Amiri");
+        model.JobTitle.Should().Be("Backend Dev");
+        model.Bio.Should().Be("bio");
+    }
+
+    [Fact]
+    public async Task Index_FallsBackToMockHeroWhenProfileMissing()
+    {
+        _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ProfileApiDto?)null);
+
+        var model = await InvokeIndexAsync();
+
+        model.FullName.Should().NotBeNullOrWhiteSpace();
+    }
+
     #endregion
 }

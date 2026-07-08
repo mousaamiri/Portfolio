@@ -14,6 +14,9 @@ public interface IPortfolioApiClient
     Task<IReadOnlyList<EducationApiDto>> GetEducationsAsync(string lang, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<ArticleApiDto>> GetArticlesAsync(string lang, CancellationToken cancellationToken = default);
 
+    /// <summary>Returns the site profile (hero/bio) for the given language, or null if none/unavailable.</summary>
+    Task<ProfileApiDto?> GetProfileAsync(string lang, CancellationToken cancellationToken = default);
+
     /// <summary>Submits a contact-form message to the public API. Returns true on success.</summary>
     Task<bool> SendMessageAsync(ContactMessageRequest request, CancellationToken cancellationToken = default);
 }
