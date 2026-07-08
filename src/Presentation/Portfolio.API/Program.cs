@@ -122,6 +122,7 @@ builder.Services.AddRateLimiter(options =>
 
 // AdminSeeder
 builder.Services.AddScoped<AdminSeeder>();
+builder.Services.AddScoped<ContentSeeder>();
 
 var app = builder.Build();
 
@@ -139,6 +140,10 @@ using (var scope = app.Services.CreateScope())
     {
         await seeder.SeedAsync(adminUsername, adminPassword);
     }
+
+    // Seed the owner's real portfolio content (idempotent, per-entity guarded).
+    var contentSeeder = scope.ServiceProvider.GetRequiredService<ContentSeeder>();
+    await contentSeeder.SeedAsync();
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
