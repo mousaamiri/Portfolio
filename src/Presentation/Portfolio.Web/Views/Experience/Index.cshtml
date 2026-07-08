@@ -120,35 +120,59 @@
                     <span class="eyebrow-rule" aria-hidden="true"></span>
                 </div>
 
-                <div class="exp-job-header">
-                    <div class="exp-job-title-row">
-                        <span class="exp-name-bullet" aria-hidden="true"></span>
-                        <h3 class="exp-job-title" data-i18n="@Model.JobTitleKey">@Model.JobTitle</h3>
-                    </div>
-                    <span class="exp-job-date-badge" data-i18n="@Model.JobDateKey">@Model.JobDate</span>
-                </div>
-                <p class="exp-job-company" data-i18n="@Model.JobCompanyKey">@Model.JobCompany</p>
-
-                <ol class="exp-job-list">
-                    @for (var i = 0; i < Model.JobBullets.Count; i++)
+                @if (Model.ProfessionalHistory.Count > 0)
+                {
+                    @* Real professional history from Portfolio.API. *@
+                    foreach (var job in Model.ProfessionalHistory)
                     {
-                        var b = Model.JobBullets[i];
-                        <li class="exp-job-item">
-                            <span class="exp-job-num" aria-hidden="true">@(i + 1)</span>
-                            <p data-i18n="@b.Key">@Html.Raw(b.Text)</p>
-                        </li>
-                    }
-                </ol>
-
-                <div class="exp-stack-block">
-                    <span class="eyebrow eyebrow--sm" data-i18n="exp.stack">STACK</span>
-                    <div class="exp-stack-pills">
-                        @foreach (var pill in Model.Stack)
+                        var dateRange = $"{job.StartDate:yyyy} – {(job.EndDate.HasValue ? job.EndDate.Value.ToString("yyyy") : "Present")}";
+                        <div class="exp-job-header">
+                            <div class="exp-job-title-row">
+                                <span class="exp-name-bullet" aria-hidden="true"></span>
+                                <h3 class="exp-job-title">@job.JobTitle</h3>
+                            </div>
+                            <span class="exp-job-date-badge">@dateRange</span>
+                        </div>
+                        <p class="exp-job-company">@job.CompanyName@(string.IsNullOrWhiteSpace(job.Location) ? "" : $" · {job.Location}")</p>
+                        @if (!string.IsNullOrWhiteSpace(job.Description))
                         {
-                            <span class="exp-stack-pill">@pill</span>
+                            <p class="exp-job-desc">@job.Description</p>
                         }
+                    }
+                }
+                else
+                {
+                    @* Fallback single static role (no real experience recorded yet). *@
+                    <div class="exp-job-header">
+                        <div class="exp-job-title-row">
+                            <span class="exp-name-bullet" aria-hidden="true"></span>
+                            <h3 class="exp-job-title" data-i18n="@Model.JobTitleKey">@Model.JobTitle</h3>
+                        </div>
+                        <span class="exp-job-date-badge" data-i18n="@Model.JobDateKey">@Model.JobDate</span>
                     </div>
-                </div>
+                    <p class="exp-job-company" data-i18n="@Model.JobCompanyKey">@Model.JobCompany</p>
+
+                    <ol class="exp-job-list">
+                        @for (var i = 0; i < Model.JobBullets.Count; i++)
+                        {
+                            var b = Model.JobBullets[i];
+                            <li class="exp-job-item">
+                                <span class="exp-job-num" aria-hidden="true">@(i + 1)</span>
+                                <p data-i18n="@b.Key">@Html.Raw(b.Text)</p>
+                            </li>
+                        }
+                    </ol>
+
+                    <div class="exp-stack-block">
+                        <span class="eyebrow eyebrow--sm" data-i18n="exp.stack">STACK</span>
+                        <div class="exp-stack-pills">
+                            @foreach (var pill in Model.Stack)
+                            {
+                                <span class="exp-stack-pill">@pill</span>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
         </div>
 

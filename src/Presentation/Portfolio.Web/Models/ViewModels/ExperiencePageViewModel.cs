@@ -12,6 +12,11 @@ public class ExperiencePageViewModel
     public List<ImpactMetricViewModel> Metrics { get; init; } = [];
     public List<PrincipleViewModel> Principles { get; init; } = [];
 
+    // Real professional history from Portfolio.API (settable so the controller can
+    // attach it onto the otherwise mock-built aggregate). When empty, the view
+    // falls back to the single static role block below.
+    public List<ExperienceViewModel> ProfessionalHistory { get; set; } = [];
+
     // Summary
     public string SummaryName { get; init; } = string.Empty;        // static
     public string SummaryTextKey { get; init; } = "exp.summary_text";
