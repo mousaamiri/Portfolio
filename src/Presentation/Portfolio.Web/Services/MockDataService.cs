@@ -24,12 +24,10 @@ public static class MockDataService
         LearningDesc = "Exploring LLM orchestration, chains, agents, and tool integration with LangChain framework.",
         LearningDate = "Jul 6, 2026",
 
-        // Projects now come from Portfolio.API (see HomeController); Home's mock
-        // project list was retired in D2. Skills/Experiences/Educations remain
-        // mocked until their pages are wired (D3/D4).
-        Skills = GetSkills(),
-        Experiences = GetExperiences(),
-        Educations = GetEducations()
+        // Projects, Skills and Educations now come from Portfolio.API (see
+        // HomeController); their mock lists were retired in D2/D3. Experiences
+        // stays mocked until the Experience page is wired (D4).
+        Experiences = GetExperiences()
     };
 
     // Projects are served by Portfolio.API (Home + Work). The static six-project
@@ -90,28 +88,8 @@ public static class MockDataService
                 Excerpt = "Clean code is readable. Production code is negotiable under pressure. This post explores the gap between theory and reality." }
     ];
 
-    // Skills — shared data (migration decision #5): the About "Skills" grid and
-    // the Experience "Technical Proficiency Matrix" render the SAME list two ways.
-    // Values ported from the static About page (4 categories × 4 skills).
-    private static List<SkillViewModel> GetSkills() =>
-    [
-        new() { Name = "Java", Category = "Backend", Proficiency = 90 },
-        new() { Name = "Node.js", Category = "Backend", Proficiency = 85 },
-        new() { Name = "Python", Category = "Backend", Proficiency = 80 },
-        new() { Name = "Spring Boot", Category = "Backend", Proficiency = 88 },
-        new() { Name = "React", Category = "Frontend", Proficiency = 90 },
-        new() { Name = "JavaScript", Category = "Frontend", Proficiency = 92 },
-        new() { Name = "HTML / CSS", Category = "Frontend", Proficiency = 95 },
-        new() { Name = "TypeScript", Category = "Frontend", Proficiency = 78 },
-        new() { Name = "PostgreSQL", Category = "Database", Proficiency = 85 },
-        new() { Name = "MongoDB", Category = "Database", Proficiency = 75 },
-        new() { Name = "MySQL", Category = "Database", Proficiency = 80 },
-        new() { Name = "Redis", Category = "Database", Proficiency = 70 },
-        new() { Name = "Git", Category = "Tools", Proficiency = 95 },
-        new() { Name = "Docker", Category = "Tools", Proficiency = 82 },
-        new() { Name = "AWS", Category = "Tools", Proficiency = 78 },
-        new() { Name = "Linux", Category = "Tools", Proficiency = 85 }
-    ];
+    // Skills are served by Portfolio.API (About page). The mock skill list was
+    // retired in D3.
 
     private static List<ExperienceViewModel> GetExperiences() =>
     [
@@ -135,33 +113,8 @@ public static class MockDataService
         }
     ];
 
-    // Education — public About section (migration decision #6) + admin panel,
-    // one shared list. Shapes mirror the admin `Education` entity (institution,
-    // degree, description, start/end year, score).
-    private static List<EducationViewModel> GetEducations() =>
-    [
-        new()
-        {
-            InstitutionName = "State University",
-            Degree = "B.S.",
-            FieldOfStudy = "Computer Science",
-            Description = "Focused on distributed systems and algorithms; the foundation for thinking like an engineer beyond \"it compiles\".",
-            StartDate = new DateTime(2016, 9, 1),
-            EndDate = new DateTime(2019, 6, 1),
-            Gpa = 18.2,
-            Score = "18.2 / 20"
-        },
-        new()
-        {
-            InstitutionName = "Cloud Institute",
-            Degree = "Professional Certification",
-            FieldOfStudy = "Cloud Architecture",
-            Description = "Formalized years of hands-on infrastructure work with a professional cloud architecture certification.",
-            StartDate = new DateTime(2022, 1, 1),
-            EndDate = new DateTime(2022, 6, 1),
-            Score = "Pass"
-        }
-    ];
+    // Education is served by Portfolio.API (About page + admin). The mock
+    // education list was retired in D3.
 
     // ── About page aggregate (9 sections) ──
     public static AboutViewModel GetAboutViewModel() => new()
@@ -173,10 +126,9 @@ public static class MockDataService
         PortraitAlt = "Mousa — portrait photo",
         Journey = GetJourney(),
         Footprint = GetFootprint(),
-        Skills = GetSkills(),
         Interests = GetInterests(),
-        Endorsements = GetEndorsements(),
-        Education = GetEducations()
+        Endorsements = GetEndorsements()
+        // Skills + Education now come from Portfolio.API (see AboutController).
     };
 
     private static List<TimelineEntryViewModel> GetJourney() =>
