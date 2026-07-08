@@ -12,6 +12,7 @@ public interface IUnitOfWork : IDisposable
     IFaqRepository Faqs { get; }
     ITimelineEntryRepository TimelineEntries { get; }
     IInterestRepository Interests { get; }
+    IStatCounterRepository StatCounters { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

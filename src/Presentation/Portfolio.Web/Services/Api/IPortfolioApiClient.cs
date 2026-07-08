@@ -23,6 +23,8 @@ public interface IPortfolioApiClient
 
     Task<IReadOnlyList<InterestApiDto>> GetInterestsAsync(string lang, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<StatCounterApiDto>> GetStatsAsync(string lang, CancellationToken cancellationToken = default);
+
     /// <summary>Submits a contact-form message to the public API. Returns true on success.</summary>
     Task<bool> SendMessageAsync(ContactMessageRequest request, CancellationToken cancellationToken = default);
 }
