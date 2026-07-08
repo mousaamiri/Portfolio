@@ -22,12 +22,11 @@ public static class MockDataService
         LinkedInUrl = "https://linkedin.com",
         LearningTitle = "Learning Langchain",
         LearningDesc = "Exploring LLM orchestration, chains, agents, and tool integration with LangChain framework.",
-        LearningDate = "Jul 6, 2026",
+        LearningDate = "Jul 6, 2026"
 
-        // Projects, Skills and Educations now come from Portfolio.API (see
-        // HomeController); their mock lists were retired in D2/D3. Experiences
-        // stays mocked until the Experience page is wired (D4).
-        Experiences = GetExperiences()
+        // All Home lists (Projects/Skills/Experiences/Educations) now come from
+        // Portfolio.API via HomeController; their mock lists were retired in D2-D4.
+        // GetHomeViewModel supplies only the hero copy (TODO(E4): move to Profile).
     };
 
     // Projects are served by Portfolio.API (Home + Work). The static six-project
@@ -91,27 +90,8 @@ public static class MockDataService
     // Skills are served by Portfolio.API (About page). The mock skill list was
     // retired in D3.
 
-    private static List<ExperienceViewModel> GetExperiences() =>
-    [
-        new()
-        {
-            CompanyName = "Tech Solutions Inc.",
-            JobTitle = "Senior .NET Developer",
-            Description = "Led development of enterprise web applications using ASP.NET Core and microservices architecture. Mentored junior developers and established coding standards.",
-            Location = "Tehran, Iran",
-            StartDate = new DateTime(2022, 3, 1),
-            EndDate = null
-        },
-        new()
-        {
-            CompanyName = "Digital Innovations Co.",
-            JobTitle = ".NET Developer",
-            Description = "Developed and maintained multiple web applications using ASP.NET MVC and Web API. Implemented CI/CD pipelines and improved deployment processes.",
-            Location = "Tehran, Iran",
-            StartDate = new DateTime(2019, 6, 1),
-            EndDate = new DateTime(2022, 2, 28)
-        }
-    ];
+    // Professional history is served by Portfolio.API (Experience page). The
+    // legacy mock experience list was retired in D4.
 
     // Education is served by Portfolio.API (About page + admin). The mock
     // education list was retired in D3.
