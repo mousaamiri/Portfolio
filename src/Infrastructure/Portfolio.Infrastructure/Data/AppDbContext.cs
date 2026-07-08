@@ -13,6 +13,7 @@ using Portfolio.Domain.Entities.Profiles;
 using Portfolio.Domain.Entities.Projects;
 using Portfolio.Domain.Entities.Skills;
 using Portfolio.Domain.Entities.Stats;
+using Portfolio.Domain.Entities.Testimonials;
 using Portfolio.Domain.Entities.Timeline;
 
 namespace Portfolio.Infrastructure.Data;
@@ -61,6 +62,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<ProficiencyGroup> ProficiencyGroups => Set<ProficiencyGroup>();
     public DbSet<ProficiencyGroupTranslation> ProficiencyGroupTranslations => Set<ProficiencyGroupTranslation>();
+
+    public DbSet<Testimonial> Testimonials => Set<Testimonial>();
+    public DbSet<TestimonialTranslation> TestimonialTranslations => Set<TestimonialTranslation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

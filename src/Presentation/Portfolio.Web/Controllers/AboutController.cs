@@ -11,9 +11,9 @@ public class AboutController(IPortfolioApiClient api) : Controller
     {
         var language = WebLanguage.Resolve(lang);
 
-        // Skills + Education + Journey + Interests + Footprint come from Portfolio.API.
-        // The remaining About sections (endorsements, hero stat values) have no backend
-        // entity yet and stay mocked. TODO(E9+): wire the rest.
+        // Skills, Education, Journey, Interests, Footprint and Endorsements all come
+        // from Portfolio.API. Only the hero stat *values* (role/experience/degree
+        // badges) and portrait remain mock-backed. TODO: source those from Profile.
         var about = MockDataService.GetAboutViewModel();
 
         var skills = await api.GetSkillsAsync(language, cancellationToken);
@@ -21,6 +21,7 @@ public class AboutController(IPortfolioApiClient api) : Controller
         var journey = await api.GetTimelineAsync(language, cancellationToken);
         var interests = await api.GetInterestsAsync(language, cancellationToken);
         var footprint = await api.GetStatsAsync(language, cancellationToken);
+        var endorsements = await api.GetTestimonialsAsync(language, cancellationToken);
 
         var model = new AboutViewModel
         {
@@ -32,7 +33,7 @@ public class AboutController(IPortfolioApiClient api) : Controller
             Journey = journey.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Footprint = footprint.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Interests = interests.Select(ApiViewModelMapper.ToViewModel).ToList(),
-            Endorsements = about.Endorsements,
+            Endorsements = endorsements.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Skills = skills.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Education = educations.Select(ApiViewModelMapper.ToViewModel).ToList()
         };

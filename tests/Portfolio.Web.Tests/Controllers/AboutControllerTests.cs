@@ -24,6 +24,8 @@ public class AboutControllerTests
             .ReturnsAsync([new InterestApiDto { Icon = "code", Label = "Coding" }]);
         _api.Setup(a => a.GetStatsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync([new StatCounterApiDto { Icon = "folder", Label = "Projects", CountTarget = 48, Suffix = "+" }]);
+        _api.Setup(a => a.GetTestimonialsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
 
         _sut = new AboutController(_api.Object);
     }
@@ -98,12 +100,24 @@ public class AboutControllerTests
     }
 
     [Fact]
-    public async Task Index_MockedSectionsStillPopulated()
+    public async Task Index_EndorsementsComeFromApi()
     {
+        _api.Setup(a => a.GetTestimonialsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new TestimonialApiDto { Name = "Jane", Role = "PM", Quote = "Great", Initials = "J" }]);
+
         var model = await InvokeAsync();
 
-        // Endorsements have no backend entity yet (E2 skipped), so they remain
-        // mock-backed and non-empty.
-        model.Endorsements.Should().NotBeEmpty();
+        model.Endorsements.Should().ContainSingle();
+        model.Endorsements[0].Name.Should().Be("Jane");
+        _api.Verify(a => a.GetTestimonialsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Index_EndorsementsEmptyWhenNoneExist()
+    {
+        // No testimonials seeded → the section is empty (no fabricated placeholders).
+        var model = await InvokeAsync();
+
+        model.Endorsements.Should().BeEmpty();
     }
 }

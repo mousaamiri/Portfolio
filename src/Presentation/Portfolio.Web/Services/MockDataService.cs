@@ -52,9 +52,10 @@ public static class MockDataService
         ExperienceValue = "3+ Years",
         DegreeValue = "B.S. Computer Science",
         PortraitUrl = "/images/about-portrait.jpg",
-        PortraitAlt = "Mousa — portrait photo",
-        Endorsements = GetEndorsements()
-        // Skills + Education + Journey + Interests + Footprint now come from Portfolio.API (see AboutController).
+        PortraitAlt = "Mousa — portrait photo"
+        // Skills, Education, Journey, Interests, Footprint and Endorsements now come
+        // from Portfolio.API (see AboutController). Only the hero stat badges above
+        // remain mock-backed.
     };
 
     // Journey/timeline is served by Portfolio.API (About page). The mock journey
@@ -66,25 +67,9 @@ public static class MockDataService
     // Interests are served by Portfolio.API (About page). The mock interest list
     // was retired in E7.
 
-    private static List<EndorsementViewModel> GetEndorsements() =>
-    [
-        new() { Initials = "JD", AvatarColor = "var(--accent)",
-                QuoteKey = "about.endorsement_1", NameKey = "about.endorsement_1_name", RoleKey = "about.endorsement_1_role",
-                Quote = "“One of the most reliable engineers I've worked with — hands things off knowing they'll be handled properly, no follow-up needed.”",
-                Name = "Jane Doe", Role = "Engineering Manager, Acme Systems" },
-        new() { Initials = "MS", AvatarColor = "#ec4899",
-                QuoteKey = "about.endorsement_2", NameKey = "about.endorsement_2_name", RoleKey = "about.endorsement_2_role",
-                Quote = "“Explains complex systems in a way that actually makes sense. Turned a confusing migration into something the whole team understood.”",
-                Name = "Mark Smith", Role = "Senior Product Manager, Acme Systems" },
-        new() { Initials = "AL", AvatarColor = "#3b82f6",
-                QuoteKey = "about.endorsement_3", NameKey = "about.endorsement_3_name", RoleKey = "about.endorsement_3_role",
-                Quote = "“Great instincts for when to move fast and when to slow down. That balance is rare and it shows in the quality of the work.”",
-                Name = "Amara Lee", Role = "Tech Lead, Acme Systems" },
-        new() { Initials = "RK", AvatarColor = "#22c55e",
-                QuoteKey = "about.endorsement_4", NameKey = "about.endorsement_4_name", RoleKey = "about.endorsement_4_role",
-                Quote = "“Mentored two juniors on my team this year. Patient, clear, and genuinely invested in people growing, not just shipping.”",
-                Name = "Ravi Kumar", Role = "Director of Engineering, Acme Systems" }
-    ];
+    // Endorsements are served by Portfolio.API (About page). The mock (fictional
+    // "Acme Systems") endorsement list was retired in E2 — the section stays empty
+    // until real testimonials exist, per PERSONAL_INFO.md.
 
     // ── Experience page aggregate ──
     // NOTE (Step 5): the Experience "Technical Proficiency Matrix" is NOT the
