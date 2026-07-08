@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IImpactMetricService, ImpactMetricService>();
         services.AddScoped<IPrincipleService, PrincipleService>();
         services.AddScoped<IProficiencyGroupService, ProficiencyGroupService>();
+        services.AddScoped<ITestimonialService, TestimonialService>();
 
         return services;
     }

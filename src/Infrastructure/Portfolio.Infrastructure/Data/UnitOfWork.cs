@@ -19,6 +19,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     private IImpactMetricRepository? _impactMetrics;
     private IPrincipleRepository? _principles;
     private IProficiencyGroupRepository? _proficiencyGroups;
+    private ITestimonialRepository? _testimonials;
 
     public IEducationRepository Educations => _educations ??= new EducationRepository(context);
     public IExperienceRepository Experiences => _experiences ??= new ExperienceRepository(context);
@@ -34,6 +35,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     public IImpactMetricRepository ImpactMetrics => _impactMetrics ??= new ImpactMetricRepository(context);
     public IPrincipleRepository Principles => _principles ??= new PrincipleRepository(context);
     public IProficiencyGroupRepository ProficiencyGroups => _proficiencyGroups ??= new ProficiencyGroupRepository(context);
+    public ITestimonialRepository Testimonials => _testimonials ??= new TestimonialRepository(context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

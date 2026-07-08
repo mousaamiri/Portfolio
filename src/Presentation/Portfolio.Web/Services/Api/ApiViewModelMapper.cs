@@ -138,6 +138,15 @@ public static class ApiViewModelMapper
             : dto.Items.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList()
     };
 
+    public static EndorsementViewModel ToViewModel(TestimonialApiDto dto) => new()
+    {
+        Quote = dto.Quote,
+        Name = dto.Name,
+        Role = dto.Role,
+        Initials = dto.Initials,
+        AvatarColor = dto.AvatarColor
+    };
+
     public static BlogPostViewModel ToViewModel(ArticleApiDto dto) => new()
     {
         Id = dto.Slug,

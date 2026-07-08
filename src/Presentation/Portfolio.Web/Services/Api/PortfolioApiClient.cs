@@ -46,6 +46,9 @@ public class PortfolioApiClient(HttpClient httpClient, ILogger<PortfolioApiClien
     public Task<IReadOnlyList<ProficiencyGroupApiDto>> GetProficienciesAsync(string lang, CancellationToken cancellationToken = default)
         => GetListAsync<ProficiencyGroupApiDto>("proficiencies", lang, cancellationToken);
 
+    public Task<IReadOnlyList<TestimonialApiDto>> GetTestimonialsAsync(string lang, CancellationToken cancellationToken = default)
+        => GetListAsync<TestimonialApiDto>("testimonials", lang, cancellationToken);
+
     public async Task<ProfileApiDto?> GetProfileAsync(string lang, CancellationToken cancellationToken = default)
     {
         try

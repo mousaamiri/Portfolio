@@ -16,6 +16,7 @@ public interface IUnitOfWork : IDisposable
     IImpactMetricRepository ImpactMetrics { get; }
     IPrincipleRepository Principles { get; }
     IProficiencyGroupRepository ProficiencyGroups { get; }
+    ITestimonialRepository Testimonials { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
