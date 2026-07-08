@@ -84,6 +84,16 @@ public static class ApiViewModelMapper
         Score = dto.Gpa?.ToString()
     };
 
+    public static BlogPostViewModel ToViewModel(ArticleApiDto dto) => new()
+    {
+        Id = dto.Slug,
+        Title = dto.Title,
+        Excerpt = dto.Excerpt ?? string.Empty,
+        Category = dto.Category ?? string.Empty,
+        Date = dto.PublishDate,
+        ReadTime = dto.ReadTimeMinutes
+    };
+
     private static List<TechPillViewModel> SplitTechnologies(string? technologies)
     {
         if (string.IsNullOrWhiteSpace(technologies))

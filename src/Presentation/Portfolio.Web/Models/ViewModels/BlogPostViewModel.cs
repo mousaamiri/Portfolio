@@ -9,7 +9,7 @@ namespace Portfolio.Web.Models.ViewModels;
 /// </summary>
 public class BlogPostViewModel
 {
-    public int Id { get; init; }
+    public string Id { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;
     public string Excerpt { get; init; } = string.Empty;
     public string Category { get; init; } = string.Empty;
