@@ -30,7 +30,8 @@ public class BlogControllerTests
             .ReturnsAsync([new ArticleApiDto
             {
                 Slug = "virtual-threads", Title = "Virtual Threads", Excerpt = "x",
-                Category = "Java", PublishDate = new DateTime(2026, 5, 26), ReadTimeMinutes = 3
+                Category = "Java", PublishDate = new DateTime(2026, 5, 26), ReadTimeMinutes = 3,
+                Body = "<p>full body</p>"
             }]);
 
         var model = await InvokeAsync();
@@ -40,6 +41,7 @@ public class BlogControllerTests
         model[0].Title.Should().Be("Virtual Threads");
         model[0].Category.Should().Be("Java");
         model[0].ReadTime.Should().Be(3);
+        model[0].Body.Should().Be("<p>full body</p>");
         _api.Verify(a => a.GetArticlesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 

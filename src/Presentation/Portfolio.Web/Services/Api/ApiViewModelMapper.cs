@@ -154,7 +154,8 @@ public static class ApiViewModelMapper
         Excerpt = dto.Excerpt ?? string.Empty,
         Category = dto.Category ?? string.Empty,
         Date = dto.PublishDate,
-        ReadTime = dto.ReadTimeMinutes
+        ReadTime = dto.ReadTimeMinutes,
+        Body = dto.Body ?? string.Empty
     };
 
     private static List<TechPillViewModel> SplitTechnologies(string? technologies)
