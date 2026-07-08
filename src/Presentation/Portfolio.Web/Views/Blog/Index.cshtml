@@ -16,13 +16,12 @@
 }
 
 @* ======================================================
-   TODO: Blog article grid — currently from MockDataService
-   Model: List<BlogPostViewModel> (metadata: title/excerpt/category/date/read-time)
-   Future: will be replaced by a real data source (out of scope for now)
-   Note: Blog is English-only in the static site (no parallel FA array, no
-   data-i18n). Filters + grid are server-rendered here for SEO/no-JS; blog.js
-   re-renders them identically and OWNS the reading modal + the full HTML article
-   bodies (its own `posts` array — the finished copy — left unchanged).
+   Blog article grid — data comes from Portfolio.API.
+   Model: List<BlogPostViewModel> (title/excerpt/category/date/read-time + body)
+   The grid + filters are server-rendered here for SEO/no-JS. blog.js re-renders
+   them identically and owns the reading modal; it reads the real articles from
+   the JSON island below (#blog-data) instead of a hardcoded array. Blog is
+   English-only in the static site (no parallel FA array, no data-i18n).
    ====================================================== *@
 <section id="blog" class="blog-section">
     <div class="container">
@@ -74,6 +73,22 @@
     </div>
 </section>
 @* Blog modal is created/destroyed dynamically by blog.js *@
+
+@* Real articles for blog.js (grid re-render + reading modal). Shape matches
+   blog.js's expected post objects: {id, title, excerpt, category, date, readTime, content}. *@
+<script id="blog-data" type="application/json">
+    @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.Select(p => new
+        {
+            id = p.Id,
+            title = p.Title,
+            excerpt = p.Excerpt,
+            category = p.Category,
+            date = p.Date.ToString("yyyy-MM-dd"),
+            readTime = p.ReadTime,
+            content = p.Body
+        })))
+</script>
 
 @section PageScripts {
     <script src="~/js/pages/blog.js"></script>

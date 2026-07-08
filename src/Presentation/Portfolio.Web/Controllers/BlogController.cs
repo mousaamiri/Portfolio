@@ -9,11 +9,10 @@ public class BlogController(IPortfolioApiClient api) : Controller
     {
         var language = Services.WebLanguage.Resolve(lang);
 
-        // Article metadata (server-rendered grid, for SEO/no-JS) now comes from
-        // Portfolio.API. NOTE: blog.js still owns the client-side grid re-render and
-        // the reading modal from its own hardcoded post array (full HTML bodies).
-        // TODO(blog-js): refactor blog.js to fetch the API instead of its own array
-        // so the visible grid + modal reflect real articles.
+        // Articles come from Portfolio.API. The server-rendered grid (SEO/no-JS) and
+        // the JSON island the view emits both use this data; blog.js reads that island
+        // for its client-side grid re-render and reading modal, so the whole page now
+        // reflects real articles (empty until the owner writes any).
         var articles = await api.GetArticlesAsync(language, cancellationToken);
         var model = articles.Select(ApiViewModelMapper.ToViewModel).ToList();
 

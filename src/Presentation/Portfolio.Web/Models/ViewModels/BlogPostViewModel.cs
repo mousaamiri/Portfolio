@@ -16,6 +16,9 @@ public class BlogPostViewModel
     public DateTime Date { get; init; }
     public int ReadTime { get; init; }
 
+    /// <summary>Full HTML article body, shown in the client-side reading modal.</summary>
+    public string Body { get; init; } = string.Empty;
+
     /// <summary>Card date in blog.js's format, e.g. "TUE MAY 26 2026".</summary>
     public string DisplayDate =>
         Date.ToString("ddd MMM dd yyyy", System.Globalization.CultureInfo.InvariantCulture).ToUpperInvariant();
