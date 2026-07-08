@@ -10,8 +10,14 @@ builder.Services.AddControllersWithViews();
 var apiBaseUrl = builder.Configuration["PortfolioApi:BaseUrl"] ?? "https://localhost:7003";
 builder.Services.AddHttpClient<IPortfolioApiClient, PortfolioApiClient>(
     client => client.BaseAddress = new Uri(apiBaseUrl));
+
+// The admin client's requests carry the admin's JWT (from the auth cookie) as a
+// Bearer header via BearerTokenHandler.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<BearerTokenHandler>();
 builder.Services.AddHttpClient<IAdminApiClient, AdminApiClient>(
-    client => client.BaseAddress = new Uri(apiBaseUrl));
+    client => client.BaseAddress = new Uri(apiBaseUrl))
+    .AddHttpMessageHandler<BearerTokenHandler>();
 
 // Cookie authentication for the admin panel (MVC proxy). The API JWT is stored
 // inside the encrypted, HttpOnly auth cookie — it never reaches the browser.
