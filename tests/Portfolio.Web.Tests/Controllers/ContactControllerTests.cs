@@ -18,11 +18,28 @@ public class ContactControllerTests
     }
 
     [Fact]
-    public void Index_ReturnsContactViewModel()
+    public async Task Index_ReturnsContactViewModel()
     {
-        var result = _sut.Index() as ViewResult;
+        _api.Setup(a => a.GetFaqsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+
+        var result = await _sut.Index(null, CancellationToken.None) as ViewResult;
 
         result!.Model.Should().BeOfType<ContactViewModel>();
+    }
+
+    [Fact]
+    public async Task Index_PopulatesFaqsFromApi()
+    {
+        _api.Setup(a => a.GetFaqsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new FaqApiDto { Question = "Remote?", Answer = "Yes" }]);
+
+        var result = await _sut.Index(null, CancellationToken.None) as ViewResult;
+        var model = (ContactViewModel)result!.Model!;
+
+        model.Faqs.Should().ContainSingle();
+        model.Faqs[0].Question.Should().Be("Remote?");
+        model.Faqs[0].Answer.Should().Be("Yes");
     }
 
     [Fact]

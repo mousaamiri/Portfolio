@@ -111,3 +111,13 @@ public class ProfileApiDto
     public string? LearningTitle { get; set; }
     public string? LearningDesc { get; set; }
 }
+
+public class FaqApiDto
+{
+    public Guid Id { get; set; }
+    public int DisplayOrder { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string Question { get; set; } = string.Empty;
+    public string Answer { get; set; } = string.Empty;
+}

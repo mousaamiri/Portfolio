@@ -7,11 +7,25 @@ namespace Portfolio.Web.Controllers;
 
 public class ContactController(IPortfolioApiClient api) : Controller
 {
-    // GET /Contact — info card + FAQ still come from MockDataService (FAQ becomes
-    // dynamic in E5). The form now posts for real (Submit below).
-    public IActionResult Index()
+    // GET /Contact — FAQ list now comes from Portfolio.API; the contact info card
+    // (email/phone/socials) stays mocked pending Profile coverage. The form posts
+    // for real (Submit below).
+    public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
-        var model = MockDataService.GetContactViewModel();
+        var language = WebLanguage.Resolve(lang);
+        var info = MockDataService.GetContactViewModel();
+        var faqs = await api.GetFaqsAsync(language, cancellationToken);
+
+        var model = new ContactViewModel
+        {
+            Email = info.Email,
+            Phone = info.Phone,
+            GitHubUrl = info.GitHubUrl,
+            LinkedInUrl = info.LinkedInUrl,
+            InstagramUrl = info.InstagramUrl,
+            Faqs = faqs.Select(ApiViewModelMapper.ToViewModel).ToList()
+        };
+
         return View(model);
     }
 

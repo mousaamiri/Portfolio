@@ -84,6 +84,12 @@ public static class ApiViewModelMapper
         Score = dto.Gpa?.ToString()
     };
 
+    public static FaqItemViewModel ToViewModel(FaqApiDto dto) => new()
+    {
+        Question = dto.Question,
+        Answer = dto.Answer
+    };
+
     public static BlogPostViewModel ToViewModel(ArticleApiDto dto) => new()
     {
         Id = dto.Slug,
