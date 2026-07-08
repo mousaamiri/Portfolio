@@ -13,6 +13,7 @@ public static class DependencyInjection
         services.AddScoped<IExperienceService, ExperienceService>();
         services.AddScoped<IEducationService, EducationService>();
         services.AddScoped<IArticleService, ArticleService>();
+        services.AddScoped<IMessageService, MessageService>();
 
         return services;
     }

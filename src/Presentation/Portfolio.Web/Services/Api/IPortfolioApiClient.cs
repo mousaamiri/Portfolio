@@ -13,4 +13,7 @@ public interface IPortfolioApiClient
     Task<IReadOnlyList<ExperienceApiDto>> GetExperiencesAsync(string lang, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<EducationApiDto>> GetEducationsAsync(string lang, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<ArticleApiDto>> GetArticlesAsync(string lang, CancellationToken cancellationToken = default);
+
+    /// <summary>Submits a contact-form message to the public API. Returns true on success.</summary>
+    Task<bool> SendMessageAsync(ContactMessageRequest request, CancellationToken cancellationToken = default);
 }
