@@ -28,6 +28,32 @@ public static class ApiViewModelMapper
         Techs = SplitTechnologies(dto.Technologies)
     };
 
+    /// <summary>
+    /// Merges the English and Farsi DTOs for the same project (matched by Id) into
+    /// the bilingual <see cref="ProjectViewModel"/> the Work master/detail view and
+    /// <c>work.js</c> expect. Farsi falls back to English when a translation is missing.
+    /// </summary>
+    public static ProjectViewModel MergeToWorkViewModel(ProjectApiDto en, ProjectApiDto? fa) => new()
+    {
+        DisplayId = en.DisplayOrder,
+        NameEn = en.Title,
+        NameFa = string.IsNullOrWhiteSpace(fa?.Title) ? en.Title : fa!.Title,
+        SubtitleEn = en.ShortDescription,
+        SubtitleFa = string.IsNullOrWhiteSpace(fa?.ShortDescription) ? en.ShortDescription : fa!.ShortDescription,
+        DescriptionEn = en.Description ?? string.Empty,
+        DescriptionFa = string.IsNullOrWhiteSpace(fa?.Description) ? en.Description ?? string.Empty : fa!.Description!,
+        GithubUrl = string.IsNullOrWhiteSpace(en.SourceCodeUrl) ? "#" : en.SourceCodeUrl,
+        Techs = SplitTechnologies(en.Technologies),
+
+        // Legacy single-language fields kept populated for _ProjectCard compatibility.
+        Title = en.Title,
+        Description = en.Description,
+        Technologies = en.Technologies,
+        ImageUrl = en.ThumbnailUrl,
+        DemoUrl = en.PreviewUrl,
+        SourceCodeUrl = en.SourceCodeUrl
+    };
+
     public static SkillViewModel ToViewModel(SkillApiDto dto) => new()
     {
         Name = dto.Name,
@@ -65,7 +91,7 @@ public static class ApiViewModelMapper
 
         return technologies
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(name => new TechPillViewModel { Name = name })
+            .Select(name => new TechPillViewModel { Name = name, Color = TechColor.For(name) })
             .ToList();
     }
 }

@@ -24,134 +24,16 @@ public static class MockDataService
         LearningDesc = "Exploring LLM orchestration, chains, agents, and tool integration with LangChain framework.",
         LearningDate = "Jul 6, 2026",
 
-        Projects = GetProjects(),
+        // Projects now come from Portfolio.API (see HomeController); Home's mock
+        // project list was retired in D2. Skills/Experiences/Educations remain
+        // mocked until their pages are wired (D3/D4).
         Skills = GetSkills(),
         Experiences = GetExperiences(),
         Educations = GetEducations()
     };
 
-    // Projects — the six real projects from the static Work page. Shared by the
-    // Home model (test only needs non-empty) and the Work master/detail showcase.
-    // Legacy fields (Title/Technologies/...) are kept populated so _ProjectCard
-    // still compiles; Work uses the bilingual + colored-tech fields.
-    private static List<ProjectViewModel> GetProjects() =>
-    [
-        new()
-        {
-            DisplayId = 1,
-            NameEn = "ResumeIQ Platform", NameFa = "پلتفرم ResumeIQ",
-            SubtitleEn = "AI Resume Analysis & ATS Intelligence Platform",
-            SubtitleFa = "تحلیل هوشمند رزومه و سازگاری با سامانه‌های ATS",
-            DescriptionEn = "An enterprise-grade resume analysis platform that evaluates candidate resumes against job descriptions using Google Gemini AI. Features automated PDF parsing, ATS compatibility scoring, skill gap identification, actionable improvement recommendations, secure JWT authentication with eager auto-renewal, and role-based access control.",
-            DescriptionFa = "یک پلتفرم سازمانی برای تحلیل رزومه که با بهره‌گیری از هوش مصنوعی Google Gemini، رزومه‌ی متقاضیان را با شرح شغل مقایسه و ارزیابی می‌کند. امکاناتی مانند استخراج خودکار اطلاعات از PDF، امتیازدهی سازگاری با ATS، شناسایی شکاف مهارتی، پیشنهادهای عملی بهبود، احراز هویت امن با JWT و کنترل دسترسی مبتنی بر نقش را فراهم می‌آورد.",
-            GithubUrl = "#",
-            Techs =
-            [
-                new() { Name = "Java 21", Color = "#f0a63b" }, new() { Name = "Spring Boot", Color = "#22c55e" },
-                new() { Name = "PostgreSQL", Color = "#3b82f6" }, new() { Name = "React", Color = "#3b82f6" },
-                new() { Name = "TypeScript", Color = "#3b82f6" }, new() { Name = "Tailwind CSS", Color = "#14b8a6" },
-                new() { Name = "Gemini AI", Color = "#3b82f6" }, new() { Name = "Apache PDFBox", Color = "#ec4899" },
-                new() { Name = "JWT Auth", Color = "#22c55e" }, new() { Name = "Docker", Color = "#3b82f6" }
-            ],
-            Title = "ResumeIQ Platform",
-            Description = "AI Resume Analysis & ATS Intelligence Platform",
-            Technologies = "Java 21, Spring Boot, PostgreSQL, React, TypeScript, Tailwind CSS, Gemini AI, Apache PDFBox, JWT Auth, Docker",
-            SourceCodeUrl = "#"
-        },
-        new()
-        {
-            DisplayId = 2,
-            NameEn = "GitGlance", NameFa = "GitGlance",
-            SubtitleEn = "Ultimate Github Profile Visualizer",
-            SubtitleFa = "ابزار جامع مصورسازی پروفایل گیت‌هاب",
-            DescriptionEn = "A comprehensive GitHub profile visualization tool that provides detailed analytics, contribution graphs, repository insights, and developer statistics in a beautiful dashboard interface.",
-            DescriptionFa = "ابزاری کامل برای مصورسازی پروفایل گیت‌هاب که تحلیل‌های جزئی، نمودار مشارکت‌ها، بینش مخازن و آمار توسعه‌دهنده را در قالب داشبوردی زیبا و کاربردی ارائه می‌دهد.",
-            GithubUrl = "#",
-            Techs =
-            [
-                new() { Name = "React", Color = "#3b82f6" }, new() { Name = "TypeScript", Color = "#3b82f6" },
-                new() { Name = "GitHub API", Color = "#f2f1ec" }, new() { Name = "Tailwind CSS", Color = "#14b8a6" },
-                new() { Name = "Chart.js", Color = "#ec4899" }
-            ],
-            Title = "GitGlance", Description = "Ultimate Github Profile Visualizer",
-            Technologies = "React, TypeScript, GitHub API, Tailwind CSS, Chart.js", SourceCodeUrl = "#"
-        },
-        new()
-        {
-            DisplayId = 3,
-            NameEn = "Spring AI RAG", NameFa = "Spring AI RAG",
-            SubtitleEn = "Production-Ready AI RAG System",
-            SubtitleFa = "سامانه هوش مصنوعی RAG آماده‌ی تولید",
-            DescriptionEn = "A production-ready Retrieval-Augmented Generation system built with Spring AI, featuring document ingestion, vector storage, semantic search, and context-aware AI responses for enterprise applications.",
-            DescriptionFa = "یک سامانه‌ی بازیابی-افزوده‌ی تولیدی (RAG) آماده‌ی بهره‌برداری که با Spring AI ساخته شده است. قابلیت‌هایی شامل دریافت و پردازش اسناد، ذخیره‌سازی بُرداری، جستجوی معنایی و تولید پاسخ‌های هوشمند متناسب با زمینه را برای کاربردهای سازمانی فراهم می‌کند.",
-            GithubUrl = "#",
-            Techs =
-            [
-                new() { Name = "Java 21", Color = "#f0a63b" }, new() { Name = "Spring Boot", Color = "#22c55e" },
-                new() { Name = "Spring AI", Color = "#22c55e" }, new() { Name = "PostgreSQL", Color = "#3b82f6" },
-                new() { Name = "pgvector", Color = "#a855f7" }, new() { Name = "Docker", Color = "#3b82f6" }
-            ],
-            Title = "Spring AI RAG", Description = "Production-Ready AI RAG System",
-            Technologies = "Java 21, Spring Boot, Spring AI, PostgreSQL, pgvector, Docker", SourceCodeUrl = "#"
-        },
-        new()
-        {
-            DisplayId = 4,
-            NameEn = "SyncBoard", NameFa = "SyncBoard",
-            SubtitleEn = "Real-time Collaborative Clipboard",
-            SubtitleFa = "کلیپ‌بورد مشارکتی لحظه‌ای",
-            DescriptionEn = "A real-time collaborative clipboard application enabling seamless text and data sharing across devices with WebSocket-powered synchronization and secure room-based access.",
-            DescriptionFa = "برنامه‌ای برای اشتراک‌گذاری لحظه‌ای متن و داده میان دستگاه‌های مختلف، با هم‌زمان‌سازی مبتنی بر WebSocket و دسترسی امن از طریق سیستم اتاق‌های خصوصی.",
-            GithubUrl = "#",
-            Techs =
-            [
-                new() { Name = "Java 21", Color = "#f0a63b" }, new() { Name = "Spring Boot", Color = "#22c55e" },
-                new() { Name = "WebSocket", Color = "#a855f7" }, new() { Name = "React", Color = "#3b82f6" },
-                new() { Name = "Redis", Color = "#ec4899" }
-            ],
-            Title = "SyncBoard", Description = "Real-time Collaborative Clipboard",
-            Technologies = "Java 21, Spring Boot, WebSocket, React, Redis", SourceCodeUrl = "#"
-        },
-        new()
-        {
-            DisplayId = 5,
-            NameEn = "Movie Recommendation System", NameFa = "سامانه پیشنهاد فیلم",
-            SubtitleEn = "Content-Based ML Recommender",
-            SubtitleFa = "پیشنهاددهنده‌ی هوشمند مبتنی بر محتوا",
-            DescriptionEn = "A machine learning-powered movie recommendation engine using content-based filtering with TF-IDF vectorization and cosine similarity for personalized movie suggestions.",
-            DescriptionFa = "موتور پیشنهاد فیلم که از یادگیری ماشین و فیلترسازی مبتنی بر محتوا بهره می‌برد. با استفاده از بُرداری‌سازی TF-IDF و شباهت کسینوسی، پیشنهادهای شخصی‌سازی‌شده‌ای به کاربر ارائه می‌دهد.",
-            GithubUrl = "#",
-            Techs =
-            [
-                new() { Name = "Python", Color = "#f0a63b" }, new() { Name = "scikit-learn", Color = "#3b82f6" },
-                new() { Name = "Pandas", Color = "#a855f7" }, new() { Name = "Flask", Color = "#22c55e" },
-                new() { Name = "TMDB API", Color = "#ec4899" }
-            ],
-            Title = "Movie Recommendation System", Description = "Content-Based ML Recommender",
-            Technologies = "Python, scikit-learn, Pandas, Flask, TMDB API", SourceCodeUrl = "#"
-        },
-        new()
-        {
-            DisplayId = 6,
-            NameEn = "Order Management Service", NameFa = "سرویس مدیریت سفارش",
-            SubtitleEn = "Secure Spring Boot Backend API",
-            SubtitleFa = "رابط برنامه‌نویسی امن با Spring Boot",
-            DescriptionEn = "A secure and scalable order management backend service with RESTful APIs, JWT authentication, role-based authorization, and comprehensive order lifecycle management.",
-            DescriptionFa = "سرویس بک‌اند امن و مقیاس‌پذیر برای مدیریت سفارش‌ها، مجهز به رابط‌های RESTful، احراز هویت JWT، سطوح دسترسی مبتنی بر نقش و مدیریت کامل چرخه‌ی عمر سفارش.",
-            GithubUrl = "#",
-            Techs =
-            [
-                new() { Name = "Java 21", Color = "#f0a63b" }, new() { Name = "Spring Boot", Color = "#22c55e" },
-                new() { Name = "Spring Security", Color = "#22c55e" }, new() { Name = "MySQL", Color = "#3b82f6" },
-                new() { Name = "JWT", Color = "#f0a63b" }, new() { Name = "Docker", Color = "#3b82f6" }
-            ],
-            Title = "Order Management Service", Description = "Secure Spring Boot Backend API",
-            Technologies = "Java 21, Spring Boot, Spring Security, MySQL, JWT, Docker", SourceCodeUrl = "#"
-        }
-    ];
-
-    // Work page uses the same six-project list as the master/detail showcase.
-    public static List<ProjectViewModel> GetWorkProjects() => GetProjects();
+    // Projects are served by Portfolio.API (Home + Work). The static six-project
+    // mock list and GetWorkProjects() were removed in D2.
 
     // Blog — article metadata (title/excerpt/category/date/read-time). Mirrors
     // the 16 posts in blog.js, which still owns the full HTML article bodies and
