@@ -173,8 +173,11 @@ var AdminSidebar = {
     var logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", function () {
-        try { sessionStorage.removeItem("admin_auth"); } catch(e) {}
-        window.location.href = "/Admin/Login";
+        // Real server-side logout — submit the antiforgery-protected form that
+        // clears the admin auth cookie (see _AdminLayout).
+        var lf = document.getElementById("logoutForm");
+        if (lf) { lf.submit(); }
+        else { window.location.href = "/Admin/Login"; }
       });
     }
   },

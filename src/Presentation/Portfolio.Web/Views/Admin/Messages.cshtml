@@ -11,7 +11,6 @@
     <script>
         (function () {
             "use strict";
-            try { if (sessionStorage.getItem("admin_auth") !== "1") { window.location.replace("/Admin/Login"); return; } } catch (e) {}
             AdminSidebar.init("messages");
             if (window.lucide) lucide.createIcons();
 

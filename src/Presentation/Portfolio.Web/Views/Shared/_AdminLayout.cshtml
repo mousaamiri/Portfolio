@@ -49,6 +49,10 @@
     <div id="toastContainer" class="admin-toast-container"></div>
     <div id="modalOverlay" class="admin-modal-overlay"><div class="admin-modal" id="modalContent"></div></div>
 
+    @* Real server-side logout (Phase 3): clears the admin auth cookie. shared.js's
+       logout button submits this antiforgery-protected form. *@
+    <form id="logoutForm" asp-controller="Admin" asp-action="Logout" method="post" hidden></form>
+
     <script src="~/js/admin/data.js"></script>
     <script src="~/js/admin/shared.js"></script>
     @RenderSection("Scripts", required: false)

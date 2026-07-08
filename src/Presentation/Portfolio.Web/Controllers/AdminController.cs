@@ -1,19 +1,20 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Portfolio.Web.Models;
+using Portfolio.Web.Services.Api;
 
 namespace Portfolio.Web.Controllers;
 
-// Admin panel (migration decision / addendum). This is a CLIENT-SIDE app:
-// data.js (in-memory AdminData store) + shared.js (sidebar + generic AdminCRUD)
-// do all the work. Auth is an INSECURE DEMO GATE (sessionStorage["admin_auth"],
-// admin/admin checked in plain JS) — ported exactly as-is, NOT real security,
-// and NO server-side authorization is applied here in this phase. CRUD is
-// in-memory / non-persistent, matching the static admin panel.
-//
-// Routes (conventional {controller}/{action}): /Admin (dashboard),
-// /Admin/Projects, /Admin/Articles, /Admin/Experiences, /Admin/Education,
-// /Admin/Skills, /Admin/Testimonials, /Admin/Messages, /Admin/Login,
-// /Admin/ForgotPassword.
-public class AdminController : Controller
+// Admin panel (Phase 3). Real, cookie-based authentication backed by the API's
+// JWT auth: the login form posts server-side to Portfolio.API, and on success the
+// returned JWT is stored inside the encrypted auth cookie (never exposed to the
+// browser). Every panel action requires an authenticated cookie via [Authorize];
+// the old client-side admin/admin sessionStorage gate has been removed.
+[Authorize]
+public class AdminController(IAdminApiClient adminApi) : Controller
 {
     public IActionResult Index() => View();          // dashboard
 
@@ -25,7 +26,64 @@ public class AdminController : Controller
     public IActionResult Testimonials() => View();
     public IActionResult Messages() => View();
 
-    // Insecure demo gate (client-side only — see class remarks).
-    public IActionResult Login() => View();
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult Login(string? returnUrl = null)
+    {
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction(nameof(Index));
+
+        ViewData["ReturnUrl"] = returnUrl;
+        return View(new AdminLoginModel());
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(AdminLoginModel model, string? returnUrl, CancellationToken cancellationToken)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var result = await adminApi.LoginAsync(model.Username, model.Password, cancellationToken);
+        if (result is null)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid username or password.");
+            return View(model);
+        }
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, model.Username),
+            new("access_token", result.Token)
+        };
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal,
+            new AuthenticationProperties
+            {
+                IsPersistent = model.RememberMe,
+                ExpiresUtc = result.ExpiresAt
+            });
+
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction(nameof(Login));
+    }
+
+    [AllowAnonymous]
     public IActionResult ForgotPassword() => View();
 }
