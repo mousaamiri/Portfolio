@@ -53,27 +53,15 @@ public static class MockDataService
         DegreeValue = "B.S. Computer Science",
         PortraitUrl = "/images/about-portrait.jpg",
         PortraitAlt = "Mousa — portrait photo",
-        Footprint = GetFootprint(),
         Endorsements = GetEndorsements()
-        // Skills + Education + Journey + Interests now come from Portfolio.API (see AboutController).
+        // Skills + Education + Journey + Interests + Footprint now come from Portfolio.API (see AboutController).
     };
 
     // Journey/timeline is served by Portfolio.API (About page). The mock journey
     // list was retired in E6.
 
-    private static List<StatCounterViewModel> GetFootprint() =>
-    [
-        new() { Icon = "folder-check", CountTarget = 48, Label = "Projects Completed", LabelKey = "about.footprint_projects" },
-        new() { Icon = "code-2", CountTarget = 120000, Suffix = "+", Label = "Lines of Code", LabelKey = "about.footprint_lines" },
-        new() { Icon = "git-commit-horizontal", CountTarget = 1500, Suffix = "+", Label = "Commits", LabelKey = "about.footprint_commits" },
-        new() { Icon = "calendar", CountTarget = 3, Suffix = "+", Label = "Years Experience", LabelKey = "about.footprint_years" },
-        new() { Icon = "layers", CountTarget = 25, Suffix = "+", Label = "Technologies Used", LabelKey = "about.footprint_techs" },
-        new() { Icon = "coffee", CountTarget = 999, Suffix = "+", Label = "Cups of Coffee", LabelKey = "about.footprint_coffee" },
-        new() { Icon = "badge-check", CountTarget = 6, Label = "Certifications", LabelKey = "about.footprint_certs",
-                HasTip = true, TipAriaLabel = "What counts as a certification",
-                TipText = "PLACEHOLDER: includes vendor cloud certs and one internal engineering certification track." },
-        new() { Icon = "upload-cloud", CountTarget = 150, Suffix = "+", Label = "Deployments", LabelKey = "about.footprint_deploys" }
-    ];
+    // Footprint stats are served by Portfolio.API (About page). The mock footprint
+    // list was retired in E8.
 
     // Interests are served by Portfolio.API (About page). The mock interest list
     // was retired in E7.

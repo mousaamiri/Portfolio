@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<IFaqService, FaqService>();
         services.AddScoped<ITimelineEntryService, TimelineEntryService>();
         services.AddScoped<IInterestService, InterestService>();
+        services.AddScoped<IStatCounterService, StatCounterService>();
 
         return services;
     }

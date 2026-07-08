@@ -104,6 +104,17 @@ public static class ApiViewModelMapper
         Label = dto.Label
     };
 
+    public static StatCounterViewModel ToViewModel(StatCounterApiDto dto) => new()
+    {
+        Icon = dto.Icon,
+        CountTarget = dto.CountTarget,
+        Suffix = dto.Suffix,
+        Label = dto.Label,
+        HasTip = !string.IsNullOrWhiteSpace(dto.TipText),
+        TipText = dto.TipText,
+        TipAriaLabel = dto.TipAriaLabel
+    };
+
     public static BlogPostViewModel ToViewModel(ArticleApiDto dto) => new()
     {
         Id = dto.Slug,

@@ -9,6 +9,7 @@ using Portfolio.Domain.Entities.Messages;
 using Portfolio.Domain.Entities.Profiles;
 using Portfolio.Domain.Entities.Projects;
 using Portfolio.Domain.Entities.Skills;
+using Portfolio.Domain.Entities.Stats;
 using Portfolio.Domain.Entities.Timeline;
 
 namespace Portfolio.Infrastructure.Data;
@@ -45,6 +46,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<Interest> Interests => Set<Interest>();
     public DbSet<InterestTranslation> InterestTranslations => Set<InterestTranslation>();
+
+    public DbSet<StatCounter> StatCounters => Set<StatCounter>();
+    public DbSet<StatCounterTranslation> StatCounterTranslations => Set<StatCounterTranslation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
