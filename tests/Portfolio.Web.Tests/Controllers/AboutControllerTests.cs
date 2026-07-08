@@ -1,0 +1,73 @@
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Portfolio.Web.Controllers;
+using Portfolio.Web.Models.ViewModels;
+using Portfolio.Web.Services.Api;
+
+namespace Portfolio.Web.Tests.Controllers;
+
+public class AboutControllerTests
+{
+    private readonly Mock<IPortfolioApiClient> _api = new();
+    private readonly AboutController _sut;
+
+    public AboutControllerTests()
+    {
+        _api.Setup(a => a.GetSkillsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new SkillApiDto { Name = "C#", Category = "Backend", Proficiency = 85, IconUrl = "csharp.svg" }]);
+        _api.Setup(a => a.GetEducationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new EducationApiDto { InstitutionName = "State University", Degree = "BSc", FieldOfStudy = "CS", Gpa = 18.2 }]);
+
+        _sut = new AboutController(_api.Object);
+    }
+
+    private async Task<AboutViewModel> InvokeAsync()
+    {
+        var result = await _sut.Index(null, CancellationToken.None) as ViewResult;
+        return (AboutViewModel)result!.Model!;
+    }
+
+    [Fact]
+    public async Task Index_ReturnsViewWithAboutViewModel()
+    {
+        var result = await _sut.Index(null, CancellationToken.None);
+
+        result.Should().BeOfType<ViewResult>();
+        (await InvokeAsync()).Should().BeOfType<AboutViewModel>();
+    }
+
+    [Fact]
+    public async Task Index_SkillsComeFromApi()
+    {
+        var model = await InvokeAsync();
+
+        model.Skills.Should().ContainSingle();
+        model.Skills[0].Name.Should().Be("C#");
+        model.Skills[0].IconClass.Should().Be("csharp.svg");
+        _api.Verify(a => a.GetSkillsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Index_EducationComesFromApi()
+    {
+        var model = await InvokeAsync();
+
+        model.Education.Should().ContainSingle();
+        model.Education[0].InstitutionName.Should().Be("State University");
+        _api.Verify(a => a.GetEducationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Index_MockedSectionsStillPopulated()
+    {
+        var model = await InvokeAsync();
+
+        // Journey / Footprint / Interests / Endorsements have no backend entity
+        // yet (wired in the E-phase), so they remain mock-backed and non-empty.
+        model.Journey.Should().NotBeEmpty();
+        model.Footprint.Should().NotBeEmpty();
+        model.Interests.Should().NotBeEmpty();
+        model.Endorsements.Should().NotBeEmpty();
+    }
+}
