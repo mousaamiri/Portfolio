@@ -8,6 +8,7 @@ using Portfolio.Domain.Entities.Messages;
 using Portfolio.Domain.Entities.Profiles;
 using Portfolio.Domain.Entities.Projects;
 using Portfolio.Domain.Entities.Skills;
+using Portfolio.Domain.Entities.Timeline;
 
 namespace Portfolio.Infrastructure.Data;
 
@@ -37,6 +38,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<Faq> Faqs => Set<Faq>();
     public DbSet<FaqTranslation> FaqTranslations => Set<FaqTranslation>();
+
+    public DbSet<TimelineEntry> TimelineEntries => Set<TimelineEntry>();
+    public DbSet<TimelineEntryTranslation> TimelineEntryTranslations => Set<TimelineEntryTranslation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

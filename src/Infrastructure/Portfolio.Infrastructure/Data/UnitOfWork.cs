@@ -13,6 +13,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     private IMessageRepository? _messages;
     private IProfileRepository? _profiles;
     private IFaqRepository? _faqs;
+    private ITimelineEntryRepository? _timelineEntries;
 
     public IEducationRepository Educations => _educations ??= new EducationRepository(context);
     public IExperienceRepository Experiences => _experiences ??= new ExperienceRepository(context);
@@ -22,6 +23,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     public IMessageRepository Messages => _messages ??= new MessageRepository(context);
     public IProfileRepository Profiles => _profiles ??= new ProfileRepository(context);
     public IFaqRepository Faqs => _faqs ??= new FaqRepository(context);
+    public ITimelineEntryRepository TimelineEntries => _timelineEntries ??= new TimelineEntryRepository(context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
