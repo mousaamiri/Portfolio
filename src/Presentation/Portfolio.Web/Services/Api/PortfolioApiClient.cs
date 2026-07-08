@@ -37,6 +37,15 @@ public class PortfolioApiClient(HttpClient httpClient, ILogger<PortfolioApiClien
     public Task<IReadOnlyList<StatCounterApiDto>> GetStatsAsync(string lang, CancellationToken cancellationToken = default)
         => GetListAsync<StatCounterApiDto>("stats", lang, cancellationToken);
 
+    public Task<IReadOnlyList<ImpactMetricApiDto>> GetImpactMetricsAsync(string lang, CancellationToken cancellationToken = default)
+        => GetListAsync<ImpactMetricApiDto>("impact-metrics", lang, cancellationToken);
+
+    public Task<IReadOnlyList<PrincipleApiDto>> GetPrinciplesAsync(string lang, CancellationToken cancellationToken = default)
+        => GetListAsync<PrincipleApiDto>("principles", lang, cancellationToken);
+
+    public Task<IReadOnlyList<ProficiencyGroupApiDto>> GetProficienciesAsync(string lang, CancellationToken cancellationToken = default)
+        => GetListAsync<ProficiencyGroupApiDto>("proficiencies", lang, cancellationToken);
+
     public async Task<ProfileApiDto?> GetProfileAsync(string lang, CancellationToken cancellationToken = default)
     {
         try

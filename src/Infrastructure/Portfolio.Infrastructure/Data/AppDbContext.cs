@@ -4,8 +4,11 @@ using Portfolio.Domain.Entities.Articles;
 using Portfolio.Domain.Entities.Educations;
 using Portfolio.Domain.Entities.Experiences;
 using Portfolio.Domain.Entities.Faqs;
+using Portfolio.Domain.Entities.ImpactMetrics;
 using Portfolio.Domain.Entities.Interests;
 using Portfolio.Domain.Entities.Messages;
+using Portfolio.Domain.Entities.Principles;
+using Portfolio.Domain.Entities.Proficiencies;
 using Portfolio.Domain.Entities.Profiles;
 using Portfolio.Domain.Entities.Projects;
 using Portfolio.Domain.Entities.Skills;
@@ -49,6 +52,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<StatCounter> StatCounters => Set<StatCounter>();
     public DbSet<StatCounterTranslation> StatCounterTranslations => Set<StatCounterTranslation>();
+
+    public DbSet<ImpactMetric> ImpactMetrics => Set<ImpactMetric>();
+    public DbSet<ImpactMetricTranslation> ImpactMetricTranslations => Set<ImpactMetricTranslation>();
+
+    public DbSet<Principle> Principles => Set<Principle>();
+    public DbSet<PrincipleTranslation> PrincipleTranslations => Set<PrincipleTranslation>();
+
+    public DbSet<ProficiencyGroup> ProficiencyGroups => Set<ProficiencyGroup>();
+    public DbSet<ProficiencyGroupTranslation> ProficiencyGroupTranslations => Set<ProficiencyGroupTranslation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

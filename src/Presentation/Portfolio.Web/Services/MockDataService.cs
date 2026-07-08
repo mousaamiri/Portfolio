@@ -92,28 +92,9 @@ public static class MockDataService
     // name lists), so it is modeled separately rather than reusing SkillViewModel.
     public static ExperiencePageViewModel GetExperiencePageViewModel() => new()
     {
-        Metrics =
-        [
-            new() { Value = "99.9%", Color = "pink", TagKey = "exp.uptime", Tag = "SERVICE UPTIME",
-                    DescKey = "exp.uptime_desc", Desc = "Ensured high availability for mission-critical enterprise backend services." },
-            new() { Value = "~40%", Color = "amber", TagKey = "exp.latency", Tag = "API LATENCY",
-                    DescKey = "exp.latency_desc", Desc = "Optimized database access patterns and query performance across microservices." },
-            new() { Value = "85%+", Color = "green", TagKey = "exp.coverage", Tag = "CODE COVERAGE",
-                    DescKey = "exp.coverage_desc", Desc = "Maintained rigorous testing standards using JUnit and Mockito for reliability." },
-            new() { Value = "10x", Color = "amber", TagKey = "exp.scale", Tag = "SCALE CAPACITY",
-                    DescKey = "exp.scale_desc", Desc = "Architected components to handle exponential increases in concurrent processing." }
-        ],
-        Principles =
-        [
-            new() { TitleKey = "exp.principle_1_title", Title = "Scale-First Architecture",
-                    DescKey = "exp.principle_1_desc", Desc = "Designing systems that are born to grow, focusing on horizontal scalability and decoupling." },
-            new() { TitleKey = "exp.principle_2_title", Title = "Performance Obsessed",
-                    DescKey = "exp.principle_2_desc", Desc = "Every millisecond counts. Prioritizing low-latency execution and efficient resource utilization." },
-            new() { TitleKey = "exp.principle_3_title", Title = "Security by Design",
-                    DescKey = "exp.principle_3_desc", Desc = "Integration of authentication, authorization, and data protection at the core of every service." },
-            new() { TitleKey = "exp.principle_4_title", Title = "Craft & Maintainability",
-                    DescKey = "exp.principle_4_desc", Desc = "Writing self-documenting code that is as easy to read as it is to extend." }
-        ],
+        // Metrics, Principles and the Proficiency matrix now come from Portfolio.API
+        // (assigned in ExperienceController; their mock lists were retired in E9).
+        // Summary / CV education / single-role block / Stack stay mock+TODO.
         SummaryName = "Jaya Vignesh",
         SummaryText = "Backend engineer focused on designing and evolving Java-based distributed systems. " +
                       "Experienced in building scalable RESTful APIs, modernizing legacy codebases, and " +
@@ -172,15 +153,6 @@ public static class MockDataService
             "JAVA", "MYSQL", "GIT", "POSTMAN", "VS CODE", "ECLIPSE", "BASH",
             "JENKINS", "FILEZILLA", "SPRING BOOT", "MAVEN", "PUTTY", "GITLAB",
             "RED HAT ENTERPRISE LINUX"
-        ],
-        Proficiency =
-        [
-            new() { Color = "amber", TitleKey = "exp.mastery", Title = "MASTERY (CORE STACK)",
-                    Items = ["Java 21", "Spring Boot", "MySQL", "RESTful APIs", "Microservices"] },
-            new() { Color = "pink", TitleKey = "exp.ecosystem", Title = "ECOSYSTEM & TOOLS",
-                    Items = ["Git", "Docker", "Jenkins", "Maven", "Postman", "Linux", "JUnit"] },
-            new() { Color = "purple", TitleKey = "exp.explorations", Title = "CURRENT EXPLORATIONS",
-                    Items = ["System Design", "Cloud Native", "Distributed Systems", "Rust", "LLM Integration"] }
         ]
     };
 

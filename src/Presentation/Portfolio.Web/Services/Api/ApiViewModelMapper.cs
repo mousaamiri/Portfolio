@@ -115,6 +115,29 @@ public static class ApiViewModelMapper
         TipAriaLabel = dto.TipAriaLabel
     };
 
+    public static ImpactMetricViewModel ToViewModel(ImpactMetricApiDto dto) => new()
+    {
+        Value = dto.Value,
+        Color = dto.Color,
+        Tag = dto.Tag,
+        Desc = dto.Description
+    };
+
+    public static PrincipleViewModel ToViewModel(PrincipleApiDto dto) => new()
+    {
+        Title = dto.Title,
+        Desc = dto.Description
+    };
+
+    public static ProficiencyGroupViewModel ToViewModel(ProficiencyGroupApiDto dto) => new()
+    {
+        Title = dto.Title,
+        Color = dto.Color,
+        Items = string.IsNullOrWhiteSpace(dto.Items)
+            ? []
+            : dto.Items.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList()
+    };
+
     public static BlogPostViewModel ToViewModel(ArticleApiDto dto) => new()
     {
         Id = dto.Slug,

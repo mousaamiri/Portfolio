@@ -9,8 +9,10 @@ namespace Portfolio.Web.Models.ViewModels;
 /// </summary>
 public class ExperiencePageViewModel
 {
-    public List<ImpactMetricViewModel> Metrics { get; init; } = [];
-    public List<PrincipleViewModel> Principles { get; init; } = [];
+    // Impact metrics + core principles come from Portfolio.API (settable so the
+    // controller can attach them onto the otherwise mock-built aggregate).
+    public List<ImpactMetricViewModel> Metrics { get; set; } = [];
+    public List<PrincipleViewModel> Principles { get; set; } = [];
 
     // Real professional history from Portfolio.API (settable so the controller can
     // attach it onto the otherwise mock-built aggregate). When empty, the view
@@ -35,6 +37,6 @@ public class ExperiencePageViewModel
     public List<KeyedTextViewModel> JobBullets { get; init; } = []; // Text may contain inline highlight HTML
     public List<string> Stack { get; init; } = [];                  // static pills
 
-    // Proficiency matrix (name lists, not percentages)
-    public List<ProficiencyGroupViewModel> Proficiency { get; init; } = [];
+    // Proficiency matrix (name lists, not percentages) — from Portfolio.API.
+    public List<ProficiencyGroupViewModel> Proficiency { get; set; } = [];
 }

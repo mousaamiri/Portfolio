@@ -16,6 +16,9 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     private ITimelineEntryRepository? _timelineEntries;
     private IInterestRepository? _interests;
     private IStatCounterRepository? _statCounters;
+    private IImpactMetricRepository? _impactMetrics;
+    private IPrincipleRepository? _principles;
+    private IProficiencyGroupRepository? _proficiencyGroups;
 
     public IEducationRepository Educations => _educations ??= new EducationRepository(context);
     public IExperienceRepository Experiences => _experiences ??= new ExperienceRepository(context);
@@ -28,6 +31,9 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     public ITimelineEntryRepository TimelineEntries => _timelineEntries ??= new TimelineEntryRepository(context);
     public IInterestRepository Interests => _interests ??= new InterestRepository(context);
     public IStatCounterRepository StatCounters => _statCounters ??= new StatCounterRepository(context);
+    public IImpactMetricRepository ImpactMetrics => _impactMetrics ??= new ImpactMetricRepository(context);
+    public IPrincipleRepository Principles => _principles ??= new PrincipleRepository(context);
+    public IProficiencyGroupRepository ProficiencyGroups => _proficiencyGroups ??= new ProficiencyGroupRepository(context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
