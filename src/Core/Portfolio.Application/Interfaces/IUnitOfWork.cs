@@ -6,6 +6,7 @@ public interface IUnitOfWork : IDisposable
     IExperienceRepository Experiences { get; }
     IProjectRepository Projects { get; }
     ISkillRepository Skills { get; }
+    IArticleRepository Articles { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -9,11 +9,13 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     private IExperienceRepository? _experiences;
     private IProjectRepository? _projects;
     private ISkillRepository? _skills;
+    private IArticleRepository? _articles;
 
     public IEducationRepository Educations => _educations ??= new EducationRepository(context);
     public IExperienceRepository Experiences => _experiences ??= new ExperienceRepository(context);
     public IProjectRepository Projects => _projects ??= new ProjectRepository(context);
     public ISkillRepository Skills => _skills ??= new SkillRepository(context);
+    public IArticleRepository Articles => _articles ??= new ArticleRepository(context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
