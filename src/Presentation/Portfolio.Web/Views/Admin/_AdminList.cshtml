@@ -1,0 +1,85 @@
+@model Portfolio.Web.Models.Admin.AdminListViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin — " + Model.Title;
+    ViewData["AdminTitle"] = Model.Title;
+}
+
+<div class="admin-page-header">
+    <div>
+        <h1 class="admin-page-title">@Model.Title</h1>
+        <p class="admin-page-subtitle">@Model.Subtitle</p>
+    </div>
+    <a asp-controller="Admin" asp-action="@Model.CreateAction" class="admin-btn admin-btn--primary">
+        <i data-lucide="plus"></i><span>@Model.CreateLabel</span>
+    </a>
+</div>
+
+@if (TempData["AdminMessage"] is string msg)
+{
+    <div class="admin-toast admin-toast--inline" role="status">@msg</div>
+}
+
+@if (Model.Rows.Count == 0)
+{
+    <div class="admin-empty">
+        <p>Nothing here yet.</p>
+        <a asp-controller="Admin" asp-action="@Model.CreateAction" class="admin-btn admin-btn--primary admin-btn--sm">Create the first one</a>
+    </div>
+}
+else
+{
+    <table class="admin-table">
+        <thead>
+            <tr>
+                @foreach (var h in Model.Headers)
+                {
+                    <th>@h</th>
+                }
+                @if (Model.ShowStatusColumn)
+                {
+                    <th>Status</th>
+                }
+                <th style="text-align:right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.Rows)
+            {
+                <tr>
+                    @for (var i = 0; i < row.Cells.Count; i++)
+                    {
+                        <td class="@(i == 0 ? "admin-cell-strong" : "")">@row.Cells[i]</td>
+                    }
+                    @if (Model.ShowStatusColumn)
+                    {
+                        var published = row.Published ?? row.Active ?? true;
+                        var label = row.Published.HasValue ? (published ? "Published" : "Draft") : (published ? "Active" : "Inactive");
+                        <td>
+                            <span class="admin-status @(published ? "admin-status--published" : "admin-status--draft")">
+                                <span class="admin-status-dot"></span>@label
+                            </span>
+                        </td>
+                    }
+                    <td style="text-align:right;white-space:nowrap">
+                        <a asp-controller="Admin" asp-action="@Model.EditAction" asp-route-id="@row.Id" class="admin-btn admin-btn--ghost admin-btn--sm">Edit</a>
+                        <form asp-controller="Admin" asp-action="@Model.DeleteAction" asp-route-id="@row.Id" method="post" style="display:inline"
+                              onsubmit="return confirm('Delete this item? This cannot be undone.');">
+                            <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            "use strict";
+            AdminSidebar.init("@Model.SidebarKey");
+            if (window.lucide) lucide.createIcons();
+        })();
+    </script>
+}

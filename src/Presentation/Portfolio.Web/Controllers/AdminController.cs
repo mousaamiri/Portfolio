@@ -16,7 +16,7 @@ namespace Portfolio.Web.Controllers;
 // browser). Every panel action requires an authenticated cookie via [Authorize];
 // the old client-side admin/admin sessionStorage gate has been removed.
 [Authorize]
-public class AdminController(IAdminApiClient adminApi) : Controller
+public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud) : Controller
 {
     public IActionResult Index() => View();          // dashboard
 
@@ -89,7 +89,77 @@ public class AdminController(IAdminApiClient adminApi) : Controller
     public IActionResult Articles() => View();
     public IActionResult Experiences() => View();
     public IActionResult Education() => View();
-    public IActionResult Skills() => View();
+
+    // ── Skills (real CRUD) ──
+    public async Task<IActionResult> Skills(CancellationToken ct)
+    {
+        var skills = await crud.ListAsync<SkillApiDto>("skills", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Skills",
+            Subtitle = "Manage your technical skills",
+            SidebarKey = "skills",
+            CreateAction = nameof(SkillCreate),
+            EditAction = nameof(SkillEdit),
+            DeleteAction = nameof(SkillDelete),
+            CreateLabel = "New Skill",
+            Headers = ["Name", "Category", "Proficiency"],
+            ShowStatusColumn = true,
+            Rows = skills.Select(AdminSkillMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet]
+    public IActionResult SkillCreate() => View("SkillForm", new SkillFormModel());
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SkillCreate(SkillFormModel model, CancellationToken ct)
+    {
+        if (!ModelState.IsValid) return View("SkillForm", model);
+        var id = await crud.CreateAsync("skills", AdminSkillMapper.ToRequest(model), ct);
+        if (id is null)
+        {
+            ModelState.AddModelError(string.Empty, "Could not create the skill.");
+            return View("SkillForm", model);
+        }
+        TempData["AdminMessage"] = "Skill created.";
+        return RedirectToAction(nameof(Skills));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SkillEdit(Guid id, CancellationToken ct)
+    {
+        var en = await crud.GetAsync<SkillApiDto>("skills", id, "en", ct);
+        if (en is null) return NotFound();
+        var fa = await crud.GetAsync<SkillApiDto>("skills", id, "fa", ct);
+        return View("SkillForm", AdminSkillMapper.ToFormModel(en, fa));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SkillEdit(Guid id, SkillFormModel model, CancellationToken ct)
+    {
+        if (!ModelState.IsValid) return View("SkillForm", model);
+        var ok = await crud.UpdateAsync("skills", id, AdminSkillMapper.ToRequest(model), ct);
+        if (!ok)
+        {
+            ModelState.AddModelError(string.Empty, "Could not update the skill.");
+            return View("SkillForm", model);
+        }
+        TempData["AdminMessage"] = "Skill updated.";
+        return RedirectToAction(nameof(Skills));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SkillDelete(Guid id, CancellationToken ct)
+    {
+        var ok = await crud.DeleteAsync("skills", id, ct);
+        TempData["AdminMessage"] = ok ? "Skill deleted." : "Could not delete the skill.";
+        return RedirectToAction(nameof(Skills));
+    }
+
     public IActionResult Testimonials() => View();
     public IActionResult Messages() => View();
 
