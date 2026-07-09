@@ -1,0 +1,96 @@
+@model Portfolio.Web.Models.Admin.ArticleFormModel
+@{
+    Layout = "_AdminLayout";
+    var isEdit = Model.IsEdit;
+    ViewData["Title"] = isEdit ? "Admin — Edit Article" : "Admin — New Article";
+    ViewData["AdminTitle"] = isEdit ? "Edit Article" : "New Article";
+    var action = isEdit ? "ArticleEdit" : "ArticleCreate";
+}
+<div class="admin-page-header">
+    <div><h1 class="admin-page-title">@(isEdit ? "Edit Article" : "New Article")</h1>
+        <p class="admin-page-subtitle">Blog article</p></div>
+    <a asp-controller="Admin" asp-action="Articles" class="admin-btn admin-btn--ghost">Back to list</a>
+</div>
+<form asp-controller="Admin" asp-action="@action" asp-route-id="@Model.Id" method="post" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="admin-form-error"></div>
+    @if (isEdit) { <input type="hidden" asp-for="Id" /> }
+
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="Slug"></label>
+            <input class="admin-form-input" asp-for="Slug" placeholder="my-article" />
+            <span class="admin-form-error" asp-validation-for="Slug"></span>
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="Category"></label>
+            <input class="admin-form-input" asp-for="Category" placeholder="Java, Architecture…" />
+        </div>
+    </div>
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="PublishDate"></label>
+            <input class="admin-form-input" asp-for="PublishDate" type="date" />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="ReadTimeMinutes"></label>
+            <input class="admin-form-input" asp-for="ReadTimeMinutes" type="number" min="1" />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="DisplayOrder"></label>
+            <input class="admin-form-input" asp-for="DisplayOrder" type="number" />
+        </div>
+    </div>
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="Tags"></label>
+            <input class="admin-form-input" asp-for="Tags" />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="CoverImageUrl"></label>
+            <input class="admin-form-input" asp-for="CoverImageUrl" />
+        </div>
+    </div>
+
+    <h3 class="admin-form-section">English</h3>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="TitleEn"></label>
+        <input class="admin-form-input" asp-for="TitleEn" />
+        <span class="admin-form-error" asp-validation-for="TitleEn"></span>
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="ExcerptEn"></label>
+        <textarea class="admin-form-textarea" asp-for="ExcerptEn" rows="2"></textarea>
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="BodyEn"></label>
+        <textarea class="admin-form-textarea" asp-for="BodyEn" rows="8"></textarea>
+        <span class="admin-form-hint">HTML allowed (rendered in the reading modal).</span>
+    </div>
+
+    <h3 class="admin-form-section">Persian (optional)</h3>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="TitleFa"></label>
+        <input class="admin-form-input admin-form-input--rtl" asp-for="TitleFa" dir="rtl" />
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="ExcerptFa"></label>
+        <textarea class="admin-form-textarea admin-form-input--rtl" asp-for="ExcerptFa" dir="rtl" rows="2"></textarea>
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="BodyFa"></label>
+        <textarea class="admin-form-textarea admin-form-input--rtl" asp-for="BodyFa" dir="rtl" rows="8"></textarea>
+    </div>
+
+    <div class="admin-form-checks">
+        <label class="admin-check"><input type="checkbox" asp-for="IsPublished" /> <span>@Html.DisplayNameFor(m => m.IsPublished)</span></label>
+        @if (isEdit)
+        {
+            <label class="admin-check"><input type="checkbox" asp-for="IsActive" /> <span>@Html.DisplayNameFor(m => m.IsActive)</span></label>
+        }
+    </div>
+    <div class="admin-form-actions">
+        <a asp-controller="Admin" asp-action="Articles" class="admin-btn admin-btn--ghost">Cancel</a>
+        <button type="submit" class="admin-btn admin-btn--primary">@(isEdit ? "Save changes" : "Create")</button>
+    </div>
+</form>
+@section Scripts { <script>(function(){"use strict";AdminSidebar.init("articles");if(window.lucide)lucide.createIcons();})();</script> }
