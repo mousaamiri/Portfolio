@@ -4,4 +4,8 @@
     <RootNamespace>Portfolio.Web</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Riok.Mapperly" />
+  </ItemGroup>
+
 </Project>
