@@ -81,19 +81,21 @@ public class SkillService(IUnitOfWork unitOfWork) : ISkillService
         skill.IsActive = request.IsActive;
         skill.UpdatedAt = DateTime.UtcNow;
 
-        skill.Translations.Clear();
-        foreach (var t in request.Translations)
-        {
-            skill.Translations.Add(new SkillTranslation
+        skill.Translations.SyncTranslations(
+            request.Translations.Select(t => new SkillTranslation
             {
-                Id = Guid.NewGuid(),
                 SkillId = skill.Id,
                 Language = ParseLanguage(t.LanguageCode),
                 Name = t.Name,
                 Description = t.Description,
                 Category = t.Category
+            }).ToList(),
+            (existing, incoming) =>
+            {
+                existing.Name = incoming.Name;
+                existing.Description = incoming.Description;
+                existing.Category = incoming.Category;
             });
-        }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

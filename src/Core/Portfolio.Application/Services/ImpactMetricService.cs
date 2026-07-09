@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.ImpactMetrics;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.ImpactMetrics;
@@ -62,9 +63,13 @@ public class ImpactMetricService(IUnitOfWork unitOfWork) : IImpactMetricService
         item.IsActive = request.IsActive;
         item.UpdatedAt = DateTime.UtcNow;
 
-        item.Translations.Clear();
-        foreach (var t in request.Translations)
-            item.Translations.Add(BuildTranslation(item.Id, t));
+        item.Translations.SyncTranslations(
+            request.Translations.Select(t => BuildTranslation(item.Id, t)).ToList(),
+            (existing, incoming) =>
+            {
+                existing.Tag = incoming.Tag;
+                existing.Description = incoming.Description;
+            });
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result<bool>.Success(true);

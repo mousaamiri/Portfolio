@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Faqs;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.Faqs;
@@ -60,9 +61,13 @@ public class FaqService(IUnitOfWork unitOfWork) : IFaqService
         faq.IsActive = request.IsActive;
         faq.UpdatedAt = DateTime.UtcNow;
 
-        faq.Translations.Clear();
-        foreach (var t in request.Translations)
-            faq.Translations.Add(BuildTranslation(faq.Id, t));
+        faq.Translations.SyncTranslations(
+            request.Translations.Select(t => BuildTranslation(faq.Id, t)).ToList(),
+            (existing, incoming) =>
+            {
+                existing.Question = incoming.Question;
+                existing.Answer = incoming.Answer;
+            });
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result<bool>.Success(true);

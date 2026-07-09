@@ -1,4 +1,5 @@
 using Portfolio.Application.Common;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.DTOs.Stats;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
@@ -66,9 +67,14 @@ public class StatCounterService(IUnitOfWork unitOfWork) : IStatCounterService
         stat.IsActive = request.IsActive;
         stat.UpdatedAt = DateTime.UtcNow;
 
-        stat.Translations.Clear();
-        foreach (var t in request.Translations)
-            stat.Translations.Add(BuildTranslation(stat.Id, t));
+        stat.Translations.SyncTranslations(
+            request.Translations.Select(t => BuildTranslation(stat.Id, t)).ToList(),
+            (existing, incoming) =>
+            {
+                existing.Label = incoming.Label;
+                existing.TipText = incoming.TipText;
+                existing.TipAriaLabel = incoming.TipAriaLabel;
+            });
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result<bool>.Success(true);

@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Articles;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.Articles;
@@ -90,19 +91,21 @@ public class ArticleService(IUnitOfWork unitOfWork) : IArticleService
         article.IsActive = request.IsActive;
         article.UpdatedAt = DateTime.UtcNow;
 
-        article.Translations.Clear();
-        foreach (var t in request.Translations)
-        {
-            article.Translations.Add(new ArticleTranslation
+        article.Translations.SyncTranslations(
+            request.Translations.Select(t => new ArticleTranslation
             {
-                Id = Guid.NewGuid(),
                 ArticleId = article.Id,
                 Language = ParseLanguage(t.LanguageCode),
                 Title = t.Title,
                 Excerpt = t.Excerpt,
                 Body = t.Body
+            }).ToList(),
+            (existing, incoming) =>
+            {
+                existing.Title = incoming.Title;
+                existing.Excerpt = incoming.Excerpt;
+                existing.Body = incoming.Body;
             });
-        }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

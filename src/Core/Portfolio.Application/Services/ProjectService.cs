@@ -102,12 +102,9 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         project.IsActive = request.IsActive;
         project.UpdatedAt = DateTime.UtcNow;
 
-        project.Translations.Clear();
-        foreach (var t in request.Translations)
-        {
-            project.Translations.Add(new ProjectTranslation
+        project.Translations.SyncTranslations(
+            request.Translations.Select(t => new ProjectTranslation
             {
-                Id = Guid.NewGuid(),
                 ProjectId = project.Id,
                 Language = ParseLanguage(t.LanguageCode),
                 Title = t.Title,
@@ -116,8 +113,16 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
                 Technologies = t.Technologies,
                 MetaTitle = t.MetaTitle,
                 MetaDescription = t.MetaDescription
+            }).ToList(),
+            (existing, incoming) =>
+            {
+                existing.Title = incoming.Title;
+                existing.ShortDescription = incoming.ShortDescription;
+                existing.Description = incoming.Description;
+                existing.Technologies = incoming.Technologies;
+                existing.MetaTitle = incoming.MetaTitle;
+                existing.MetaDescription = incoming.MetaDescription;
             });
-        }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

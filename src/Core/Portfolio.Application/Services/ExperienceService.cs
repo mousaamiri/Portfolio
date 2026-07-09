@@ -84,20 +84,23 @@ public class ExperienceService(IUnitOfWork unitOfWork) : IExperienceService
         experience.IsActive = request.IsActive;
         experience.UpdatedAt = DateTime.UtcNow;
 
-        experience.Translations.Clear();
-        foreach (var t in request.Translations)
-        {
-            experience.Translations.Add(new ExperienceTranslation
+        experience.Translations.SyncTranslations(
+            request.Translations.Select(t => new ExperienceTranslation
             {
-                Id = Guid.NewGuid(),
                 ExperienceId = experience.Id,
                 Language = ParseLanguage(t.LanguageCode),
                 CompanyName = t.CompanyName,
                 JobTitle = t.JobTitle,
                 Description = t.Description,
                 Location = t.Location
+            }).ToList(),
+            (existing, incoming) =>
+            {
+                existing.CompanyName = incoming.CompanyName;
+                existing.JobTitle = incoming.JobTitle;
+                existing.Description = incoming.Description;
+                existing.Location = incoming.Location;
             });
-        }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
