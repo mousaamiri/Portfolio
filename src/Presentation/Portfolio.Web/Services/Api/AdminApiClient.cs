@@ -196,6 +196,8 @@ public class AdminApiClient(HttpClient httpClient, ILogger<AdminApiClient> logge
 
     // ── Profile (upsert via PUT api/admin/profile) ──
 
+    // ── Profile (upsert via PUT api/admin/profile) ──
+
     public async Task<bool> UpsertProfileAsync(UpsertProfileApiRequest request, CancellationToken cancellationToken = default)
     {
         try
@@ -206,6 +208,23 @@ public class AdminApiClient(HttpClient httpClient, ILogger<AdminApiClient> logge
         catch (Exception ex) when (IsTransport(ex))
         {
             logger.LogWarning(ex, "Admin UpsertProfile request failed.");
+            return false;
+        }
+    }
+
+    public async Task<bool> ChangePasswordAsync(string currentPassword, string newPassword, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync(
+                "api/admin/auth/change-password",
+                new { currentPassword, newPassword },
+                cancellationToken);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex) when (IsTransport(ex))
+        {
+            logger.LogWarning(ex, "Admin ChangePassword request failed.");
             return false;
         }
     }

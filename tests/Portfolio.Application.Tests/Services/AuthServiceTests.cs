@@ -63,4 +63,45 @@ public class AuthServiceTests
 
         result.Should().BeNull();
     }
+
+    [Fact]
+    public async Task ChangePasswordAsync_WithCorrectCurrentPassword_UpdatesHashAndReturnsTrue()
+    {
+        var admin = new Admin("admin", "old_hash");
+        _adminRepoMock.Setup(r => r.GetByUsernameAsync("admin", It.IsAny<CancellationToken>())).ReturnsAsync(admin);
+        _passwordHasherMock.Setup(h => h.VerifyHashedPassword(admin, "old_hash", "current"))
+            .Returns(PasswordVerificationResult.Success);
+        _passwordHasherMock.Setup(h => h.HashPassword(admin, "new-strong-pass")).Returns("new_hash");
+
+        var result = await _sut.ChangePasswordAsync("admin", new ChangePasswordRequest { CurrentPassword = "current", NewPassword = "new-strong-pass" });
+
+        result.Should().BeTrue();
+        admin.PasswordHash.Should().Be("new_hash");
+        _adminRepoMock.Verify(r => r.UpdateAsync(admin, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_WithWrongCurrentPassword_ReturnsFalseAndDoesNotUpdate()
+    {
+        var admin = new Admin("admin", "old_hash");
+        _adminRepoMock.Setup(r => r.GetByUsernameAsync("admin", It.IsAny<CancellationToken>())).ReturnsAsync(admin);
+        _passwordHasherMock.Setup(h => h.VerifyHashedPassword(admin, "old_hash", "wrong"))
+            .Returns(PasswordVerificationResult.Failed);
+
+        var result = await _sut.ChangePasswordAsync("admin", new ChangePasswordRequest { CurrentPassword = "wrong", NewPassword = "new-strong-pass" });
+
+        result.Should().BeFalse();
+        admin.PasswordHash.Should().Be("old_hash");
+        _adminRepoMock.Verify(r => r.UpdateAsync(It.IsAny<Admin>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_WithUnknownAdmin_ReturnsFalse()
+    {
+        _adminRepoMock.Setup(r => r.GetByUsernameAsync("ghost", It.IsAny<CancellationToken>())).ReturnsAsync((Admin?)null);
+
+        var result = await _sut.ChangePasswordAsync("ghost", new ChangePasswordRequest { CurrentPassword = "x", NewPassword = "new-strong-pass" });
+
+        result.Should().BeFalse();
+    }
 }

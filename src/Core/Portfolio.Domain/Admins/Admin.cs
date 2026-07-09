@@ -17,4 +17,12 @@ public class Admin
         Username = username;
         PasswordHash = passwordHash;
     }
+
+    public void ChangePassword(string newPasswordHash)
+    {
+        if (string.IsNullOrWhiteSpace(newPasswordHash))
+            throw new ArgumentException("Password hash cannot be empty.", nameof(newPasswordHash));
+
+        PasswordHash = newPasswordHash;
+    }
 }

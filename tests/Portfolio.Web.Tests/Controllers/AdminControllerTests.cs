@@ -120,6 +120,45 @@ public class AdminControllerTests
         _authService.Verify(a => a.SignOutAsync(It.IsAny<HttpContext>(), "Cookies", It.IsAny<AuthenticationProperties>()), Times.Once);
     }
 
+    // ── Change password ──
+
+    [Fact]
+    public async Task ChangePassword_Post_Valid_ChangesAndRedirectsToDashboard()
+    {
+        _adminApi.Setup(a => a.ChangePasswordAsync("old", "new-strong-pass", It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        var result = await _sut.ChangePassword(
+            new Portfolio.Web.Models.Admin.ChangePasswordFormModel { CurrentPassword = "old", NewPassword = "new-strong-pass", ConfirmPassword = "new-strong-pass" },
+            CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Index");
+        _adminApi.Verify(a => a.ChangePasswordAsync("old", "new-strong-pass", It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ChangePassword_Post_WrongCurrent_ReturnsViewWithError()
+    {
+        _adminApi.Setup(a => a.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+
+        var result = await _sut.ChangePassword(
+            new Portfolio.Web.Models.Admin.ChangePasswordFormModel { CurrentPassword = "wrong", NewPassword = "new-strong-pass", ConfirmPassword = "new-strong-pass" },
+            CancellationToken.None);
+
+        result.Should().BeOfType<ViewResult>();
+        _sut.ModelState.IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ChangePassword_Post_InvalidModel_DoesNotCallApi()
+    {
+        _sut.ModelState.AddModelError("NewPassword", "Required");
+
+        var result = await _sut.ChangePassword(new Portfolio.Web.Models.Admin.ChangePasswordFormModel(), CancellationToken.None);
+
+        result.Should().BeOfType<ViewResult>();
+        _adminApi.Verify(a => a.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     // ── Projects CRUD ──
 
     [Fact]

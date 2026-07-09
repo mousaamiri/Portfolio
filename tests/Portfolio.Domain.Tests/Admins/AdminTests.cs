@@ -35,4 +35,28 @@ public class AdminTests
 
         admin1.Id.Should().NotBe(admin2.Id);
     }
+
+    [Fact]
+    public void ChangePassword_WithValidHash_UpdatesHash()
+    {
+        var admin = new Admin("admin", "old_hash");
+
+        admin.ChangePassword("new_hash");
+
+        admin.PasswordHash.Should().Be("new_hash");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void ChangePassword_WithEmptyHash_Throws(string? hash)
+    {
+        var admin = new Admin("admin", "old_hash");
+
+        var act = () => admin.ChangePassword(hash!);
+
+        act.Should().Throw<ArgumentException>();
+        admin.PasswordHash.Should().Be("old_hash");
+    }
 }
