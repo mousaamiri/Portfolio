@@ -391,6 +391,75 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud) : 
 
     public IActionResult Messages() => View();
 
+    // ── ImpactMetric (real CRUD) ──
+    public async Task<IActionResult> Metrics(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<ImpactMetricApiDto>("impact-metrics", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Impact Metrics", Subtitle = "Experience-page metrics", SidebarKey = "metrics",
+            CreateAction = nameof(MetricCreate), EditAction = nameof(MetricEdit), DeleteAction = nameof(MetricDelete),
+            CreateLabel = "New Metric", Headers = ["Value", "Tag", "Color"], ShowStatusColumn = true,
+            Rows = items.Select(AdminImpactMetricMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult MetricCreate() => View("MetricForm", new ImpactMetricFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> MetricCreate(ImpactMetricFormModel m, CancellationToken ct)
+        => CreateEntity("impact-metrics", m, "MetricForm", nameof(Metrics), AdminImpactMetricMapper.ToRequest, "Metric", ct);
+    [HttpGet] public Task<IActionResult> MetricEdit(Guid id, CancellationToken ct)
+        => EditForm<ImpactMetricApiDto, ImpactMetricFormModel>("impact-metrics", id, "MetricForm", AdminImpactMetricMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> MetricEdit(Guid id, ImpactMetricFormModel m, CancellationToken ct)
+        => UpdateEntity("impact-metrics", id, m, "MetricForm", nameof(Metrics), AdminImpactMetricMapper.ToRequest, "Metric", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> MetricDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("impact-metrics", id, nameof(Metrics), "Metric", ct);
+
+    // ── Principle (real CRUD) ──
+    public async Task<IActionResult> Principles(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<PrincipleApiDto>("principles", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Principles", Subtitle = "Experience-page core principles", SidebarKey = "principles",
+            CreateAction = nameof(PrincipleCreate), EditAction = nameof(PrincipleEdit), DeleteAction = nameof(PrincipleDelete),
+            CreateLabel = "New Principle", Headers = ["Title", "Description"], ShowStatusColumn = true,
+            Rows = items.Select(AdminPrincipleMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult PrincipleCreate() => View("PrincipleForm", new PrincipleFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> PrincipleCreate(PrincipleFormModel m, CancellationToken ct)
+        => CreateEntity("principles", m, "PrincipleForm", nameof(Principles), AdminPrincipleMapper.ToRequest, "Principle", ct);
+    [HttpGet] public Task<IActionResult> PrincipleEdit(Guid id, CancellationToken ct)
+        => EditForm<PrincipleApiDto, PrincipleFormModel>("principles", id, "PrincipleForm", AdminPrincipleMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> PrincipleEdit(Guid id, PrincipleFormModel m, CancellationToken ct)
+        => UpdateEntity("principles", id, m, "PrincipleForm", nameof(Principles), AdminPrincipleMapper.ToRequest, "Principle", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> PrincipleDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("principles", id, nameof(Principles), "Principle", ct);
+
+    // ── ProficiencyGroup (real CRUD) ──
+    public async Task<IActionResult> Proficiencies(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<ProficiencyGroupApiDto>("proficiencies", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Proficiency Groups", Subtitle = "Experience-page proficiency matrix", SidebarKey = "proficiencies",
+            CreateAction = nameof(ProficiencyCreate), EditAction = nameof(ProficiencyEdit), DeleteAction = nameof(ProficiencyDelete),
+            CreateLabel = "New Group", Headers = ["Title", "Items", "Color"], ShowStatusColumn = true,
+            Rows = items.Select(AdminProficiencyMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult ProficiencyCreate() => View("ProficiencyForm", new ProficiencyFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> ProficiencyCreate(ProficiencyFormModel m, CancellationToken ct)
+        => CreateEntity("proficiencies", m, "ProficiencyForm", nameof(Proficiencies), AdminProficiencyMapper.ToRequest, "Proficiency group", ct);
+    [HttpGet] public Task<IActionResult> ProficiencyEdit(Guid id, CancellationToken ct)
+        => EditForm<ProficiencyGroupApiDto, ProficiencyFormModel>("proficiencies", id, "ProficiencyForm", AdminProficiencyMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> ProficiencyEdit(Guid id, ProficiencyFormModel m, CancellationToken ct)
+        => UpdateEntity("proficiencies", id, m, "ProficiencyForm", nameof(Proficiencies), AdminProficiencyMapper.ToRequest, "Proficiency group", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> ProficiencyDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("proficiencies", id, nameof(Proficiencies), "Proficiency group", ct);
+
     [AllowAnonymous]
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)

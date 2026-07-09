@@ -520,4 +520,45 @@ public class AdminControllerTests
 
         result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Testimonials");
     }
+
+    // ── Experience-page entities (ImpactMetric/Principle/ProficiencyGroup) ──
+
+    [Fact]
+    public async Task MetricCreate_Post_UsesHyphenatedResource()
+    {
+        _crud.Setup(c => c.CreateAsync("impact-metrics", It.IsAny<Portfolio.Web.Services.Api.ImpactMetricApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+
+        var result = await _sut.MetricCreate(
+            new Portfolio.Web.Models.Admin.ImpactMetricFormModel { Value = "99.9%", TagEn = "UPTIME", DescriptionEn = "d" }, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Metrics");
+        _crud.Verify(c => c.CreateAsync("impact-metrics", It.IsAny<Portfolio.Web.Services.Api.ImpactMetricApiRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Principles_ListView_MapsRows()
+    {
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.PrincipleApiDto>("principles", "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Portfolio.Web.Services.Api.PrincipleApiDto { Id = Guid.NewGuid(), Title = "Scale-First", Description = "d" }]);
+
+        var result = await _sut.Principles(CancellationToken.None) as ViewResult;
+
+        ((Portfolio.Web.Models.Admin.AdminListViewModel)result!.Model!).Rows.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task ProficiencyCreate_Post_JoinsItems()
+    {
+        _crud.Setup(c => c.CreateAsync("proficiencies", It.IsAny<Portfolio.Web.Services.Api.ProficiencyApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+
+        var result = await _sut.ProficiencyCreate(
+            new Portfolio.Web.Models.Admin.ProficiencyFormModel { TitleEn = "MASTERY", ItemsEn = "Java 21, Spring Boot" }, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Proficiencies");
+        _crud.Verify(c => c.CreateAsync("proficiencies",
+            It.Is<Portfolio.Web.Services.Api.ProficiencyApiRequest>(r => r.Translations[0].Items == "Java 21, Spring Boot"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
 }
