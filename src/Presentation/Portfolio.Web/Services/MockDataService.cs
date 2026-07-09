@@ -10,16 +10,16 @@ public static class MockDataService
         FullName = "Mousa Amiri Motlagh",
         JobTitle = "Backend Engineer",
         Bio = "I build backend systems, design APIs, and work with cloud infrastructure. " +
-              "Focused on Java, Spring Boot, and production-grade architecture. I care " +
+              "Focused on C#, .NET, ASP.NET Core, and production-grade architecture. I care " +
               "about clean design, performance, and building systems that are reliable " +
               "in real-world environments.",
 
         // Hero structured config (resume links, socials, "learning" popover).
         ResumeUrlEn = "/resumes/resume-en.pdf",
         ResumeUrlFa = "/resumes/resume-fa.pdf",
-        GitHubUrl = "https://github.com/mousaamiri/",
-        InstagramUrl = "https://instagram.com",
-        LinkedInUrl = "https://linkedin.com",
+        GitHubUrl = "https://github.com/mousaamiri",
+        InstagramUrl = "#",
+        LinkedInUrl = "#",
         LearningTitle = "Learning Langchain",
         LearningDesc = "Exploring LLM orchestration, chains, agents, and tool integration with LangChain framework.",
         LearningDate = "Jul 6, 2026"
@@ -50,7 +50,7 @@ public static class MockDataService
     {
         RoleValue = "Software Engineer",
         ExperienceValue = "3+ Years",
-        DegreeValue = "B.S. Computer Science",
+        DegreeValue = "",
         PortraitUrl = "/images/about-portrait.jpg",
         PortraitAlt = "Mousa — portrait photo"
         // Skills, Education, Journey, Interests, Footprint and Endorsements now come
