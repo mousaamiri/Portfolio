@@ -17,6 +17,9 @@ public interface IAdminApiClient
     /// <summary>Returns the authenticated admin's username (via api/admin/auth/me), or null if unauthenticated.</summary>
     Task<string?> GetCurrentAdminAsync(CancellationToken cancellationToken = default);
 
+    /// <summary>Changes the current admin's password; true on success, false if the current password is wrong.</summary>
+    Task<bool> ChangePasswordAsync(string currentPassword, string newPassword, CancellationToken cancellationToken = default);
+
     // ── Projects (admin CRUD) ──
     Task<IReadOnlyList<ProjectApiDto>> GetProjectsAsync(string lang, CancellationToken cancellationToken = default);
     Task<ProjectApiDto?> GetProjectAsync(Guid id, string lang, CancellationToken cancellationToken = default);

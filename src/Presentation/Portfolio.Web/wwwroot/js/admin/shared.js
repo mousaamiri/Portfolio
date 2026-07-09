@@ -164,6 +164,8 @@ var AdminSidebar = {
       '<span class="admin-sidebar-brand">Admin</span></div>' +
       '<nav class="admin-nav">' + navHtml + '</nav>' +
       '<div class="admin-sidebar-footer">' +
+      '<a href="/Admin/ChangePassword" class="admin-nav-link admin-nav-link--subtle">' +
+      '<i data-lucide="key-round" class="admin-nav-icon"></i><span>Change Password</span></a>' +
       '<a href="/" class="admin-nav-link admin-nav-link--subtle" target="_blank">' +
       '<i data-lucide="external-link" class="admin-nav-icon"></i><span>View Site</span></a>' +
       '<button class="admin-nav-link admin-nav-link--subtle" id="themeToggleBtn">' +

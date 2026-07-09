@@ -28,4 +28,21 @@ public class AuthController(AuthService authService) : AdminControllerBase
     {
         return Ok(ApiResponse<object>.Ok(new { Username = User.Identity?.Name }));
     }
+
+    // Requires a valid JWT (base class [Authorize]). The admin changes their own
+    // password by supplying the current one — no email/reset infrastructure needed.
+    [HttpPost("change-password")]
+    public async Task<ActionResult<ApiResponse<bool>>> ChangePassword(
+        [FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
+    {
+        var username = User.Identity?.Name;
+        if (string.IsNullOrEmpty(username))
+            return Unauthorized(ApiResponse.Fail("Not authenticated."));
+
+        var ok = await authService.ChangePasswordAsync(username, request, cancellationToken);
+        if (!ok)
+            return BadRequest(ApiResponse.Fail("Current password is incorrect."));
+
+        return Ok(ApiResponse<bool>.Ok(true));
+    }
 }

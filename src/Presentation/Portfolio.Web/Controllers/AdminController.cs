@@ -570,6 +570,30 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud, IP
         return RedirectToAction(nameof(Login));
     }
 
+    // ── Change password (authenticated admin changes their own password) ──
+    [HttpGet]
+    public IActionResult ChangePassword() => View(new ChangePasswordFormModel());
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordFormModel model, CancellationToken ct)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var ok = await adminApi.ChangePasswordAsync(model.CurrentPassword, model.NewPassword, ct);
+        if (!ok)
+        {
+            ModelState.AddModelError(string.Empty, "Current password is incorrect.");
+            return View(model);
+        }
+
+        TempData["AdminMessage"] = "Password changed.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    // Forgot-password: there is no email-based reset (single-admin app). This page
+    // explains the real recovery path (change password while signed in).
     [AllowAnonymous]
     public IActionResult ForgotPassword() => View();
 }

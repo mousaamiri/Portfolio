@@ -25,4 +25,25 @@ public class AuthService(
 
         return new LoginResponse(token, expiresAt);
     }
+
+    /// <summary>
+    /// Changes the given admin's password after verifying the current one.
+    /// Returns false if the admin is unknown or the current password is wrong.
+    /// </summary>
+    public async Task<bool> ChangePasswordAsync(string username, ChangePasswordRequest request, CancellationToken cancellationToken = default)
+    {
+        var admin = await adminRepository.GetByUsernameAsync(username, cancellationToken);
+        if (admin is null)
+            return false;
+
+        var verification = passwordHasher.VerifyHashedPassword(admin, admin.PasswordHash, request.CurrentPassword);
+        if (verification == PasswordVerificationResult.Failed)
+            return false;
+
+        var newHash = passwordHasher.HashPassword(admin, request.NewPassword);
+        admin.ChangePassword(newHash);
+        await adminRepository.UpdateAsync(admin, cancellationToken);
+
+        return true;
+    }
 }

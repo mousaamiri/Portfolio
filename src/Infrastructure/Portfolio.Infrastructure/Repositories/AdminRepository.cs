@@ -17,4 +17,10 @@ public class AdminRepository(AppDbContext context) : IAdminRepository
     {
         await context.Admins.AddAsync(admin, cancellationToken);
     }
+
+    public async Task UpdateAsync(Admin admin, CancellationToken cancellationToken = default)
+    {
+        context.Admins.Update(admin);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 }
