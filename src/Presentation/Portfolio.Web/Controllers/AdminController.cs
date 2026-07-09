@@ -18,7 +18,32 @@ namespace Portfolio.Web.Controllers;
 [Authorize]
 public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud, IPortfolioApiClient publicApi) : Controller
 {
-    public IActionResult Index() => View();          // dashboard
+    // Dashboard — counts fetched live from Portfolio.API.
+    public async Task<IActionResult> Index(CancellationToken ct)
+    {
+        var projects = crud.ListAsync<ProjectApiDto>("projects", "en", ct);
+        var articles = crud.ListAsync<ArticleApiDto>("articles", "en", ct);
+        var experiences = crud.ListAsync<ExperienceApiDto>("experiences", "en", ct);
+        var education = crud.ListAsync<EducationApiDto>("educations", "en", ct);
+        var skills = crud.ListAsync<SkillApiDto>("skills", "en", ct);
+        var testimonials = crud.ListAsync<TestimonialApiDto>("testimonials", "en", ct);
+        var messages = adminApi.GetMessagesAsync(ct);
+
+        await Task.WhenAll(projects, articles, experiences, education, skills, testimonials, messages);
+
+        var model = new AdminDashboardViewModel
+        {
+            Projects = projects.Result.Count,
+            Articles = articles.Result.Count,
+            Experiences = experiences.Result.Count,
+            Education = education.Result.Count,
+            Skills = skills.Result.Count,
+            Testimonials = testimonials.Result.Count,
+            Messages = messages.Result.Count,
+            UnreadMessages = messages.Result.Count(m => !m.IsRead)
+        };
+        return View(model);
+    }
 
     // ── Projects (real CRUD via Portfolio.API) ──
     public async Task<IActionResult> Projects(CancellationToken cancellationToken)

@@ -1,11 +1,10 @@
 @*
-    _AdminLayout.cshtml — admin panel shell (dashboard + 7 CRUD screens).
-    ADDENDUM (AI_PROJECT_RULES.md): the admin panel is a client-side app —
-    data.js holds the in-memory AdminData store, shared.js builds the sidebar +
-    generic AdminCRUD table/modal/toast. Auth is an INSECURE DEMO GATE
-    (sessionStorage["admin_auth"]="1"), ported exactly as-is; it is NOT real
-    security. All CRUD is in-memory / non-persistent (resets on reload), matching
-    the static admin. This layout renders the empty shell; the scripts populate it.
+    _AdminLayout.cshtml — admin panel shell (dashboard + CRUD screens).
+    Phase 3: the panel is now real server-side MVC. Each screen is a server-rendered
+    Razor view backed by AdminController, which proxies the authenticated api/admin/*
+    endpoints (JWT carried in the auth cookie). shared.js only builds the sidebar,
+    theme toggle and mobile nav — the in-memory AdminData store (data.js) was retired.
+    Authentication is a real cookie-based sign-in ([Authorize] on AdminController).
 *@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -53,7 +52,6 @@
        logout button submits this antiforgery-protected form. *@
     <form id="logoutForm" asp-controller="Admin" asp-action="Logout" method="post" hidden></form>
 
-    <script src="~/js/admin/data.js"></script>
     <script src="~/js/admin/shared.js"></script>
     @RenderSection("Scripts", required: false)
 </body>

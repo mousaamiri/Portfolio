@@ -120,6 +120,30 @@ public class AdminControllerTests
         _authService.Verify(a => a.SignOutAsync(It.IsAny<HttpContext>(), "Cookies", It.IsAny<AuthenticationProperties>()), Times.Once);
     }
 
+    // ── Dashboard ──
+
+    [Fact]
+    public async Task Index_BuildsDashboardCountsFromApi()
+    {
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.ProjectApiDto>("projects", "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new(), new()]);
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.ArticleApiDto>("articles", "en", It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.ExperienceApiDto>("experiences", "en", It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.EducationApiDto>("educations", "en", It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.SkillApiDto>("skills", "en", It.IsAny<CancellationToken>())).ReturnsAsync([new()]);
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.TestimonialApiDto>("testimonials", "en", It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _adminApi.Setup(a => a.GetMessagesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Portfolio.Web.Services.Api.MessageApiDto { IsRead = false }, new Portfolio.Web.Services.Api.MessageApiDto { IsRead = true }]);
+
+        var result = await _sut.Index(CancellationToken.None) as ViewResult;
+        var model = (Portfolio.Web.Models.Admin.AdminDashboardViewModel)result!.Model!;
+
+        model.Projects.Should().Be(2);
+        model.Skills.Should().Be(1);
+        model.Messages.Should().Be(2);
+        model.UnreadMessages.Should().Be(1);
+    }
+
     // ── Change password ──
 
     [Fact]
