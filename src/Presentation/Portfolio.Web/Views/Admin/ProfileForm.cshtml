@@ -1,0 +1,73 @@
+@model Portfolio.Web.Models.Admin.ProfileFormModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin — Profile";
+    ViewData["AdminTitle"] = "Profile";
+}
+<div class="admin-page-header">
+    <div><h1 class="admin-page-title">Profile</h1>
+        <p class="admin-page-subtitle">Home hero + contact identity (single record)</p></div>
+</div>
+@if (TempData["AdminMessage"] is string msg)
+{
+    <div class="admin-toast admin-toast--inline" role="status">@msg</div>
+}
+<form asp-controller="Admin" asp-action="Profile" method="post" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="admin-form-error"></div>
+
+    <h3 class="admin-form-section">Contact &amp; links</h3>
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="Email"></label>
+            <input class="admin-form-input" asp-for="Email" />
+            <span class="admin-form-error" asp-validation-for="Email"></span>
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="WebsiteUrl"></label>
+            <input class="admin-form-input" asp-for="WebsiteUrl" />
+        </div>
+    </div>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="GitHubUrl"></label><input class="admin-form-input" asp-for="GitHubUrl" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="LinkedInUrl"></label><input class="admin-form-input" asp-for="LinkedInUrl" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="InstagramUrl"></label><input class="admin-form-input" asp-for="InstagramUrl" /></div>
+    </div>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="ResumeUrlEn"></label><input class="admin-form-input" asp-for="ResumeUrlEn" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="ResumeUrlFa"></label><input class="admin-form-input" asp-for="ResumeUrlFa" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="PortraitUrl"></label><input class="admin-form-input" asp-for="PortraitUrl" /></div>
+    </div>
+    <div class="admin-form-group" style="max-width:260px">
+        <label class="admin-form-label" asp-for="LearningDate"></label>
+        <input class="admin-form-input" asp-for="LearningDate" placeholder="Jul 6, 2026" />
+    </div>
+
+    <h3 class="admin-form-section">English</h3>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="FullNameEn"></label><input class="admin-form-input" asp-for="FullNameEn" /><span class="admin-form-error" asp-validation-for="FullNameEn"></span></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="JobTitleEn"></label><input class="admin-form-input" asp-for="JobTitleEn" /><span class="admin-form-error" asp-validation-for="JobTitleEn"></span></div>
+    </div>
+    <div class="admin-form-group"><label class="admin-form-label" asp-for="TaglineEn"></label><input class="admin-form-input" asp-for="TaglineEn" /></div>
+    <div class="admin-form-group"><label class="admin-form-label" asp-for="BioEn"></label><textarea class="admin-form-textarea" asp-for="BioEn" rows="4"></textarea></div>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="LearningTitleEn"></label><input class="admin-form-input" asp-for="LearningTitleEn" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="LearningDescEn"></label><input class="admin-form-input" asp-for="LearningDescEn" /></div>
+    </div>
+
+    <h3 class="admin-form-section">Persian (optional)</h3>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="FullNameFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="FullNameFa" dir="rtl" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="JobTitleFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="JobTitleFa" dir="rtl" /></div>
+    </div>
+    <div class="admin-form-group"><label class="admin-form-label" asp-for="TaglineFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="TaglineFa" dir="rtl" /></div>
+    <div class="admin-form-group"><label class="admin-form-label" asp-for="BioFa"></label><textarea class="admin-form-textarea admin-form-input--rtl" asp-for="BioFa" dir="rtl" rows="4"></textarea></div>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="LearningTitleFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="LearningTitleFa" dir="rtl" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="LearningDescFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="LearningDescFa" dir="rtl" /></div>
+    </div>
+
+    <div class="admin-form-actions">
+        <button type="submit" class="admin-btn admin-btn--primary">Save profile</button>
+    </div>
+</form>
+@section Scripts { <script>(function(){"use strict";AdminSidebar.init("profile");if(window.lucide)lucide.createIcons();})();</script> }

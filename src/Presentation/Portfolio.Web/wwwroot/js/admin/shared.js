@@ -125,6 +125,7 @@ var AdminSidebar = {
   NAV: [
     // MVC migration: hrefs point at AdminController routes (was *.html).
     { page: "index", label: "Dashboard", icon: "layout-dashboard", href: "/Admin" },
+    { page: "profile", label: "Profile", icon: "user-circle", href: "/Admin/Profile" },
     { page: "projects", label: "Projects", icon: "folder-kanban", href: "/Admin/Projects" },
     { page: "articles", label: "Articles", icon: "file-text", href: "/Admin/Articles" },
     { page: "experiences", label: "Experiences", icon: "briefcase", href: "/Admin/Experiences" },

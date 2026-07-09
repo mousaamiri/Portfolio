@@ -1,85 +1,49 @@
+@model List<Portfolio.Web.Services.Api.MessageApiDto>
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Admin — Messages";
     ViewData["AdminTitle"] = "Messages";
 }
-
-@* Messages = admin-only inbox of (currently simulated) contact submissions.
-   Read-only-ish: no Add/Edit (canAdd:false), only View + Delete + Mark-as-read.
-   Not exposed anywhere on the public site (AI_PROJECT_RULES.md). *@
-@section Scripts {
-    <script>
-        (function () {
-            "use strict";
-            AdminSidebar.init("messages");
-            if (window.lucide) lucide.createIcons();
-
-            AdminCRUD.init({
-                entityName: "Message",
-                title: "Messages",
-                subtitle: "View contact form submissions",
-                store: AdminData.Messages,
-                canAdd: false,
-                searchKeys: ["name", "email", "subject", "message"],
-                columns: [
-                    {
-                        label: "From", key: "name",
-                        render: function (m) {
-                            var dot = m.isRead ? '' : '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:6px"></span>';
-                            return '<div>' + dot + '<span style="font-weight:' + (m.isRead ? '400' : '600') + '">' + AdminUtil.escapeHtml(m.name) + '</span>' +
-                                '<div style="font-size:12px;color:var(--text-faint)">' + AdminUtil.escapeHtml(m.email) + '</div></div>';
-                        }
-                    },
-                    {
-                        label: "Subject", key: "subject",
-                        render: function (m) {
-                            return '<span style="font-weight:' + (m.isRead ? '400' : '600') + '">' + AdminUtil.escapeHtml(m.subject) + '</span>';
-                        }
-                    },
-                    { label: "Date", key: "date" },
-                    {
-                        label: "Status", key: "isRead",
-                        render: function (m) {
-                            var cls = m.isRead ? "admin-status--draft" : "admin-status--published";
-                            var txt = m.isRead ? "Read" : "Unread";
-                            return '<span class="admin-status ' + cls + '"><span class="admin-status-dot"></span>' + txt + '</span>';
-                        }
-                    }
-                ],
-                formFields: [],
-                onView: function (msg) {
-                    var html = '';
-                    html += '<div class="admin-modal-header"><h3 class="admin-modal-title">Message Details</h3>';
-                    html += '<button class="admin-modal-close"><i data-lucide="x"></i></button></div>';
-                    html += '<div class="admin-modal-body">';
-                    html += '<div style="display:flex;flex-direction:column;gap:16px">';
-                    html += '<div><span class="admin-form-label">FROM</span><div style="margin-top:4px;font-size:14px;color:var(--text)">' + AdminUtil.escapeHtml(msg.name) + ' &lt;' + AdminUtil.escapeHtml(msg.email) + '&gt;</div></div>';
-                    html += '<div><span class="admin-form-label">SUBJECT</span><div style="margin-top:4px;font-size:14px;color:var(--text);font-weight:600">' + AdminUtil.escapeHtml(msg.subject) + '</div></div>';
-                    html += '<div><span class="admin-form-label">DATE</span><div style="margin-top:4px;font-size:14px;color:var(--text-muted)">' + AdminUtil.escapeHtml(msg.date) + '</div></div>';
-                    if (msg.interest) {
-                        html += '<div><span class="admin-form-label">INTEREST</span><div style="margin-top:4px"><span class="admin-tag">' + AdminUtil.escapeHtml(msg.interest) + '</span></div></div>';
-                    }
-                    html += '<div><span class="admin-form-label">MESSAGE</span><div style="margin-top:4px;font-size:14px;color:var(--text);line-height:1.6;padding:16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm)">' + AdminUtil.escapeHtml(msg.message) + '</div></div>';
-                    html += '</div></div>';
-                    html += '<div class="admin-modal-footer">';
-                    if (!msg.isRead) {
-                        html += '<button class="admin-btn admin-btn--primary" id="markReadBtn"><i data-lucide="check"></i> Mark as Read</button>';
-                    }
-                    html += '<button class="admin-btn admin-btn--ghost" data-modal-cancel>Close</button>';
-                    html += '</div>';
-
-                    AdminModal.open(html);
-
-                    if (!msg.isRead) {
-                        document.getElementById("markReadBtn").addEventListener("click", function () {
-                            AdminData.Messages.update(msg.id, { isRead: true });
-                            AdminToast.show("Marked as read", "success");
-                            AdminModal.close();
-                            AdminCRUD.render();
-                        });
-                    }
-                }
-            });
-        })();
-    </script>
+<div class="admin-page-header">
+    <div><h1 class="admin-page-title">Messages</h1>
+        <p class="admin-page-subtitle">Contact-form submissions</p></div>
+</div>
+@if (TempData["AdminMessage"] is string msg)
+{
+    <div class="admin-toast admin-toast--inline" role="status">@msg</div>
 }
+@if (Model.Count == 0)
+{
+    <div class="admin-empty"><p>No messages yet.</p></div>
+}
+else
+{
+    <table class="admin-table">
+        <thead>
+            <tr><th>From</th><th>Subject</th><th>Received</th><th>Status</th><th style="text-align:right">Actions</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var m in Model.OrderByDescending(x => x.CreatedAt))
+            {
+                <tr style="@(m.IsRead ? "" : "font-weight:600")">
+                    <td class="admin-cell-strong">@m.Name<div class="admin-cell-sub" style="font-weight:400">@m.Email</div></td>
+                    <td>@(string.IsNullOrWhiteSpace(m.Subject) ? "—" : m.Subject)</td>
+                    <td>@m.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>
+                        <span class="admin-status @(m.IsRead ? "admin-status--draft" : "admin-status--published")">
+                            <span class="admin-status-dot"></span>@(m.IsRead ? "Read" : "Unread")
+                        </span>
+                    </td>
+                    <td style="text-align:right;white-space:nowrap">
+                        <a asp-controller="Admin" asp-action="MessageView" asp-route-id="@m.Id" class="admin-btn admin-btn--ghost admin-btn--sm">View</a>
+                        <form asp-controller="Admin" asp-action="MessageDelete" asp-route-id="@m.Id" method="post" style="display:inline"
+                              onsubmit="return confirm('Delete this message?');">
+                            <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@section Scripts { <script>(function(){"use strict";AdminSidebar.init("messages");if(window.lucide)lucide.createIcons();})();</script> }

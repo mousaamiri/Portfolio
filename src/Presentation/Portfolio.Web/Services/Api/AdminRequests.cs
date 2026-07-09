@@ -249,3 +249,29 @@ public class ProficiencyApiRequest
     public bool IsActive { get; set; } = true;
     public List<ProficiencyTranslationApiRequest> Translations { get; set; } = [];
 }
+
+// ── Profile (single upsert) ──
+public class ProfileTranslationApiRequest
+{
+    public string LanguageCode { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string JobTitle { get; set; } = string.Empty;
+    public string? Tagline { get; set; }
+    public string? Bio { get; set; }
+    public string? LearningTitle { get; set; }
+    public string? LearningDesc { get; set; }
+}
+
+public class UpsertProfileApiRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string? GitHubUrl { get; set; }
+    public string? LinkedInUrl { get; set; }
+    public string? InstagramUrl { get; set; }
+    public string? WebsiteUrl { get; set; }
+    public string? ResumeUrlEn { get; set; }
+    public string? ResumeUrlFa { get; set; }
+    public string? PortraitUrl { get; set; }
+    public string? LearningDate { get; set; }
+    public List<ProfileTranslationApiRequest> Translations { get; set; } = [];
+}

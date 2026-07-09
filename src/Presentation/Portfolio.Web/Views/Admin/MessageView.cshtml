@@ -1,0 +1,41 @@
+@model Portfolio.Web.Services.Api.MessageApiDto
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin — Message";
+    ViewData["AdminTitle"] = "Message";
+}
+<div class="admin-page-header">
+    <div><h1 class="admin-page-title">@Model.Name</h1>
+        <p class="admin-page-subtitle">@Model.Email · @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p></div>
+    <a asp-controller="Admin" asp-action="Messages" class="admin-btn admin-btn--ghost">Back to inbox</a>
+</div>
+
+<div class="admin-form" style="max-width:760px">
+    @if (!string.IsNullOrWhiteSpace(Model.Subject))
+    {
+        <div class="admin-form-group"><span class="admin-form-label">Subject</span><p>@Model.Subject</p></div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Interest))
+    {
+        <div class="admin-form-group"><span class="admin-form-label">Interest</span><p>@Model.Interest</p></div>
+    }
+    <div class="admin-form-group">
+        <span class="admin-form-label">Message</span>
+        <p style="white-space:pre-wrap;line-height:1.6">@Model.Body</p>
+    </div>
+
+    <div class="admin-form-actions">
+        <a href="mailto:@Model.Email" class="admin-btn admin-btn--ghost">Reply by email</a>
+        @if (!Model.IsRead)
+        {
+            <form asp-controller="Admin" asp-action="MessageMarkRead" asp-route-id="@Model.Id" method="post" style="display:inline">
+                <button type="submit" class="admin-btn admin-btn--primary">Mark as read</button>
+            </form>
+        }
+        <form asp-controller="Admin" asp-action="MessageDelete" asp-route-id="@Model.Id" method="post" style="display:inline"
+              onsubmit="return confirm('Delete this message?');">
+            <button type="submit" class="admin-btn admin-btn--danger">Delete</button>
+        </form>
+    </div>
+</div>
+@section Scripts { <script>(function(){"use strict";AdminSidebar.init("messages");if(window.lucide)lucide.createIcons();})();</script> }

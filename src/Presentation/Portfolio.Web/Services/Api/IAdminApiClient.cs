@@ -25,4 +25,13 @@ public interface IAdminApiClient
     Task<Guid?> CreateProjectAsync(CreateProjectApiRequest request, CancellationToken cancellationToken = default);
     Task<bool> UpdateProjectAsync(Guid id, UpdateProjectApiRequest request, CancellationToken cancellationToken = default);
     Task<bool> DeleteProjectAsync(Guid id, CancellationToken cancellationToken = default);
+
+    // ── Messages (inbox: list / view / mark-read / delete — no create) ──
+    Task<IReadOnlyList<MessageApiDto>> GetMessagesAsync(CancellationToken cancellationToken = default);
+    Task<MessageApiDto?> GetMessageAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<bool> MarkMessageReadAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<bool> DeleteMessageAsync(Guid id, CancellationToken cancellationToken = default);
+
+    // ── Profile (single-row upsert) ──
+    Task<bool> UpsertProfileAsync(UpsertProfileApiRequest request, CancellationToken cancellationToken = default);
 }
