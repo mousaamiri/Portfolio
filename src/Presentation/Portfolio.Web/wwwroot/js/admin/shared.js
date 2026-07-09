@@ -130,6 +130,10 @@ var AdminSidebar = {
     { page: "experiences", label: "Experiences", icon: "briefcase", href: "/Admin/Experiences" },
     { page: "education", label: "Education", icon: "graduation-cap", href: "/Admin/Education" },
     { page: "skills", label: "Skills", icon: "star", href: "/Admin/Skills" },
+    { page: "timeline", label: "Timeline", icon: "milestone", href: "/Admin/Timeline" },
+    { page: "interests", label: "Interests", icon: "heart", href: "/Admin/Interests" },
+    { page: "stats", label: "Stats", icon: "bar-chart-3", href: "/Admin/Stats" },
+    { page: "faqs", label: "FAQ", icon: "help-circle", href: "/Admin/Faqs" },
     { page: "testimonials", label: "Testimonials", icon: "quote", href: "/Admin/Testimonials" },
     { page: "messages", label: "Messages", icon: "mail", href: "/Admin/Messages", badge: true }
   ],

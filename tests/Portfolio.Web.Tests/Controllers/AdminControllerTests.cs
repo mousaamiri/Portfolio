@@ -408,4 +408,60 @@ public class AdminControllerTests
         result.Should().BeOfType<ViewResult>();
         _crud.Verify(c => c.CreateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
     }
+
+    // ── Experience / Education (date-based CV entities) ──
+
+    [Fact]
+    public async Task Experiences_ListView_MapsRows()
+    {
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.ExperienceApiDto>("experiences", "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Portfolio.Web.Services.Api.ExperienceApiDto { Id = Guid.NewGuid(), CompanyName = "Acme", JobTitle = "Dev", StartDate = new DateTime(2022, 1, 1) }]);
+
+        var result = await _sut.Experiences(CancellationToken.None) as ViewResult;
+
+        result!.ViewName.Should().Be("_AdminList");
+        ((Portfolio.Web.Models.Admin.AdminListViewModel)result.Model!).Rows.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task ExperienceCreate_Post_Valid_PostsTranslationAndRedirects()
+    {
+        _crud.Setup(c => c.CreateAsync("experiences", It.IsAny<Portfolio.Web.Services.Api.ExperienceApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+
+        var result = await _sut.ExperienceCreate(
+            new Portfolio.Web.Models.Admin.ExperienceFormModel { CompanyNameEn = "Acme", JobTitleEn = "Dev" }, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Experiences");
+        _crud.Verify(c => c.CreateAsync("experiences",
+            It.Is<Portfolio.Web.Services.Api.ExperienceApiRequest>(r => r.Translations[0].JobTitle == "Dev"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task EducationEdit_Get_BuildsBilingualForm()
+    {
+        var id = Guid.NewGuid();
+        _crud.Setup(c => c.GetAsync<Portfolio.Web.Services.Api.EducationApiDto>("educations", id, "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Portfolio.Web.Services.Api.EducationApiDto { Id = id, InstitutionName = "MIT", Degree = "BSc", FieldOfStudy = "CS" });
+        _crud.Setup(c => c.GetAsync<Portfolio.Web.Services.Api.EducationApiDto>("educations", id, "fa", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Portfolio.Web.Services.Api.EducationApiDto { Id = id, InstitutionName = "ام‌آی‌تی", Degree = "کارشناسی", FieldOfStudy = "کامپیوتر" });
+
+        var result = await _sut.EducationEdit(id, CancellationToken.None) as ViewResult;
+        var model = (Portfolio.Web.Models.Admin.EducationFormModel)result!.Model!;
+
+        model.DegreeEn.Should().Be("BSc");
+        model.DegreeFa.Should().Be("کارشناسی");
+    }
+
+    [Fact]
+    public async Task EducationDelete_Post_DeletesAndRedirects()
+    {
+        var id = Guid.NewGuid();
+        _crud.Setup(c => c.DeleteAsync("educations", id, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        var result = await _sut.EducationDelete(id, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Education");
+    }
 }

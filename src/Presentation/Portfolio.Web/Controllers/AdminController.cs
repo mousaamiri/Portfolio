@@ -228,8 +228,52 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud) : 
         return RedirectToAction(listAction);
     }
 
-    public IActionResult Experiences() => View();
-    public IActionResult Education() => View();
+    // ── Experience (real CRUD) ──
+    public async Task<IActionResult> Experiences(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<ExperienceApiDto>("experiences", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Experience", Subtitle = "Manage professional history", SidebarKey = "experiences",
+            CreateAction = nameof(ExperienceCreate), EditAction = nameof(ExperienceEdit), DeleteAction = nameof(ExperienceDelete),
+            CreateLabel = "New Experience", Headers = ["Job title", "Company", "Dates"], ShowStatusColumn = true,
+            Rows = items.Select(AdminExperienceMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult ExperienceCreate() => View("ExperienceForm", new ExperienceFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> ExperienceCreate(ExperienceFormModel m, CancellationToken ct)
+        => CreateEntity("experiences", m, "ExperienceForm", nameof(Experiences), AdminExperienceMapper.ToRequest, "Experience", ct);
+    [HttpGet] public Task<IActionResult> ExperienceEdit(Guid id, CancellationToken ct)
+        => EditForm<ExperienceApiDto, ExperienceFormModel>("experiences", id, "ExperienceForm", AdminExperienceMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> ExperienceEdit(Guid id, ExperienceFormModel m, CancellationToken ct)
+        => UpdateEntity("experiences", id, m, "ExperienceForm", nameof(Experiences), AdminExperienceMapper.ToRequest, "Experience", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> ExperienceDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("experiences", id, nameof(Experiences), "Experience", ct);
+
+    // ── Education (real CRUD) ──
+    public async Task<IActionResult> Education(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<EducationApiDto>("educations", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Education", Subtitle = "Manage education history", SidebarKey = "education",
+            CreateAction = nameof(EducationCreate), EditAction = nameof(EducationEdit), DeleteAction = nameof(EducationDelete),
+            CreateLabel = "New Education", Headers = ["Degree", "Institution", "Dates"], ShowStatusColumn = true,
+            Rows = items.Select(AdminEducationMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult EducationCreate() => View("EducationForm", new EducationFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> EducationCreate(EducationFormModel m, CancellationToken ct)
+        => CreateEntity("educations", m, "EducationForm", nameof(Education), AdminEducationMapper.ToRequest, "Education", ct);
+    [HttpGet] public Task<IActionResult> EducationEdit(Guid id, CancellationToken ct)
+        => EditForm<EducationApiDto, EducationFormModel>("educations", id, "EducationForm", AdminEducationMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> EducationEdit(Guid id, EducationFormModel m, CancellationToken ct)
+        => UpdateEntity("educations", id, m, "EducationForm", nameof(Education), AdminEducationMapper.ToRequest, "Education", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> EducationDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("educations", id, nameof(Education), "Education", ct);
+
 
     // ── Skills (real CRUD) ──
     public async Task<IActionResult> Skills(CancellationToken ct)
