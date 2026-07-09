@@ -316,4 +316,96 @@ public class AdminControllerTests
         result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Skills");
         _crud.Verify(c => c.DeleteAsync("skills", id, It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    // ── Simple entities (Faq/Interest/Timeline/Stat) via generic helpers ──
+
+    [Fact]
+    public async Task Faqs_ListView_MapsRows()
+    {
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.FaqApiDto>("faqs", "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Portfolio.Web.Services.Api.FaqApiDto { Id = Guid.NewGuid(), Question = "Remote?", Answer = "Yes" }]);
+
+        var result = await _sut.Faqs(CancellationToken.None) as ViewResult;
+
+        result!.ViewName.Should().Be("_AdminList");
+        ((Portfolio.Web.Models.Admin.AdminListViewModel)result.Model!).Rows.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task FaqCreate_Post_Valid_PostsBilingualAndRedirects()
+    {
+        _crud.Setup(c => c.CreateAsync("faqs", It.IsAny<Portfolio.Web.Services.Api.FaqApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+
+        var result = await _sut.FaqCreate(
+            new Portfolio.Web.Models.Admin.FaqFormModel { QuestionEn = "Q", AnswerEn = "A", QuestionFa = "س", AnswerFa = "ج" },
+            CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Faqs");
+        _crud.Verify(c => c.CreateAsync("faqs",
+            It.Is<Portfolio.Web.Services.Api.FaqApiRequest>(r => r.Translations.Count == 2),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task FaqCreate_Post_EnglishOnly_SendsSingleTranslation()
+    {
+        _crud.Setup(c => c.CreateAsync("faqs", It.IsAny<Portfolio.Web.Services.Api.FaqApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+
+        await _sut.FaqCreate(new Portfolio.Web.Models.Admin.FaqFormModel { QuestionEn = "Q", AnswerEn = "A" }, CancellationToken.None);
+
+        _crud.Verify(c => c.CreateAsync("faqs",
+            It.Is<Portfolio.Web.Services.Api.FaqApiRequest>(r => r.Translations.Count == 1),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task InterestEdit_Get_NotFound_Returns404()
+    {
+        _crud.Setup(c => c.GetAsync<Portfolio.Web.Services.Api.InterestApiDto>("interests", It.IsAny<Guid>(), "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Portfolio.Web.Services.Api.InterestApiDto?)null);
+
+        var result = await _sut.InterestEdit(Guid.NewGuid(), CancellationToken.None);
+
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Fact]
+    public async Task TimelineEdit_Get_BuildsBilingualForm()
+    {
+        var id = Guid.NewGuid();
+        _crud.Setup(c => c.GetAsync<Portfolio.Web.Services.Api.TimelineEntryApiDto>("timeline", id, "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Portfolio.Web.Services.Api.TimelineEntryApiDto { Id = id, Year = "2024", Title = "Built X" });
+        _crud.Setup(c => c.GetAsync<Portfolio.Web.Services.Api.TimelineEntryApiDto>("timeline", id, "fa", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Portfolio.Web.Services.Api.TimelineEntryApiDto { Id = id, Year = "2024", Title = "ساخت X" });
+
+        var result = await _sut.TimelineEdit(id, CancellationToken.None) as ViewResult;
+        var model = (Portfolio.Web.Models.Admin.TimelineFormModel)result!.Model!;
+
+        model.TitleEn.Should().Be("Built X");
+        model.TitleFa.Should().Be("ساخت X");
+    }
+
+    [Fact]
+    public async Task StatDelete_Post_DeletesAndRedirects()
+    {
+        var id = Guid.NewGuid();
+        _crud.Setup(c => c.DeleteAsync("stats", id, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        var result = await _sut.StatDelete(id, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Stats");
+    }
+
+    [Fact]
+    public async Task StatCreate_Post_InvalidModel_DoesNotCallApi()
+    {
+        _sut.ModelState.AddModelError("LabelEn", "Required");
+
+        var result = await _sut.StatCreate(new Portfolio.Web.Models.Admin.StatFormModel(), CancellationToken.None);
+
+        result.Should().BeOfType<ViewResult>();
+        _crud.Verify(c => c.CreateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
 }

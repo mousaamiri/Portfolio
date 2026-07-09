@@ -1,0 +1,72 @@
+@model Portfolio.Web.Models.Admin.StatFormModel
+@{
+    Layout = "_AdminLayout";
+    var isEdit = Model.IsEdit;
+    ViewData["Title"] = isEdit ? "Admin — Edit Stat" : "Admin — New Stat";
+    ViewData["AdminTitle"] = isEdit ? "Edit Stat" : "New Stat";
+    var action = isEdit ? "StatEdit" : "StatCreate";
+}
+<div class="admin-page-header">
+    <div><h1 class="admin-page-title">@(isEdit ? "Edit Stat" : "New Stat")</h1>
+        <p class="admin-page-subtitle">About-page footprint counter</p></div>
+    <a asp-controller="Admin" asp-action="Stats" class="admin-btn admin-btn--ghost">Back to list</a>
+</div>
+<form asp-controller="Admin" asp-action="@action" asp-route-id="@Model.Id" method="post" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="admin-form-error"></div>
+    @if (isEdit) { <input type="hidden" asp-for="Id" /> }
+
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="Icon"></label>
+            <input class="admin-form-input" asp-for="Icon" placeholder="calendar, folder-git-2…" />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="CountTarget"></label>
+            <input class="admin-form-input" asp-for="CountTarget" type="number" />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="Suffix"></label>
+            <input class="admin-form-input" asp-for="Suffix" placeholder="+" />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="DisplayOrder"></label>
+            <input class="admin-form-input" asp-for="DisplayOrder" type="number" />
+        </div>
+    </div>
+
+    <h3 class="admin-form-section">English</h3>
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="LabelEn"></label>
+            <input class="admin-form-input" asp-for="LabelEn" />
+            <span class="admin-form-error" asp-validation-for="LabelEn"></span>
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="TipTextEn"></label>
+            <input class="admin-form-input" asp-for="TipTextEn" />
+        </div>
+    </div>
+    <h3 class="admin-form-section">Persian (optional)</h3>
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="LabelFa"></label>
+            <input class="admin-form-input admin-form-input--rtl" asp-for="LabelFa" dir="rtl" />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-form-label" asp-for="TipTextFa"></label>
+            <input class="admin-form-input admin-form-input--rtl" asp-for="TipTextFa" dir="rtl" />
+        </div>
+    </div>
+
+    @if (isEdit)
+    {
+        <div class="admin-form-checks">
+            <label class="admin-check"><input type="checkbox" asp-for="IsActive" /> <span>@Html.DisplayNameFor(m => m.IsActive)</span></label>
+        </div>
+    }
+    <div class="admin-form-actions">
+        <a asp-controller="Admin" asp-action="Stats" class="admin-btn admin-btn--ghost">Cancel</a>
+        <button type="submit" class="admin-btn admin-btn--primary">@(isEdit ? "Save changes" : "Create")</button>
+    </div>
+</form>
+@section Scripts { <script>(function(){"use strict";AdminSidebar.init("stats");if(window.lucide)lucide.createIcons();})();</script> }
