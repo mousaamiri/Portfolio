@@ -17,6 +17,7 @@ public class AdminControllerTests
 {
     private readonly Mock<IAdminApiClient> _adminApi = new();
     private readonly Mock<IAdminCrudClient> _crud = new();
+    private readonly Mock<IPortfolioApiClient> _publicApi = new();
     private readonly Mock<IAuthenticationService> _authService = new();
     private readonly AdminController _sut;
 
@@ -34,7 +35,7 @@ public class AdminControllerTests
 
         var httpContext = new DefaultHttpContext { RequestServices = services.BuildServiceProvider() };
 
-        _sut = new AdminController(_adminApi.Object, _crud.Object)
+        _sut = new AdminController(_adminApi.Object, _crud.Object, _publicApi.Object)
         {
             ControllerContext = new ControllerContext { HttpContext = httpContext },
             TempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>()),
@@ -560,5 +561,86 @@ public class AdminControllerTests
         _crud.Verify(c => c.CreateAsync("proficiencies",
             It.Is<Portfolio.Web.Services.Api.ProficiencyApiRequest>(r => r.Translations[0].Items == "Java 21, Spring Boot"),
             It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    // ── Messages inbox ──
+
+    [Fact]
+    public async Task Messages_ListsInbox()
+    {
+        _adminApi.Setup(a => a.GetMessagesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Portfolio.Web.Services.Api.MessageApiDto { Id = Guid.NewGuid(), Name = "Jane", Email = "j@x.com", Body = "Hi", IsRead = false }]);
+
+        var result = await _sut.Messages(CancellationToken.None) as ViewResult;
+
+        result!.ViewName.Should().Be("Messages");
+        ((List<Portfolio.Web.Services.Api.MessageApiDto>)result.Model!).Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task MessageMarkRead_Post_MarksAndRedirects()
+    {
+        var id = Guid.NewGuid();
+        _adminApi.Setup(a => a.MarkMessageReadAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        var result = await _sut.MessageMarkRead(id, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Messages");
+        _adminApi.Verify(a => a.MarkMessageReadAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task MessageView_NotFound_Returns404()
+    {
+        _adminApi.Setup(a => a.GetMessageAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Portfolio.Web.Services.Api.MessageApiDto?)null);
+
+        var result = await _sut.MessageView(Guid.NewGuid(), CancellationToken.None);
+
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    // ── Profile ──
+
+    [Fact]
+    public async Task Profile_Get_BuildsBilingualFormFromPublicApi()
+    {
+        _publicApi.Setup(a => a.GetProfileAsync("en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ProfileApiDto { Email = "me@x.com", FullName = "Mousa", JobTitle = "Dev" });
+        _publicApi.Setup(a => a.GetProfileAsync("fa", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ProfileApiDto { Email = "me@x.com", FullName = "موسی", JobTitle = "برنامه‌نویس" });
+
+        var result = await _sut.Profile(CancellationToken.None) as ViewResult;
+        var model = (Portfolio.Web.Models.Admin.ProfileFormModel)result!.Model!;
+
+        model.FullNameEn.Should().Be("Mousa");
+        model.FullNameFa.Should().Be("موسی");
+        model.Email.Should().Be("me@x.com");
+    }
+
+    [Fact]
+    public async Task Profile_Post_Valid_UpsertsAndRedirects()
+    {
+        _adminApi.Setup(a => a.UpsertProfileAsync(It.IsAny<UpsertProfileApiRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        var result = await _sut.Profile(
+            new Portfolio.Web.Models.Admin.ProfileFormModel { Email = "me@x.com", FullNameEn = "Mousa", JobTitleEn = "Dev", FullNameFa = "موسی", JobTitleFa = "برنامه‌نویس" },
+            CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Profile");
+        _adminApi.Verify(a => a.UpsertProfileAsync(
+            It.Is<UpsertProfileApiRequest>(r => r.Translations.Count == 2 && r.Email == "me@x.com"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Profile_Post_Invalid_DoesNotCallApi()
+    {
+        _sut.ModelState.AddModelError("Email", "Required");
+
+        var result = await _sut.Profile(new Portfolio.Web.Models.Admin.ProfileFormModel(), CancellationToken.None);
+
+        result.Should().BeOfType<ViewResult>();
+        _adminApi.Verify(a => a.UpsertProfileAsync(It.IsAny<UpsertProfileApiRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

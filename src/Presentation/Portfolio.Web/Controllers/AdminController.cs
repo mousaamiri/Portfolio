@@ -16,7 +16,7 @@ namespace Portfolio.Web.Controllers;
 // browser). Every panel action requires an authenticated cookie via [Authorize];
 // the old client-side admin/admin sessionStorage gate has been removed.
 [Authorize]
-public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud) : Controller
+public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud, IPortfolioApiClient publicApi) : Controller
 {
     public IActionResult Index() => View();          // dashboard
 
@@ -389,7 +389,59 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud) : 
     [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> TestimonialDelete(Guid id, CancellationToken ct)
         => DeleteEntity("testimonials", id, nameof(Testimonials), "Testimonial", ct);
 
-    public IActionResult Messages() => View();
+    // ── Messages inbox (list / view / mark-read / delete) ──
+    public async Task<IActionResult> Messages(CancellationToken ct)
+    {
+        var messages = await adminApi.GetMessagesAsync(ct);
+        return View("Messages", messages.ToList());
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MessageView(Guid id, CancellationToken ct)
+    {
+        var message = await adminApi.GetMessageAsync(id, ct);
+        if (message is null) return NotFound();
+        return View("MessageView", message);
+    }
+
+    [HttpPost][ValidateAntiForgeryToken]
+    public async Task<IActionResult> MessageMarkRead(Guid id, CancellationToken ct)
+    {
+        var ok = await adminApi.MarkMessageReadAsync(id, ct);
+        TempData["AdminMessage"] = ok ? "Marked as read." : "Could not update the message.";
+        return RedirectToAction(nameof(Messages));
+    }
+
+    [HttpPost][ValidateAntiForgeryToken]
+    public async Task<IActionResult> MessageDelete(Guid id, CancellationToken ct)
+    {
+        var ok = await adminApi.DeleteMessageAsync(id, ct);
+        TempData["AdminMessage"] = ok ? "Message deleted." : "Could not delete the message.";
+        return RedirectToAction(nameof(Messages));
+    }
+
+    // ── Profile (single bilingual upsert) ──
+    [HttpGet]
+    public async Task<IActionResult> Profile(CancellationToken ct)
+    {
+        var en = await publicApi.GetProfileAsync("en", ct);
+        var fa = await publicApi.GetProfileAsync("fa", ct);
+        return View("ProfileForm", AdminProfileMapper.ToFormModel(en, fa));
+    }
+
+    [HttpPost][ValidateAntiForgeryToken]
+    public async Task<IActionResult> Profile(ProfileFormModel model, CancellationToken ct)
+    {
+        if (!ModelState.IsValid) return View("ProfileForm", model);
+        var ok = await adminApi.UpsertProfileAsync(AdminProfileMapper.ToRequest(model), ct);
+        if (!ok)
+        {
+            ModelState.AddModelError(string.Empty, "Could not save the profile.");
+            return View("ProfileForm", model);
+        }
+        TempData["AdminMessage"] = "Profile saved.";
+        return RedirectToAction(nameof(Profile));
+    }
 
     // ── ImpactMetric (real CRUD) ──
     public async Task<IActionResult> Metrics(CancellationToken ct)
