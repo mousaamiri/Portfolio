@@ -464,4 +464,60 @@ public class AdminControllerTests
 
         result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Education");
     }
+
+    // ── Article / Testimonial ──
+
+    [Fact]
+    public async Task Articles_ListView_ShowsPublishedStatus()
+    {
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.ArticleApiDto>("articles", "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Portfolio.Web.Services.Api.ArticleApiDto { Id = Guid.NewGuid(), Title = "VT", Category = "Java", IsPublished = true }]);
+
+        var result = await _sut.Articles(CancellationToken.None) as ViewResult;
+        var vm = (Portfolio.Web.Models.Admin.AdminListViewModel)result!.Model!;
+
+        vm.Rows.Should().ContainSingle();
+        vm.Rows[0].Published.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ArticleCreate_Post_Valid_PostsAndRedirects()
+    {
+        _crud.Setup(c => c.CreateAsync("articles", It.IsAny<Portfolio.Web.Services.Api.ArticleApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+
+        var result = await _sut.ArticleCreate(
+            new Portfolio.Web.Models.Admin.ArticleFormModel { Slug = "vt", TitleEn = "Virtual Threads", BodyEn = "<p>x</p>" }, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Articles");
+        _crud.Verify(c => c.CreateAsync("articles",
+            It.Is<Portfolio.Web.Services.Api.ArticleApiRequest>(r => r.Slug == "vt" && r.Translations[0].Body == "<p>x</p>"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task TestimonialCreate_Post_Valid_PostsAndRedirects()
+    {
+        _crud.Setup(c => c.CreateAsync("testimonials", It.IsAny<Portfolio.Web.Services.Api.TestimonialApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+
+        var result = await _sut.TestimonialCreate(
+            new Portfolio.Web.Models.Admin.TestimonialFormModel { NameEn = "Jane", QuoteEn = "Great", RoleEn = "PM", Initials = "JD" }, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Testimonials");
+        _crud.Verify(c => c.CreateAsync("testimonials",
+            It.Is<Portfolio.Web.Services.Api.TestimonialApiRequest>(r => r.Translations[0].Name == "Jane" && r.Initials == "JD"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task TestimonialDelete_Post_DeletesAndRedirects()
+    {
+        var id = Guid.NewGuid();
+        _crud.Setup(c => c.DeleteAsync("testimonials", id, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        var result = await _sut.TestimonialDelete(id, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Testimonials");
+    }
 }

@@ -86,8 +86,6 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud) : 
         return RedirectToAction(nameof(Projects));
     }
 
-    public IActionResult Articles() => View();
-
     // ── Faq (real CRUD) ──
     public async Task<IActionResult> Faqs(CancellationToken ct)
     {
@@ -228,6 +226,29 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud) : 
         return RedirectToAction(listAction);
     }
 
+    // ── Article (real CRUD) ──
+    public async Task<IActionResult> Articles(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<ArticleApiDto>("articles", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Articles", Subtitle = "Manage blog articles", SidebarKey = "articles",
+            CreateAction = nameof(ArticleCreate), EditAction = nameof(ArticleEdit), DeleteAction = nameof(ArticleDelete),
+            CreateLabel = "New Article", Headers = ["Title", "Category", "Published"], ShowStatusColumn = true,
+            Rows = items.Select(AdminArticleMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult ArticleCreate() => View("ArticleForm", new ArticleFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> ArticleCreate(ArticleFormModel m, CancellationToken ct)
+        => CreateEntity("articles", m, "ArticleForm", nameof(Articles), AdminArticleMapper.ToRequest, "Article", ct);
+    [HttpGet] public Task<IActionResult> ArticleEdit(Guid id, CancellationToken ct)
+        => EditForm<ArticleApiDto, ArticleFormModel>("articles", id, "ArticleForm", AdminArticleMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> ArticleEdit(Guid id, ArticleFormModel m, CancellationToken ct)
+        => UpdateEntity("articles", id, m, "ArticleForm", nameof(Articles), AdminArticleMapper.ToRequest, "Article", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> ArticleDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("articles", id, nameof(Articles), "Article", ct);
+
     // ── Experience (real CRUD) ──
     public async Task<IActionResult> Experiences(CancellationToken ct)
     {
@@ -345,7 +366,29 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud) : 
         return RedirectToAction(nameof(Skills));
     }
 
-    public IActionResult Testimonials() => View();
+    // ── Testimonial (real CRUD) ──
+    public async Task<IActionResult> Testimonials(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<TestimonialApiDto>("testimonials", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Testimonials", Subtitle = "Manage endorsements", SidebarKey = "testimonials",
+            CreateAction = nameof(TestimonialCreate), EditAction = nameof(TestimonialEdit), DeleteAction = nameof(TestimonialDelete),
+            CreateLabel = "New Testimonial", Headers = ["Name", "Role", "Quote"], ShowStatusColumn = true,
+            Rows = items.Select(AdminTestimonialMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult TestimonialCreate() => View("TestimonialForm", new TestimonialFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> TestimonialCreate(TestimonialFormModel m, CancellationToken ct)
+        => CreateEntity("testimonials", m, "TestimonialForm", nameof(Testimonials), AdminTestimonialMapper.ToRequest, "Testimonial", ct);
+    [HttpGet] public Task<IActionResult> TestimonialEdit(Guid id, CancellationToken ct)
+        => EditForm<TestimonialApiDto, TestimonialFormModel>("testimonials", id, "TestimonialForm", AdminTestimonialMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> TestimonialEdit(Guid id, TestimonialFormModel m, CancellationToken ct)
+        => UpdateEntity("testimonials", id, m, "TestimonialForm", nameof(Testimonials), AdminTestimonialMapper.ToRequest, "Testimonial", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> TestimonialDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("testimonials", id, nameof(Testimonials), "Testimonial", ct);
+
     public IActionResult Messages() => View();
 
     [AllowAnonymous]
