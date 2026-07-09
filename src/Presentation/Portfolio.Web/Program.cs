@@ -18,6 +18,9 @@ builder.Services.AddTransient<BearerTokenHandler>();
 builder.Services.AddHttpClient<IAdminApiClient, AdminApiClient>(
     client => client.BaseAddress = new Uri(apiBaseUrl))
     .AddHttpMessageHandler<BearerTokenHandler>();
+builder.Services.AddHttpClient<IAdminCrudClient, AdminCrudClient>(
+    client => client.BaseAddress = new Uri(apiBaseUrl))
+    .AddHttpMessageHandler<BearerTokenHandler>();
 
 // Cookie authentication for the admin panel (MVC proxy). The API JWT is stored
 // inside the encrypted, HttpOnly auth cookie — it never reaches the browser.
