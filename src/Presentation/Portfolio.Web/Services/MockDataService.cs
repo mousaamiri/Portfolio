@@ -80,14 +80,20 @@ public static class MockDataService
     public static ExperiencePageViewModel GetExperiencePageViewModel() => new();
 
     // ── Contact page ──
-    // Structured contact config only. The FAQ list is served by Portfolio.API
-    // (retired here in E5); contact info stays mocked pending Profile coverage.
+    // Real contact info for Mousa. Email/socials also come from the Profile entity
+    // (ContactController prefers Profile, falls back here); phone/location have no
+    // Profile field yet, so they are served from here. The FAQ list is served by
+    // Portfolio.API.
     public static ContactViewModel GetContactViewModel() => new()
     {
-        Email = "hello@jayavignesh.dev",
-        Phone = "+91 00000 00000",
-        GitHubUrl = "https://github.com/jayavignesh",
-        LinkedInUrl = "https://linkedin.com/in/jayavignesh",
-        InstagramUrl = "https://instagram.com/jayavignesh"
+        Email = "mousa.amiri.dev@gmail.com",
+        Phone = "09906720069",
+        Location = "Tehran",
+        Country = "Iran",
+        CountryCode = "IR",
+        GitHubUrl = "https://github.com/mousaamiri",
+        LinkedInUrl = "#",
+        InstagramUrl = "#",
+        WebsiteUrl = "https://mousaamiri.ir"
     };
 }

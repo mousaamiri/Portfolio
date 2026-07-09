@@ -7,9 +7,9 @@ namespace Portfolio.Web.Controllers;
 
 public class ContactController(IPortfolioApiClient api) : Controller
 {
-    // GET /Contact — contact info card (email/socials) now comes from the Profile
-    // entity and the FAQ list from Portfolio.API. Falls back to the mock contact
-    // info only when no profile is available. The form posts for real (Submit below).
+    // GET /Contact — email/socials prefer the Profile entity (fall back to the real
+    // mock config); phone/location/website come from the mock (no Profile field yet).
+    // FAQ list from Portfolio.API. The form posts for real (Submit below).
     public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
         var language = WebLanguage.Resolve(lang);
@@ -19,12 +19,15 @@ public class ContactController(IPortfolioApiClient api) : Controller
 
         var model = new ContactViewModel
         {
-            Email = profile?.Email ?? info.Email,
-            // Owner lists no phone; show nothing rather than the mock placeholder once a profile exists.
-            Phone = profile is null ? info.Phone : string.Empty,
-            GitHubUrl = profile?.GitHubUrl ?? info.GitHubUrl,
-            LinkedInUrl = profile?.LinkedInUrl ?? info.LinkedInUrl,
-            InstagramUrl = profile?.InstagramUrl ?? info.InstagramUrl,
+            Email = string.IsNullOrWhiteSpace(profile?.Email) ? info.Email : profile!.Email,
+            Phone = info.Phone,
+            Location = info.Location,
+            Country = info.Country,
+            CountryCode = info.CountryCode,
+            GitHubUrl = string.IsNullOrWhiteSpace(profile?.GitHubUrl) ? info.GitHubUrl : profile!.GitHubUrl!,
+            LinkedInUrl = string.IsNullOrWhiteSpace(profile?.LinkedInUrl) ? info.LinkedInUrl : profile!.LinkedInUrl!,
+            InstagramUrl = string.IsNullOrWhiteSpace(profile?.InstagramUrl) ? info.InstagramUrl : profile!.InstagramUrl!,
+            WebsiteUrl = string.IsNullOrWhiteSpace(profile?.WebsiteUrl) ? info.WebsiteUrl : profile!.WebsiteUrl!,
             Faqs = faqs.Select(ApiViewModelMapper.ToViewModel).ToList()
         };
 

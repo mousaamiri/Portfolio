@@ -58,7 +58,10 @@ public class ContactControllerTests
 
         model.Email.Should().Be("mousa.amiri.dev@gmail.com");
         model.GitHubUrl.Should().Be("https://github.com/mousaamiri");
-        model.Phone.Should().BeEmpty();
+        // Phone/location have no Profile field, so they always come from the real mock config.
+        model.Phone.Should().Be("09906720069");
+        model.Location.Should().Be("Tehran");
+        model.Country.Should().Be("Iran");
     }
 
     [Fact]
