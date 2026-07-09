@@ -87,6 +87,147 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud) : 
     }
 
     public IActionResult Articles() => View();
+
+    // ── Faq (real CRUD) ──
+    public async Task<IActionResult> Faqs(CancellationToken ct)
+    {
+        var faqs = await crud.ListAsync<FaqApiDto>("faqs", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "FAQ", Subtitle = "Manage contact-page questions", SidebarKey = "faqs",
+            CreateAction = nameof(FaqCreate), EditAction = nameof(FaqEdit), DeleteAction = nameof(FaqDelete),
+            CreateLabel = "New Question", Headers = ["Question", "Answer"], ShowStatusColumn = true,
+            Rows = faqs.Select(AdminFaqMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult FaqCreate() => View("FaqForm", new FaqFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> FaqCreate(FaqFormModel m, CancellationToken ct)
+        => CreateEntity("faqs", m, "FaqForm", nameof(Faqs), AdminFaqMapper.ToRequest, "FAQ", ct);
+    [HttpGet] public Task<IActionResult> FaqEdit(Guid id, CancellationToken ct)
+        => EditForm<FaqApiDto, FaqFormModel>("faqs", id, "FaqForm", AdminFaqMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> FaqEdit(Guid id, FaqFormModel m, CancellationToken ct)
+        => UpdateEntity("faqs", id, m, "FaqForm", nameof(Faqs), AdminFaqMapper.ToRequest, "FAQ", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> FaqDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("faqs", id, nameof(Faqs), "FAQ", ct);
+
+    // ── Interest (real CRUD) ──
+    public async Task<IActionResult> Interests(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<InterestApiDto>("interests", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Interests", Subtitle = "Manage About-page interests", SidebarKey = "interests",
+            CreateAction = nameof(InterestCreate), EditAction = nameof(InterestEdit), DeleteAction = nameof(InterestDelete),
+            CreateLabel = "New Interest", Headers = ["Label", "Icon"], ShowStatusColumn = true,
+            Rows = items.Select(AdminInterestMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult InterestCreate() => View("InterestForm", new InterestFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> InterestCreate(InterestFormModel m, CancellationToken ct)
+        => CreateEntity("interests", m, "InterestForm", nameof(Interests), AdminInterestMapper.ToRequest, "Interest", ct);
+    [HttpGet] public Task<IActionResult> InterestEdit(Guid id, CancellationToken ct)
+        => EditForm<InterestApiDto, InterestFormModel>("interests", id, "InterestForm", AdminInterestMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> InterestEdit(Guid id, InterestFormModel m, CancellationToken ct)
+        => UpdateEntity("interests", id, m, "InterestForm", nameof(Interests), AdminInterestMapper.ToRequest, "Interest", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> InterestDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("interests", id, nameof(Interests), "Interest", ct);
+
+    // ── TimelineEntry (real CRUD) ──
+    public async Task<IActionResult> Timeline(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<TimelineEntryApiDto>("timeline", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Timeline", Subtitle = "Manage About-page journey", SidebarKey = "timeline",
+            CreateAction = nameof(TimelineCreate), EditAction = nameof(TimelineEdit), DeleteAction = nameof(TimelineDelete),
+            CreateLabel = "New Entry", Headers = ["Year", "Title", "Icon"], ShowStatusColumn = true,
+            Rows = items.Select(AdminTimelineMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult TimelineCreate() => View("TimelineForm", new TimelineFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> TimelineCreate(TimelineFormModel m, CancellationToken ct)
+        => CreateEntity("timeline", m, "TimelineForm", nameof(Timeline), AdminTimelineMapper.ToRequest, "Timeline entry", ct);
+    [HttpGet] public Task<IActionResult> TimelineEdit(Guid id, CancellationToken ct)
+        => EditForm<TimelineEntryApiDto, TimelineFormModel>("timeline", id, "TimelineForm", AdminTimelineMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> TimelineEdit(Guid id, TimelineFormModel m, CancellationToken ct)
+        => UpdateEntity("timeline", id, m, "TimelineForm", nameof(Timeline), AdminTimelineMapper.ToRequest, "Timeline entry", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> TimelineDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("timeline", id, nameof(Timeline), "Timeline entry", ct);
+
+    // ── StatCounter (real CRUD) ──
+    public async Task<IActionResult> Stats(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<StatCounterApiDto>("stats", "en", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "Stats", Subtitle = "Manage About-page footprint counters", SidebarKey = "stats",
+            CreateAction = nameof(StatCreate), EditAction = nameof(StatEdit), DeleteAction = nameof(StatDelete),
+            CreateLabel = "New Stat", Headers = ["Label", "Target", "Icon"], ShowStatusColumn = true,
+            Rows = items.Select(AdminStatMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult StatCreate() => View("StatForm", new StatFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> StatCreate(StatFormModel m, CancellationToken ct)
+        => CreateEntity("stats", m, "StatForm", nameof(Stats), AdminStatMapper.ToRequest, "Stat", ct);
+    [HttpGet] public Task<IActionResult> StatEdit(Guid id, CancellationToken ct)
+        => EditForm<StatCounterApiDto, StatFormModel>("stats", id, "StatForm", AdminStatMapper.ToFormModel, ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> StatEdit(Guid id, StatFormModel m, CancellationToken ct)
+        => UpdateEntity("stats", id, m, "StatForm", nameof(Stats), AdminStatMapper.ToRequest, "Stat", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> StatDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("stats", id, nameof(Stats), "Stat", ct);
+
+    // ── Generic CRUD helpers (shared by the entities above) ──
+    private async Task<IActionResult> CreateEntity<TForm, TRequest>(
+        string resource, TForm model, string formView, string listAction,
+        Func<TForm, TRequest> toRequest, string label, CancellationToken ct)
+    {
+        if (!ModelState.IsValid) return View(formView, model);
+        var id = await crud.CreateAsync(resource, toRequest(model), ct);
+        if (id is null)
+        {
+            ModelState.AddModelError(string.Empty, $"Could not create the {label.ToLowerInvariant()}.");
+            return View(formView, model);
+        }
+        TempData["AdminMessage"] = $"{label} created.";
+        return RedirectToAction(listAction);
+    }
+
+    private async Task<IActionResult> UpdateEntity<TForm, TRequest>(
+        string resource, Guid id, TForm model, string formView, string listAction,
+        Func<TForm, TRequest> toRequest, string label, CancellationToken ct)
+    {
+        if (!ModelState.IsValid) return View(formView, model);
+        var ok = await crud.UpdateAsync(resource, id, toRequest(model), ct);
+        if (!ok)
+        {
+            ModelState.AddModelError(string.Empty, $"Could not update the {label.ToLowerInvariant()}.");
+            return View(formView, model);
+        }
+        TempData["AdminMessage"] = $"{label} updated.";
+        return RedirectToAction(listAction);
+    }
+
+    private async Task<IActionResult> EditForm<TDto, TForm>(
+        string resource, Guid id, string formView,
+        Func<TDto, TDto?, TForm> toForm, CancellationToken ct) where TDto : class
+    {
+        var en = await crud.GetAsync<TDto>(resource, id, "en", ct);
+        if (en is null) return NotFound();
+        var fa = await crud.GetAsync<TDto>(resource, id, "fa", ct);
+        return View(formView, toForm(en, fa));
+    }
+
+    private async Task<IActionResult> DeleteEntity(string resource, Guid id, string listAction, string label, CancellationToken ct)
+    {
+        var ok = await crud.DeleteAsync(resource, id, ct);
+        TempData["AdminMessage"] = ok ? $"{label} deleted." : $"Could not delete the {label.ToLowerInvariant()}.";
+        return RedirectToAction(listAction);
+    }
+
     public IActionResult Experiences() => View();
     public IActionResult Education() => View();
 

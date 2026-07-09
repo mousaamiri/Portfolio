@@ -1,0 +1,55 @@
+@model Portfolio.Web.Models.Admin.FaqFormModel
+@{
+    Layout = "_AdminLayout";
+    var isEdit = Model.IsEdit;
+    ViewData["Title"] = isEdit ? "Admin — Edit FAQ" : "Admin — New FAQ";
+    ViewData["AdminTitle"] = isEdit ? "Edit FAQ" : "New FAQ";
+    var action = isEdit ? "FaqEdit" : "FaqCreate";
+}
+<div class="admin-page-header">
+    <div><h1 class="admin-page-title">@(isEdit ? "Edit FAQ" : "New FAQ")</h1>
+        <p class="admin-page-subtitle">Contact-page question</p></div>
+    <a asp-controller="Admin" asp-action="Faqs" class="admin-btn admin-btn--ghost">Back to list</a>
+</div>
+<form asp-controller="Admin" asp-action="@action" asp-route-id="@Model.Id" method="post" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="admin-form-error"></div>
+    @if (isEdit) { <input type="hidden" asp-for="Id" /> }
+
+    <h3 class="admin-form-section">English</h3>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="QuestionEn"></label>
+        <input class="admin-form-input" asp-for="QuestionEn" />
+        <span class="admin-form-error" asp-validation-for="QuestionEn"></span>
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="AnswerEn"></label>
+        <textarea class="admin-form-textarea" asp-for="AnswerEn" rows="3"></textarea>
+        <span class="admin-form-error" asp-validation-for="AnswerEn"></span>
+    </div>
+
+    <h3 class="admin-form-section">Persian (optional)</h3>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="QuestionFa"></label>
+        <input class="admin-form-input admin-form-input--rtl" asp-for="QuestionFa" dir="rtl" />
+    </div>
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="AnswerFa"></label>
+        <textarea class="admin-form-textarea admin-form-input--rtl" asp-for="AnswerFa" dir="rtl" rows="3"></textarea>
+    </div>
+
+    <div class="admin-form-group" style="max-width:180px">
+        <label class="admin-form-label" asp-for="DisplayOrder"></label>
+        <input class="admin-form-input" asp-for="DisplayOrder" type="number" />
+    </div>
+    @if (isEdit)
+    {
+        <div class="admin-form-checks">
+            <label class="admin-check"><input type="checkbox" asp-for="IsActive" /> <span>@Html.DisplayNameFor(m => m.IsActive)</span></label>
+        </div>
+    }
+    <div class="admin-form-actions">
+        <a asp-controller="Admin" asp-action="Faqs" class="admin-btn admin-btn--ghost">Cancel</a>
+        <button type="submit" class="admin-btn admin-btn--primary">@(isEdit ? "Save changes" : "Create")</button>
+    </div>
+</form>
+@section Scripts { <script>(function(){"use strict";AdminSidebar.init("faqs");if(window.lucide)lucide.createIcons();})();</script> }
