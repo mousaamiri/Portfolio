@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Timeline;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.Timeline;
@@ -64,9 +65,13 @@ public class TimelineEntryService(IUnitOfWork unitOfWork) : ITimelineEntryServic
         entry.IsActive = request.IsActive;
         entry.UpdatedAt = DateTime.UtcNow;
 
-        entry.Translations.Clear();
-        foreach (var t in request.Translations)
-            entry.Translations.Add(BuildTranslation(entry.Id, t));
+        entry.Translations.SyncTranslations(
+            request.Translations.Select(t => BuildTranslation(entry.Id, t)).ToList(),
+            (existing, incoming) =>
+            {
+                existing.Title = incoming.Title;
+                existing.Description = incoming.Description;
+            });
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result<bool>.Success(true);

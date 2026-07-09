@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Interests;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.Interests;
@@ -62,9 +63,9 @@ public class InterestService(IUnitOfWork unitOfWork) : IInterestService
         interest.IsActive = request.IsActive;
         interest.UpdatedAt = DateTime.UtcNow;
 
-        interest.Translations.Clear();
-        foreach (var t in request.Translations)
-            interest.Translations.Add(BuildTranslation(interest.Id, t));
+        interest.Translations.SyncTranslations(
+            request.Translations.Select(t => BuildTranslation(interest.Id, t)).ToList(),
+            (existing, incoming) => existing.Label = incoming.Label);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result<bool>.Success(true);

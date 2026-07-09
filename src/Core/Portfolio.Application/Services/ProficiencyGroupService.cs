@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Proficiencies;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.Proficiencies;
@@ -60,9 +61,13 @@ public class ProficiencyGroupService(IUnitOfWork unitOfWork) : IProficiencyGroup
         item.IsActive = request.IsActive;
         item.UpdatedAt = DateTime.UtcNow;
 
-        item.Translations.Clear();
-        foreach (var t in request.Translations)
-            item.Translations.Add(BuildTranslation(item.Id, t));
+        item.Translations.SyncTranslations(
+            request.Translations.Select(t => BuildTranslation(item.Id, t)).ToList(),
+            (existing, incoming) =>
+            {
+                existing.Title = incoming.Title;
+                existing.Items = incoming.Items;
+            });
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result<bool>.Success(true);

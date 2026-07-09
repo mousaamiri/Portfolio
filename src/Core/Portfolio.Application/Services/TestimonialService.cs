@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Testimonials;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.Testimonials;
@@ -62,9 +63,14 @@ public class TestimonialService(IUnitOfWork unitOfWork) : ITestimonialService
         item.IsActive = request.IsActive;
         item.UpdatedAt = DateTime.UtcNow;
 
-        item.Translations.Clear();
-        foreach (var t in request.Translations)
-            item.Translations.Add(BuildTranslation(item.Id, t));
+        item.Translations.SyncTranslations(
+            request.Translations.Select(t => BuildTranslation(item.Id, t)).ToList(),
+            (existing, incoming) =>
+            {
+                existing.Quote = incoming.Quote;
+                existing.Name = incoming.Name;
+                existing.Role = incoming.Role;
+            });
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result<bool>.Success(true);

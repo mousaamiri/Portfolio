@@ -1,5 +1,6 @@
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Profiles;
+using Portfolio.Application.Extensions;
 using Portfolio.Application.Interfaces;
 using Portfolio.Application.Interfaces.Services;
 using Portfolio.Domain.Entities.Profiles;
@@ -44,12 +45,9 @@ public class ProfileService(IUnitOfWork unitOfWork) : IProfileService
         if (!isNew)
             profile.UpdatedAt = DateTime.UtcNow;
 
-        profile.Translations.Clear();
-        foreach (var t in request.Translations)
-        {
-            profile.Translations.Add(new ProfileTranslation
+        profile.Translations.SyncTranslations(
+            request.Translations.Select(t => new ProfileTranslation
             {
-                Id = Guid.NewGuid(),
                 ProfileId = profile.Id,
                 Language = ParseLanguage(t.LanguageCode),
                 FullName = t.FullName,
@@ -58,8 +56,16 @@ public class ProfileService(IUnitOfWork unitOfWork) : IProfileService
                 Bio = t.Bio,
                 LearningTitle = t.LearningTitle,
                 LearningDesc = t.LearningDesc
+            }).ToList(),
+            (existing, incoming) =>
+            {
+                existing.FullName = incoming.FullName;
+                existing.JobTitle = incoming.JobTitle;
+                existing.Tagline = incoming.Tagline;
+                existing.Bio = incoming.Bio;
+                existing.LearningTitle = incoming.LearningTitle;
+                existing.LearningDesc = incoming.LearningDesc;
             });
-        }
 
         if (isNew)
             await unitOfWork.Profiles.AddAsync(profile, cancellationToken);
