@@ -16,6 +16,7 @@ namespace Portfolio.Web.Tests.Controllers;
 public class AdminControllerTests
 {
     private readonly Mock<IAdminApiClient> _adminApi = new();
+    private readonly Mock<IAdminCrudClient> _crud = new();
     private readonly Mock<IAuthenticationService> _authService = new();
     private readonly AdminController _sut;
 
@@ -33,7 +34,7 @@ public class AdminControllerTests
 
         var httpContext = new DefaultHttpContext { RequestServices = services.BuildServiceProvider() };
 
-        _sut = new AdminController(_adminApi.Object)
+        _sut = new AdminController(_adminApi.Object, _crud.Object)
         {
             ControllerContext = new ControllerContext { HttpContext = httpContext },
             TempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>()),
@@ -233,5 +234,86 @@ public class AdminControllerTests
 
         result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Projects");
         _adminApi.Verify(a => a.DeleteProjectAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    // ── Skills CRUD (generic client) ──
+
+    [Fact]
+    public async Task Skills_ReturnsListView()
+    {
+        _crud.Setup(c => c.ListAsync<ProjectApiDto>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()));
+        _crud.Setup(c => c.ListAsync<Portfolio.Web.Services.Api.SkillApiDto>("skills", "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Portfolio.Web.Services.Api.SkillApiDto { Id = Guid.NewGuid(), Name = "C#", Category = "Backend", Proficiency = 85 }]);
+
+        var result = await _sut.Skills(CancellationToken.None) as ViewResult;
+
+        result!.ViewName.Should().Be("_AdminList");
+        var vm = (Portfolio.Web.Models.Admin.AdminListViewModel)result.Model!;
+        vm.Rows.Should().ContainSingle();
+        vm.Rows[0].Cells[0].Should().Be("C#");
+    }
+
+    [Fact]
+    public async Task SkillCreate_Post_Valid_CreatesAndRedirects()
+    {
+        _crud.Setup(c => c.CreateAsync("skills", It.IsAny<Portfolio.Web.Services.Api.SkillApiRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+
+        var result = await _sut.SkillCreate(new Portfolio.Web.Models.Admin.SkillFormModel { IconUrl = "csharp", NameEn = "C#" }, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Skills");
+        _crud.Verify(c => c.CreateAsync("skills",
+            It.Is<Portfolio.Web.Services.Api.SkillApiRequest>(r => r.Translations[0].Name == "C#"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task SkillCreate_Post_InvalidModel_DoesNotCallApi()
+    {
+        _sut.ModelState.AddModelError("NameEn", "Required");
+
+        var result = await _sut.SkillCreate(new Portfolio.Web.Models.Admin.SkillFormModel(), CancellationToken.None);
+
+        result.Should().BeOfType<ViewResult>();
+        _crud.Verify(c => c.CreateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task SkillEdit_Get_NotFound_Returns404()
+    {
+        _crud.Setup(c => c.GetAsync<Portfolio.Web.Services.Api.SkillApiDto>("skills", It.IsAny<Guid>(), "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Portfolio.Web.Services.Api.SkillApiDto?)null);
+
+        var result = await _sut.SkillEdit(Guid.NewGuid(), CancellationToken.None);
+
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Fact]
+    public async Task SkillEdit_Get_BuildsBilingualForm()
+    {
+        var id = Guid.NewGuid();
+        _crud.Setup(c => c.GetAsync<Portfolio.Web.Services.Api.SkillApiDto>("skills", id, "en", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Portfolio.Web.Services.Api.SkillApiDto { Id = id, Name = "C#", Category = "Backend" });
+        _crud.Setup(c => c.GetAsync<Portfolio.Web.Services.Api.SkillApiDto>("skills", id, "fa", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Portfolio.Web.Services.Api.SkillApiDto { Id = id, Name = "سی‌شارپ" });
+
+        var result = await _sut.SkillEdit(id, CancellationToken.None) as ViewResult;
+        var model = (Portfolio.Web.Models.Admin.SkillFormModel)result!.Model!;
+
+        model.NameEn.Should().Be("C#");
+        model.NameFa.Should().Be("سی‌شارپ");
+    }
+
+    [Fact]
+    public async Task SkillDelete_Post_DeletesAndRedirects()
+    {
+        var id = Guid.NewGuid();
+        _crud.Setup(c => c.DeleteAsync("skills", id, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        var result = await _sut.SkillDelete(id, CancellationToken.None);
+
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Skills");
+        _crud.Verify(c => c.DeleteAsync("skills", id, It.IsAny<CancellationToken>()), Times.Once);
     }
 }
