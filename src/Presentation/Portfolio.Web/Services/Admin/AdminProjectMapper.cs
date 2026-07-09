@@ -1,82 +1,56 @@
+using Riok.Mapperly.Abstractions;
 using Portfolio.Web.Models.Admin;
 using Portfolio.Web.Services.Api;
 
 namespace Portfolio.Web.Services.Admin;
 
-/// <summary>Maps between the admin Project form/list ViewModels and the API DTOs/requests.</summary>
-public static class AdminProjectMapper
+/// <summary>
+/// Project admin mapping. Mapperly source-generates the property projections
+/// (DTO→list, DTO→form EN half, form→request); the bilingual flatten/merge stay
+/// as hand-written wrappers since they are not 1:1.
+/// </summary>
+[Mapper]
+public static partial class AdminProjectMapper
 {
-    public static ProjectListItem ToListItem(ProjectApiDto dto) => new()
-    {
-        Id = dto.Id,
-        Title = dto.Title,
-        Slug = dto.Slug,
-        Technologies = dto.Technologies,
-        IsPublished = dto.IsPublished,
-        IsActive = dto.IsActive
-    };
+    public static partial ProjectListItem ToListItem(ProjectApiDto dto);
 
-    /// <summary>Builds the bilingual edit form from the EN + FA fetches of a project.</summary>
-    public static ProjectFormModel ToFormModel(ProjectApiDto en, ProjectApiDto? fa) => new()
-    {
-        Id = en.Id,
-        Slug = en.Slug,
-        ThumbnailUrl = en.ThumbnailUrl,
-        CoverImageUrl = en.CoverImageUrl,
-        PreviewUrl = en.PreviewUrl,
-        SourceCodeUrl = en.SourceCodeUrl,
-        IsSourcePrivate = en.IsSourcePrivate,
-        IsClientProject = en.IsClientProject,
-        IsFeatured = en.IsFeatured,
-        IsPublished = en.IsPublished,
-        IsActive = en.IsActive,
-        StartedAt = en.StartedAt,
-        CompletedAt = en.CompletedAt,
-        DisplayOrder = en.DisplayOrder,
-        TitleEn = en.Title,
-        ShortDescriptionEn = en.ShortDescription,
-        DescriptionEn = en.Description,
-        TechnologiesEn = en.Technologies,
-        TitleFa = fa?.Title ?? string.Empty,
-        ShortDescriptionFa = fa?.ShortDescription ?? string.Empty,
-        DescriptionFa = fa?.Description,
-        TechnologiesFa = fa?.Technologies
-    };
+    // DTO (English) → form. FA half is filled by ToFormModel below.
+    [MapProperty(nameof(ProjectApiDto.Title), nameof(ProjectFormModel.TitleEn))]
+    [MapProperty(nameof(ProjectApiDto.ShortDescription), nameof(ProjectFormModel.ShortDescriptionEn))]
+    [MapProperty(nameof(ProjectApiDto.Description), nameof(ProjectFormModel.DescriptionEn))]
+    [MapProperty(nameof(ProjectApiDto.Technologies), nameof(ProjectFormModel.TechnologiesEn))]
+    private static partial ProjectFormModel ToFormEn(ProjectApiDto en);
 
-    public static CreateProjectApiRequest ToCreateRequest(ProjectFormModel m) => new()
-    {
-        Slug = m.Slug,
-        ThumbnailUrl = m.ThumbnailUrl,
-        CoverImageUrl = m.CoverImageUrl,
-        PreviewUrl = m.PreviewUrl,
-        SourceCodeUrl = m.SourceCodeUrl,
-        IsSourcePrivate = m.IsSourcePrivate,
-        IsClientProject = m.IsClientProject,
-        IsFeatured = m.IsFeatured,
-        IsPublished = m.IsPublished,
-        StartedAt = m.StartedAt,
-        CompletedAt = m.CompletedAt,
-        DisplayOrder = m.DisplayOrder,
-        Translations = BuildTranslations(m)
-    };
+    // form → create/update request (translations set by the wrappers below).
+    [MapperIgnoreTarget(nameof(CreateProjectApiRequest.Translations))]
+    private static partial CreateProjectApiRequest ToCreateBase(ProjectFormModel m);
 
-    public static UpdateProjectApiRequest ToUpdateRequest(ProjectFormModel m) => new()
+    [MapperIgnoreTarget(nameof(UpdateProjectApiRequest.Translations))]
+    private static partial UpdateProjectApiRequest ToUpdateBase(ProjectFormModel m);
+
+    public static ProjectFormModel ToFormModel(ProjectApiDto en, ProjectApiDto? fa)
     {
-        Slug = m.Slug,
-        ThumbnailUrl = m.ThumbnailUrl,
-        CoverImageUrl = m.CoverImageUrl,
-        PreviewUrl = m.PreviewUrl,
-        SourceCodeUrl = m.SourceCodeUrl,
-        IsSourcePrivate = m.IsSourcePrivate,
-        IsClientProject = m.IsClientProject,
-        IsFeatured = m.IsFeatured,
-        IsPublished = m.IsPublished,
-        IsActive = m.IsActive,
-        StartedAt = m.StartedAt,
-        CompletedAt = m.CompletedAt,
-        DisplayOrder = m.DisplayOrder,
-        Translations = BuildTranslations(m)
-    };
+        var m = ToFormEn(en);
+        m.TitleFa = fa?.Title ?? string.Empty;
+        m.ShortDescriptionFa = fa?.ShortDescription ?? string.Empty;
+        m.DescriptionFa = fa?.Description;
+        m.TechnologiesFa = fa?.Technologies;
+        return m;
+    }
+
+    public static CreateProjectApiRequest ToCreateRequest(ProjectFormModel m)
+    {
+        var r = ToCreateBase(m);
+        r.Translations = BuildTranslations(m);
+        return r;
+    }
+
+    public static UpdateProjectApiRequest ToUpdateRequest(ProjectFormModel m)
+    {
+        var r = ToUpdateBase(m);
+        r.Translations = BuildTranslations(m);
+        return r;
+    }
 
     private static List<ProjectTranslationApiRequest> BuildTranslations(ProjectFormModel m)
     {
@@ -92,7 +66,6 @@ public static class AdminProjectMapper
             }
         };
 
-        // Only include the Persian translation if it was actually filled in.
         if (!string.IsNullOrWhiteSpace(m.TitleFa))
         {
             translations.Add(new ProjectTranslationApiRequest

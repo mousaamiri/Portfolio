@@ -1,0 +1,12 @@
+# EditorConfig — repo-wide
+
+root = true
+
+[*.cs]
+# Mapperly (Riok.Mapperly) source-generator diagnostics.
+# Our admin form ViewModels deliberately carry extra fields the single-language
+# API DTO does not (the _Fa bilingual half, filled by a hand-written helper), and
+# deliberately ignore audit columns (CreatedAt) on the DTO. Both are by design, so
+# downgrade the "unmapped member" infos rather than let them add build noise.
+dotnet_diagnostic.RMG012.severity = none
+dotnet_diagnostic.RMG020.severity = none
