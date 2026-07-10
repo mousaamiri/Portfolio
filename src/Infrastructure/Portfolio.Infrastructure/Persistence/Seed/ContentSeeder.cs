@@ -47,10 +47,20 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
 
     private async Task SeedUiTranslationsAsync(CancellationToken ct)
     {
-        if (await context.UiTranslations.AnyAsync(ct)) return;
+        // Idempotent top-up: insert only the (Key, fa) pairs that aren't already
+        // in the DB. Safe on a fresh DB (inserts all) and on an existing one
+        // (adds only newly-introduced keys), so new seed entries land on restart.
+        var existingKeys = await context.UiTranslations
+            .Where(t => t.Language == Language.Fa)
+            .Select(t => t.Key)
+            .ToListAsync(ct);
+        var existing = new HashSet<string>(existingKeys);
 
+        var added = 0;
         foreach (var (key, fa) in UiTranslationSeedData.Fa)
         {
+            if (existing.Contains(key)) continue;
+
             await context.UiTranslations.AddAsync(new UiTranslation
             {
                 Id = Guid.NewGuid(),
@@ -60,10 +70,13 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             }, ct);
+            added++;
         }
 
+        if (added == 0) return;
+
         await context.SaveChangesAsync(ct);
-        logger.LogInformation("Seeded {Count} UI translations (fa).", UiTranslationSeedData.Fa.Length);
+        logger.LogInformation("Seeded {Count} UI translations (fa).", added);
     }
 
     private async Task SeedProfileAsync(CancellationToken ct)
