@@ -134,3 +134,33 @@ public static partial class AdminStatMapper
         };
     }
 }
+
+// ── UI translation (flat key→value; not bilingual, so a plain mapper) ──
+public static class AdminUiTranslationMapper
+{
+    public static AdminListRow ToRow(UiTranslationApiDto d) => new()
+    {
+        Id = d.Id,
+        Cells = [d.Key, d.Language.ToUpperInvariant(), Trim(d.Value)],
+        Active = d.IsActive
+    };
+
+    public static UiTranslationFormModel ToFormModel(UiTranslationApiDto d) => new()
+    {
+        Id = d.Id,
+        Key = d.Key,
+        LanguageCode = string.IsNullOrWhiteSpace(d.Language) ? "fa" : d.Language.ToLowerInvariant(),
+        Value = d.Value,
+        IsActive = d.IsActive
+    };
+
+    public static UiTranslationApiRequest ToRequest(UiTranslationFormModel m) => new()
+    {
+        Key = m.Key.Trim(),
+        LanguageCode = m.LanguageCode,
+        Value = m.Value,
+        IsActive = m.IsActive
+    };
+
+    private static string Trim(string s) => s.Length <= 80 ? s : s[..77] + "…";
+}

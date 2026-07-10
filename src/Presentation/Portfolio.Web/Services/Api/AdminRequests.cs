@@ -277,3 +277,12 @@ public class UpsertProfileApiRequest
     public string? LearningDate { get; set; }
     public List<ProfileTranslationApiRequest> Translations { get; set; } = [];
 }
+
+// ── UI translation (flat key→value) ──
+public class UiTranslationApiRequest
+{
+    public string Key { get; set; } = string.Empty;
+    public string LanguageCode { get; set; } = "fa";
+    public string Value { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
+}

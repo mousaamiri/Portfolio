@@ -139,6 +139,7 @@ var AdminSidebar = {
     { page: "stats", label: "Stats", icon: "bar-chart-3", href: "/Admin/Stats" },
     { page: "faqs", label: "FAQ", icon: "help-circle", href: "/Admin/Faqs" },
     { page: "testimonials", label: "Testimonials", icon: "quote", href: "/Admin/Testimonials" },
+    { page: "uitranslations", label: "UI Text", icon: "languages", href: "/Admin/UiTranslations" },
     { page: "messages", label: "Messages", icon: "mail", href: "/Admin/Messages", badge: true }
   ],
 

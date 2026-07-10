@@ -134,6 +134,33 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud, IP
     [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> FaqDelete(Guid id, CancellationToken ct)
         => DeleteEntity("faqs", id, nameof(Faqs), "FAQ", ct);
 
+    // ── UI translations (flat key→value chrome strings) ──
+    public async Task<IActionResult> UiTranslations(CancellationToken ct)
+    {
+        var items = await crud.ListAsync<UiTranslationApiDto>("ui-translations", "fa", ct);
+        return View("_AdminList", new AdminListViewModel
+        {
+            Title = "UI Text", Subtitle = "Localized interface strings (nav, labels, buttons)", SidebarKey = "uitranslations",
+            CreateAction = nameof(UiTranslationCreate), EditAction = nameof(UiTranslationEdit), DeleteAction = nameof(UiTranslationDelete),
+            CreateLabel = "New String", Headers = ["Key", "Lang", "Value"], ShowStatusColumn = true,
+            Rows = items.Select(AdminUiTranslationMapper.ToRow).ToList()
+        });
+    }
+
+    [HttpGet] public IActionResult UiTranslationCreate() => View("UiTranslationForm", new UiTranslationFormModel());
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> UiTranslationCreate(UiTranslationFormModel m, CancellationToken ct)
+        => CreateEntity("ui-translations", m, "UiTranslationForm", nameof(UiTranslations), AdminUiTranslationMapper.ToRequest, "UI string", ct);
+    [HttpGet] public async Task<IActionResult> UiTranslationEdit(Guid id, CancellationToken ct)
+    {
+        var dto = await crud.GetAsync<UiTranslationApiDto>("ui-translations", id, "fa", ct);
+        if (dto is null) return NotFound();
+        return View("UiTranslationForm", AdminUiTranslationMapper.ToFormModel(dto));
+    }
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> UiTranslationEdit(Guid id, UiTranslationFormModel m, CancellationToken ct)
+        => UpdateEntity("ui-translations", id, m, "UiTranslationForm", nameof(UiTranslations), AdminUiTranslationMapper.ToRequest, "UI string", ct);
+    [HttpPost][ValidateAntiForgeryToken] public Task<IActionResult> UiTranslationDelete(Guid id, CancellationToken ct)
+        => DeleteEntity("ui-translations", id, nameof(UiTranslations), "UI string", ct);
+
     // ── Interest (real CRUD) ──
     public async Task<IActionResult> Interests(CancellationToken ct)
     {
