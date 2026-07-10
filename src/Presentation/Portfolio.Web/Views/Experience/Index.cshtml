@@ -29,6 +29,8 @@
 
         @* ===== SECTION 2: IMPACT METRICS + CORE PRINCIPLES ===== *@
         <div class="exp-impact-row">
+            @if (Model.Metrics.Any())
+            {
             <div class="exp-metrics-grid">
                 @foreach (var m in Model.Metrics)
                 {
@@ -39,7 +41,10 @@
                     </div>
                 }
             </div>
+            }
 
+            @if (Model.Principles.Any())
+            {
             <div class="exp-principles-card">
                 <div class="about-eyebrow-row">
                     <span class="eyebrow eyebrow--sm">@Html.T("exp.principles", "CORE PRINCIPLES")</span>
@@ -58,6 +63,7 @@
                     }
                 </ul>
             </div>
+            }
         </div>
 
         @* ===== SECTION 3: SUMMARY + EDUCATION + PROFESSIONAL EXPERIENCE ===== *@
@@ -190,6 +196,8 @@
         </div>
 
         @* ===== SECTION 4: TECHNICAL PROFICIENCY MATRIX ===== *@
+        @if (Model.Proficiency.Any())
+        {
         <div class="exp-proficiency-block">
             <div class="about-eyebrow-row">
                 <span class="eyebrow">@Html.T("exp.proficiency", "TECHNICAL PROFICIENCY MATRIX")</span>
@@ -213,6 +221,7 @@
                 }
             </div>
         </div>
+        }
 
     </div>
 

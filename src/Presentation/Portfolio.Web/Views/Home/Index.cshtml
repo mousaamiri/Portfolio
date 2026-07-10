@@ -65,6 +65,8 @@
 
         <div class="hero-status-wrapper">
             <div class="hero-availability-dot" aria-hidden="true"></div>
+            @if (!string.IsNullOrWhiteSpace(Model.LearningTitle))
+            {
             <div class="hero-popover" aria-hidden="true">
                 <div class="hero-popover-inner">
                     <div class="hero-popover-header">
@@ -77,6 +79,7 @@
                 </div>
                 <div class="hero-popover-tail" aria-hidden="true"></div>
             </div>
+            }
         </div>
 
     </div>

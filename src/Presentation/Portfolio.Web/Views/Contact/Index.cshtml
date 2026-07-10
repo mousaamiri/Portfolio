@@ -210,6 +210,8 @@
                 </form>
             </div>
 
+            @if (Model.Faqs.Any())
+            {
             <div class="contact-faq-block">
                 <div class="about-eyebrow-row">
                     <span class="eyebrow">@Html.T("contact.faqs", "FAQS")</span>
@@ -233,6 +235,7 @@
                     }
                 </div>
             </div>
+            }
 
         </div>
     </div>
