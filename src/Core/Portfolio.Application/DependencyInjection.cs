@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<IPrincipleService, PrincipleService>();
         services.AddScoped<IProficiencyGroupService, ProficiencyGroupService>();
         services.AddScoped<ITestimonialService, TestimonialService>();
+        services.AddScoped<IUiTranslationService, UiTranslationService>();
 
         return services;
     }
