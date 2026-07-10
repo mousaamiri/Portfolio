@@ -5,17 +5,21 @@
     picker, or SPA router) — only tokens/base/rtl CSS + fonts + FOUC + the
     client-side i18n runtime. Their forms are pure client-side simulations.
 *@
+@inject Portfolio.Web.Localization.LocalizationState Loc
+@{
+    var uiJson = System.Text.Json.JsonSerializer.Serialize(Loc.Map);
+}
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="@Loc.Language" dir="@Loc.Dir">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="~/images/favicon.svg" />
-    <title>@ViewData["Title"] — Portfolio</title>
+    <title>@Html.T((string)(ViewData["I18nTitle"] ?? ""), $"{ViewData["Title"]} — Portfolio")</title>
 
-    @* FOUC-prevention: theme/dir/lang before paint (byte-for-byte from source) *@
+    @* FOUC-prevention: theme before paint. Language/dir are server-rendered on <html>. *@
     <script>
-        (function(){var t;try{t=localStorage.getItem('portfolio-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var l;try{l=localStorage.getItem('portfolio-lang')}catch(e){}if(l==='fa'){document.documentElement.setAttribute('dir','rtl');document.documentElement.setAttribute('lang','fa')}})();
+        (function(){var t;try{t=localStorage.getItem('portfolio-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t)})();
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,18 +32,20 @@
     @RenderSection("Styles", required: false)
     <link rel="stylesheet" href="~/css/rtl.css" />
 </head>
-<body data-i18n-title="@(ViewData["I18nTitle"] ?? "")">
+<body>
+
+    <script>
+        window.__lang = '@Loc.Language';
+        window.__ui = @Html.Raw(uiJson);
+    </script>
 
     <main id="page-content">
         @RenderBody()
     </main>
 
-    @* Minimal scripts: client-side i18n + the page's own simulated-form script. *@
-    <script src="~/js/translations.js"></script>
+    @* Minimal scripts: server-backed i18n shim + the page's own simulated-form
+       script. Localization is server-side (window.__ui + inline defaults). *@
     <script src="~/js/i18n.js"></script>
     @RenderSection("PageScripts", required: false)
-    <script>
-        if (window.i18n) { window.i18n.translateElements(); }
-    </script>
 </body>
 </html>

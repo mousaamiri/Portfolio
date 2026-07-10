@@ -10,11 +10,9 @@
 }
 
 @* ======================================================
-   TODO: Home hero — currently from MockDataService
-   Model: HomeViewModel (FullName, JobTitle, Bio, resume/social URLs, learning popover)
-   Future: will be replaced by a real data source (out of scope for now)
-   Note: hero TEXT stays English-in-markup with data-i18n keys; translations.js
-         supplies Farsi at runtime (client-side i18n, per AI_PROJECT_RULES.md).
+   Home hero — Profile (Portfolio.API) with a mock fallback.
+   Static chrome + hero text are localized server-side via @Html.T(key, english):
+   English default renders for en; the DB UI-chrome map supplies fa.
    ====================================================== *@
 <section id="hero" class="hero-section">
     <div class="hero-spotlight" aria-hidden="true"></div>
@@ -22,34 +20,34 @@
     <div class="container hero-container">
 
         <p class="hero-overline">
-            <span class="hero-overline-text" data-typewriter data-i18n="home.cmd_hint">PRESS CMD+K FOR COMMANDS</span
+            <span class="hero-overline-text" data-typewriter>@Html.T("home.cmd_hint", "PRESS CMD+K FOR COMMANDS")</span
             ><span class="hero-cursor" aria-hidden="true">▊</span>
         </p>
 
-        <h1 class="hero-headline" data-reveal-headline data-i18n="home.name" style="visibility: hidden;">
-            @Model.FullName
+        <h1 class="hero-headline" data-reveal-headline style="visibility: hidden;">
+            @Html.T("home.name", Model.FullName)
         </h1>
 
-        <p class="hero-subheadline" data-reveal-sub data-i18n="home.role" style="visibility: hidden;">
-            &gt; @Model.JobTitle
+        <p class="hero-subheadline" data-reveal-sub style="visibility: hidden;">
+            @Html.T("home.role", $"&gt; {Model.JobTitle}")
         </p>
 
-        <p class="hero-description" data-reveal-sub data-i18n="home.description" style="visibility: hidden;">
-            @Model.Bio
+        <p class="hero-description" data-reveal-sub style="visibility: hidden;">
+            @Html.T("home.description", Model.Bio)
         </p>
 
         <div class="hero-actions" data-reveal-sub style="visibility: hidden;">
             <a id="resume-download" href="@Model.ResumeUrlEn" class="hero-btn hero-btn--primary" download="resume-en.pdf">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span data-i18n="home.download_resume">Download Resume</span>
+                <span>@Html.T("home.download_resume", "Download Resume")</span>
             </a>
             <a asp-controller="Work" asp-action="Index" class="hero-btn hero-btn--ghost">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-                <span data-i18n="home.view_projects">View Projects</span>
+                <span>@Html.T("home.view_projects", "View Projects")</span>
             </a>
             <a asp-controller="Contact" asp-action="Index" class="hero-btn hero-btn--ghost">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                <span data-i18n="home.contact">Contact</span>
+                <span>@Html.T("home.contact", "Contact")</span>
             </a>
         </div>
 
@@ -70,12 +68,12 @@
             <div class="hero-popover" aria-hidden="true">
                 <div class="hero-popover-inner">
                     <div class="hero-popover-header">
-                        <span class="hero-popover-badge" data-i18n="home.learning">LEARNING</span>
-                        <span class="hero-popover-label" data-i18n="home.latest_note">LATEST NOTE</span>
+                        <span class="hero-popover-badge">@Html.T("home.learning", "LEARNING")</span>
+                        <span class="hero-popover-label">@Html.T("home.latest_note", "LATEST NOTE")</span>
                     </div>
-                    <p class="hero-popover-title" data-i18n="home.learning_title">@Model.LearningTitle</p>
-                    <p class="hero-popover-desc" data-i18n="home.learning_desc">@Model.LearningDesc</p>
-                    <span class="hero-popover-date" data-i18n="home.learning_date">@Model.LearningDate</span>
+                    <p class="hero-popover-title">@Html.T("home.learning_title", Model.LearningTitle)</p>
+                    <p class="hero-popover-desc">@Html.T("home.learning_desc", Model.LearningDesc)</p>
+                    <span class="hero-popover-date">@Html.T("home.learning_date", Model.LearningDate)</span>
                 </div>
                 <div class="hero-popover-tail" aria-hidden="true"></div>
             </div>

@@ -22,10 +22,10 @@
 
         @* ===== SECTION 1: HEADER ===== *@
         <div class="about-eyebrow-row">
-            <span class="eyebrow" data-i18n="exp.eyebrow">EXPERIENCE</span>
+            <span class="eyebrow">@Html.T("exp.eyebrow", "EXPERIENCE")</span>
             <span class="eyebrow-rule" aria-hidden="true"></span>
         </div>
-        <h2 class="exp-heading" data-i18n="exp.heading">PROFESSIONAL ENGINEERING JOURNEY</h2>
+        <h2 class="exp-heading">@Html.T("exp.heading", "PROFESSIONAL ENGINEERING JOURNEY")</h2>
 
         @* ===== SECTION 2: IMPACT METRICS + CORE PRINCIPLES ===== *@
         <div class="exp-impact-row">
@@ -33,16 +33,16 @@
                 @foreach (var m in Model.Metrics)
                 {
                     <div class="exp-metric-card">
-                        <span class="exp-metric-tag exp-metric-tag--@m.Color" data-i18n="@m.TagKey">@m.Tag</span>
+                        <span class="exp-metric-tag exp-metric-tag--@m.Color">@m.Tag</span>
                         <span class="exp-metric-value">@m.Value</span>
-                        <p class="exp-metric-desc" data-i18n="@m.DescKey">@m.Desc</p>
+                        <p class="exp-metric-desc">@m.Desc</p>
                     </div>
                 }
             </div>
 
             <div class="exp-principles-card">
                 <div class="about-eyebrow-row">
-                    <span class="eyebrow eyebrow--sm" data-i18n="exp.principles">CORE PRINCIPLES</span>
+                    <span class="eyebrow eyebrow--sm">@Html.T("exp.principles", "CORE PRINCIPLES")</span>
                     <span class="eyebrow-rule" aria-hidden="true"></span>
                 </div>
                 <ul class="exp-principles-list">
@@ -51,8 +51,8 @@
                         <li class="exp-principle-item">
                             <span class="exp-principle-bullet" aria-hidden="true"></span>
                             <div>
-                                <span class="exp-principle-title" data-i18n="@p.TitleKey">@p.Title</span>
-                                <span class="exp-principle-desc" data-i18n="@p.DescKey">@p.Desc</span>
+                                <span class="exp-principle-title">@p.Title</span>
+                                <span class="exp-principle-desc">@p.Desc</span>
                             </div>
                         </li>
                     }
@@ -68,7 +68,7 @@
                 {
                     <div class="exp-summary-block">
                         <div class="about-eyebrow-row">
-                            <span class="eyebrow eyebrow--sm" data-i18n="exp.summary">SUMMARY</span>
+                            <span class="eyebrow eyebrow--sm">@Html.T("exp.summary", "SUMMARY")</span>
                             <span class="eyebrow-rule" aria-hidden="true"></span>
                         </div>
                         <div class="exp-summary-name">
@@ -83,7 +83,7 @@
                 {
                     <div class="exp-education-block">
                         <div class="about-eyebrow-row">
-                            <span class="eyebrow eyebrow--sm" data-i18n="exp.education">EDUCATION</span>
+                            <span class="eyebrow eyebrow--sm">@Html.T("exp.education", "EDUCATION")</span>
                             <span class="eyebrow-rule" aria-hidden="true"></span>
                         </div>
                         <div class="exp-edu-timeline">
@@ -98,16 +98,16 @@
                                         }
                                     </div>
                                     <div class="exp-edu-content">
-                                        <h4 class="exp-edu-title" data-i18n="@ed.TitleKey">@ed.Title</h4>
+                                        <h4 class="exp-edu-title">@ed.Title</h4>
                                         <span class="exp-edu-year">@ed.Years</span>
-                                        <p class="exp-edu-institution" data-i18n="@ed.InstitutionKey">@ed.Institution</p>
+                                        <p class="exp-edu-institution">@ed.Institution</p>
                                         <p class="exp-edu-score">@ed.Score</p>
                                         @if (ed.Courses.Count > 0)
                                         {
                                             <div class="exp-edu-courses">
                                                 @foreach (var c in ed.Courses)
                                                 {
-                                                    <span class="exp-edu-course-tag" data-i18n="@c.Key">@c.Text</span>
+                                                    <span class="exp-edu-course-tag">@c.Text</span>
                                                 }
                                             </div>
                                         }
@@ -122,7 +122,7 @@
 
             <div class="exp-right-col">
                 <div class="about-eyebrow-row">
-                    <span class="eyebrow eyebrow--sm" data-i18n="exp.professional">PROFESSIONAL EXPERIENCE</span>
+                    <span class="eyebrow eyebrow--sm">@Html.T("exp.professional", "PROFESSIONAL EXPERIENCE")</span>
                     <span class="eyebrow-rule" aria-hidden="true"></span>
                 </div>
 
@@ -152,11 +152,11 @@
                     <div class="exp-job-header">
                         <div class="exp-job-title-row">
                             <span class="exp-name-bullet" aria-hidden="true"></span>
-                            <h3 class="exp-job-title" data-i18n="@Model.JobTitleKey">@Model.JobTitle</h3>
+                            <h3 class="exp-job-title">@Model.JobTitle</h3>
                         </div>
-                        <span class="exp-job-date-badge" data-i18n="@Model.JobDateKey">@Model.JobDate</span>
+                        <span class="exp-job-date-badge">@Model.JobDate</span>
                     </div>
-                    <p class="exp-job-company" data-i18n="@Model.JobCompanyKey">@Model.JobCompany</p>
+                    <p class="exp-job-company">@Model.JobCompany</p>
 
                     <ol class="exp-job-list">
                         @for (var i = 0; i < Model.JobBullets.Count; i++)
@@ -164,7 +164,7 @@
                             var b = Model.JobBullets[i];
                             <li class="exp-job-item">
                                 <span class="exp-job-num" aria-hidden="true">@(i + 1)</span>
-                                <p data-i18n="@b.Key">@Html.Raw(b.Text)</p>
+                                <p>@Html.Raw(b.Text)</p>
                             </li>
                         }
                     </ol>
@@ -172,7 +172,7 @@
                     @if (Model.Stack.Count > 0)
                     {
                         <div class="exp-stack-block">
-                            <span class="eyebrow eyebrow--sm" data-i18n="exp.stack">STACK</span>
+                            <span class="eyebrow eyebrow--sm">@Html.T("exp.stack", "STACK")</span>
                             <div class="exp-stack-pills">
                                 @foreach (var pill in Model.Stack)
                                 {
@@ -184,7 +184,7 @@
                 }
                 else
                 {
-                    <p class="exp-job-empty" data-i18n="exp.no_history">Professional history will appear here soon.</p>
+                    <p class="exp-job-empty">@Html.T("exp.no_history", "Professional history will appear here soon.")</p>
                 }
             </div>
         </div>
@@ -192,7 +192,7 @@
         @* ===== SECTION 4: TECHNICAL PROFICIENCY MATRIX ===== *@
         <div class="exp-proficiency-block">
             <div class="about-eyebrow-row">
-                <span class="eyebrow" data-i18n="exp.proficiency">TECHNICAL PROFICIENCY MATRIX</span>
+                <span class="eyebrow">@Html.T("exp.proficiency", "TECHNICAL PROFICIENCY MATRIX")</span>
                 <span class="eyebrow-rule" aria-hidden="true"></span>
             </div>
             <div class="exp-proficiency-grid">
@@ -201,7 +201,7 @@
                     <div class="exp-proficiency-card">
                         <div class="exp-proficiency-header">
                             <span class="exp-proficiency-bullet exp-proficiency-bullet--@pg.Color" aria-hidden="true"></span>
-                            <h4 class="exp-proficiency-title" data-i18n="@pg.TitleKey">@pg.Title</h4>
+                            <h4 class="exp-proficiency-title">@pg.Title</h4>
                         </div>
                         <ul class="exp-proficiency-list">
                             @foreach (var item in pg.Items)

@@ -12,18 +12,24 @@
     Login / Forgot-Password use their OWN minimal layout (Layout = null) — they
     must NOT inherit this shell (AI_PROJECT_RULES.md).
 *@
+@inject Portfolio.Web.Localization.LocalizationState Loc
+@{
+    var uiJson = System.Text.Json.JsonSerializer.Serialize(Loc.Map);
+}
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="@Loc.Language" dir="@Loc.Dir">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="@(ViewData["Description"] ?? "Portfolio of Mousa Amiri Motlagh — Backend Engineer")" />
     <link rel="icon" type="image/svg+xml" href="~/images/favicon.svg" />
-    <title>@ViewData["Title"] — Portfolio</title>
+    <title>@Html.T((string)(ViewData["I18nTitle"] ?? ""), $"{ViewData["Title"]} — Portfolio")</title>
 
-    @* ── FOUC-prevention: set theme/dir/lang BEFORE paint (byte-for-byte from source) ── *@
+    @* ── FOUC-prevention: set theme BEFORE paint. Language/dir are now rendered
+         server-side on <html> (from the portfolio-lang cookie), so only the theme
+         needs the pre-paint bootstrap. ── *@
     <script>
-        (function(){var t;try{t=localStorage.getItem('portfolio-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var l;try{l=localStorage.getItem('portfolio-lang')}catch(e){}if(l==='fa'){document.documentElement.setAttribute('dir','rtl');document.documentElement.setAttribute('lang','fa')}})();
+        (function(){var t;try{t=localStorage.getItem('portfolio-theme')}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t)})();
     </script>
 
     @* ── Latin webfonts (Farsi AzarMehr/Pinar are self-hosted via @@font-face in tokens.css) ── *@
@@ -45,7 +51,15 @@
 
     @RenderSection("Styles", required: false)
 </head>
-<body data-i18n-title="@(ViewData["I18nTitle"] ?? "")">
+<body>
+
+    @* Server-resolved language + DB-sourced UI-chrome map for the client-built
+       components (navbar/footer/command palette). English → empty map (they use
+       their inline English defaults). *@
+    <script>
+        window.__lang = '@Loc.Language';
+        window.__ui = @Html.Raw(uiJson);
+    </script>
 
     @* Navbar placeholder — hydrated by navbar-component.js *@
     <partial name="_Navigation" />
@@ -79,8 +93,9 @@
 
     @* ── Shared shell scripts, in the exact source order. Page-specific scripts
          load in the PageScripts section BETWEEN text-reveal and navbar (matches
-         the static site's <script src="home.js"> position — init timing intact). ── *@
-    <script src="~/js/translations.js"></script>
+         the static site's <script src="home.js"> position — init timing intact).
+         Localization is server-side now: chrome text comes from window.__ui
+         (DB-sourced) + inline defaults; i18n.js is a thin server-backed shim. ── *@
     <script src="~/js/i18n.js"></script>
     <script src="~/js/navbar-component.js"></script>
     <script src="~/js/text-reveal.js"></script>
@@ -91,9 +106,6 @@
     <script src="~/js/command-palette.js"></script>
     <script src="~/js/footer-component.js"></script>
     <script src="~/js/theme-switcher.js"></script>
-    <script>
-        if (window.i18n) { window.i18n.translateElements(); window.i18n.updateLangSwitcher(); }
-    </script>
     <script src="~/js/spa-router.js"></script>
 
     @RenderSection("Scripts", required: false)
