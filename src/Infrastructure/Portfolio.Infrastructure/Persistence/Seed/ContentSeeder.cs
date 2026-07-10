@@ -12,6 +12,7 @@ using Portfolio.Domain.Entities.Projects;
 using Portfolio.Domain.Entities.Skills;
 using Portfolio.Domain.Entities.Stats;
 using Portfolio.Domain.Entities.Timeline;
+using Portfolio.Domain.Entities.UiTranslations;
 using Portfolio.Domain.Enums;
 using Portfolio.Infrastructure.Data;
 
@@ -40,7 +41,29 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
         await SeedPrinciplesAsync(cancellationToken);
         await SeedProficienciesAsync(cancellationToken);
         await SeedArticlesAsync(cancellationToken);
+        await SeedUiTranslationsAsync(cancellationToken);
         logger.LogInformation("Content seed check complete.");
+    }
+
+    private async Task SeedUiTranslationsAsync(CancellationToken ct)
+    {
+        if (await context.UiTranslations.AnyAsync(ct)) return;
+
+        foreach (var (key, fa) in UiTranslationSeedData.Fa)
+        {
+            await context.UiTranslations.AddAsync(new UiTranslation
+            {
+                Id = Guid.NewGuid(),
+                Key = key,
+                Language = Language.Fa,
+                Value = fa,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            }, ct);
+        }
+
+        await context.SaveChangesAsync(ct);
+        logger.LogInformation("Seeded {Count} UI translations (fa).", UiTranslationSeedData.Fa.Length);
     }
 
     private async Task SeedProfileAsync(CancellationToken ct)
