@@ -1,0 +1,68 @@
+@model Portfolio.Web.Models.Admin.UiTranslationFormModel
+@{
+    Layout = "_AdminLayout";
+    var isEdit = Model.IsEdit;
+    ViewData["Title"] = isEdit ? "Admin — Edit UI Text" : "Admin — New UI Text";
+    ViewData["AdminTitle"] = isEdit ? "Edit UI Text" : "New UI Text";
+    var action = isEdit ? "UiTranslationEdit" : "UiTranslationCreate";
+    var isRtl = Model.LanguageCode is "fa" or "ar";
+}
+<div class="admin-page-header">
+    <div><h1 class="admin-page-title">@(isEdit ? "Edit UI Text" : "New UI Text")</h1>
+        <p class="admin-page-subtitle">Localized interface string</p></div>
+    <a asp-controller="Admin" asp-action="UiTranslations" class="admin-btn admin-btn--ghost">Back to list</a>
+</div>
+<form asp-controller="Admin" asp-action="@action" asp-route-id="@Model.Id" method="post" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="admin-form-error"></div>
+    @if (isEdit) { <input type="hidden" asp-for="Id" /> }
+
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="Key"></label>
+        <input class="admin-form-input" asp-for="Key" placeholder="nav.home" />
+        <span class="admin-form-error" asp-validation-for="Key"></span>
+    </div>
+
+    <div class="admin-form-group" style="max-width:180px">
+        <label class="admin-form-label" asp-for="LanguageCode"></label>
+        <select class="admin-form-input" asp-for="LanguageCode">
+            <option value="fa">Persian (fa)</option>
+            <option value="ar">Arabic (ar)</option>
+            <option value="en">English (en)</option>
+        </select>
+        <span class="admin-form-error" asp-validation-for="LanguageCode"></span>
+    </div>
+
+    <div class="admin-form-group">
+        <label class="admin-form-label" asp-for="Value"></label>
+        <textarea class="admin-form-textarea @(isRtl ? "admin-form-input--rtl" : "")" asp-for="Value" dir="@(isRtl ? "rtl" : "ltr")" rows="3"></textarea>
+        <span class="admin-form-error" asp-validation-for="Value"></span>
+    </div>
+
+    <div class="admin-form-checks">
+        <label class="admin-check"><input type="checkbox" asp-for="IsActive" /> <span>@Html.DisplayNameFor(m => m.IsActive)</span></label>
+    </div>
+
+    <div class="admin-form-actions">
+        <a asp-controller="Admin" asp-action="UiTranslations" class="admin-btn admin-btn--ghost">Cancel</a>
+        <button type="submit" class="admin-btn admin-btn--primary">@(isEdit ? "Save changes" : "Create")</button>
+    </div>
+</form>
+@section Scripts {
+    <script>
+        (function () {
+            "use strict";
+            AdminSidebar.init("uitranslations");
+            if (window.lucide) lucide.createIcons();
+            // Flip textarea direction live when the language changes.
+            var sel = document.querySelector('[name="LanguageCode"]');
+            var val = document.querySelector('[name="Value"]');
+            if (sel && val) {
+                sel.addEventListener("change", function () {
+                    var rtl = sel.value === "fa" || sel.value === "ar";
+                    val.setAttribute("dir", rtl ? "rtl" : "ltr");
+                    val.classList.toggle("admin-form-input--rtl", rtl);
+                });
+            }
+        })();
+    </script>
+}

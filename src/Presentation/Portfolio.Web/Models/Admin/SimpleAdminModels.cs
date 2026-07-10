@@ -65,3 +65,20 @@ public class StatFormModel
 
     public bool IsEdit => Id.HasValue;
 }
+
+// ── UI translation (flat key→value chrome string) ──
+public class UiTranslationFormModel
+{
+    public Guid? Id { get; set; }
+
+    [Required]
+    [RegularExpression(@"^[a-z]+\.[a-z_0-9]+$", ErrorMessage = "Key must be dot-notation, e.g. nav.home.")]
+    [Display(Name = "Key")]
+    public string Key { get; set; } = string.Empty;
+
+    [Required][Display(Name = "Language")] public string LanguageCode { get; set; } = "fa";
+    [Required][Display(Name = "Value")] public string Value { get; set; } = string.Empty;
+    [Display(Name = "Active")] public bool IsActive { get; set; } = true;
+
+    public bool IsEdit => Id.HasValue;
+}
