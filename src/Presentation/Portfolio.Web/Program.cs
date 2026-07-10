@@ -1,9 +1,14 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Portfolio.Web.Localization;
 using Portfolio.Web.Services.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+// Per-request localization state (language + UI-chrome map), populated by
+// LanguageMiddleware from the portfolio-lang cookie.
+builder.Services.AddScoped<LocalizationState>();
 
 // Typed clients over Portfolio.API. The public client hits anonymous read
 // endpoints; the admin client hits the authenticated api/admin/* endpoints.
@@ -50,6 +55,10 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Resolve language from the cookie and load the UI-chrome map (non-English)
+// before MVC renders. Placed after auth so the admin area can be skipped inside.
+app.UseMiddleware<LanguageMiddleware>();
 
 app.MapControllerRoute(
     name: "default",

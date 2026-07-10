@@ -7,7 +7,7 @@ public class BlogController(IPortfolioApiClient api) : Controller
 {
     public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
-        var language = Services.WebLanguage.Resolve(lang);
+        var language = Services.WebLanguage.ResolveFromRequest(HttpContext, lang);
 
         // Articles come from Portfolio.API. The server-rendered grid (SEO/no-JS) and
         // the JSON island the view emits both use this data; blog.js reads that island

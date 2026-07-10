@@ -8,7 +8,7 @@ public class ExperienceController(IPortfolioApiClient api) : Controller
 {
     public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
-        var language = WebLanguage.Resolve(lang);
+        var language = WebLanguage.ResolveFromRequest(HttpContext, lang);
 
         // Impact metrics, core principles, proficiency matrix and professional history
         // all come from Portfolio.API; the Summary name/text come from the Profile
