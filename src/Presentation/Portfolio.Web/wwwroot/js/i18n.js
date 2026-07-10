@@ -23,7 +23,9 @@
   function lang() { return currentLang; }
 
   function t(key, fallback) {
-    if (currentLang !== "en" && ui[key]) return ui[key];
+    // DB-backed for every language (English included, so chrome is editable);
+    // window.__ui carries the current language's map, empty when a row is absent.
+    if (ui[key]) return ui[key];
     return fallback || key;
   }
 

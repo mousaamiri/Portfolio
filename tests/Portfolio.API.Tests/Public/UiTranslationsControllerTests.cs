@@ -47,15 +47,16 @@ public class UiTranslationsControllerTests : IDisposable
     }
 
     [Fact]
-    public async Task GetMap_English_ShouldReturn200WithEmptyMap()
+    public async Task GetMap_English_ShouldReturn200WithDbMap()
     {
+        var map = new Dictionary<string, string> { ["nav.home"] = "Home" };
         _mockService.Setup(s => s.GetMapAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result<IReadOnlyDictionary<string, string>>.Success(new Dictionary<string, string>()));
+            .ReturnsAsync(Result<IReadOnlyDictionary<string, string>>.Success(map));
 
         var response = await _client.GetAsync("/api/public/ui-translations?lang=en");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<ApiResponse<Dictionary<string, string>>>(JsonOptions);
-        body!.Data.Should().BeEmpty();
+        body!.Data!["nav.home"].Should().Be("Home");
     }
 }

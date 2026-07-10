@@ -23,15 +23,17 @@ public class UiTranslationServiceTests
     };
 
     [Fact]
-    public async Task GetMapAsync_English_ReturnsEmptyMap_WithoutHittingRepository()
+    public async Task GetMapAsync_English_ReturnsDbMap()
     {
+        _unitOfWorkMock
+            .Setup(u => u.UiTranslations.GetByLanguageAsync(Language.En, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<UiTranslation> { Row("nav.home", "Home", Language.En) });
+
         var result = await _sut.GetMapAsync("en");
 
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
-        _unitOfWorkMock.Verify(
-            u => u.UiTranslations.GetByLanguageAsync(It.IsAny<Language>(), It.IsAny<CancellationToken>()),
-            Times.Never);
+        result.Value!.Should().ContainSingle();
+        result.Value["nav.home"].Should().Be("Home");
     }
 
     [Fact]
@@ -50,15 +52,18 @@ public class UiTranslationServiceTests
     }
 
     [Fact]
-    public async Task GetMapAsync_UnknownLanguage_FallsBackToEnglishEmptyMap()
+    public async Task GetMapAsync_UnknownLanguage_FallsBackToEnglish()
     {
+        // Unknown codes parse to English, so the English rows are returned.
+        _unitOfWorkMock
+            .Setup(u => u.UiTranslations.GetByLanguageAsync(Language.En, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<UiTranslation> { Row("nav.home", "Home", Language.En) });
+
         var result = await _sut.GetMapAsync("zz");
 
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
-        _unitOfWorkMock.Verify(
-            u => u.UiTranslations.GetByLanguageAsync(It.IsAny<Language>(), It.IsAny<CancellationToken>()),
-            Times.Never);
+        result.Value!.Should().ContainSingle();
+        result.Value["nav.home"].Should().Be("Home");
     }
 
     // ── Admin CRUD ──

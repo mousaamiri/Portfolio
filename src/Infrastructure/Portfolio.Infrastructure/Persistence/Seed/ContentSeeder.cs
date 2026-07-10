@@ -47,17 +47,31 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
 
     private async Task SeedUiTranslationsAsync(CancellationToken ct)
     {
-        // Idempotent top-up: insert only the (Key, fa) pairs that aren't already
-        // in the DB. Safe on a fresh DB (inserts all) and on an existing one
-        // (adds only newly-introduced keys), so new seed entries land on restart.
-        var existingKeys = await context.UiTranslations
-            .Where(t => t.Language == Language.Fa)
+        // Idempotent top-up per language: insert only the (Key, Language) pairs
+        // not already in the DB. Safe on a fresh DB (inserts all) and on an
+        // existing one (adds only newly-introduced keys/languages), so new seed
+        // entries — including the English rows that make chrome admin-editable —
+        // land on restart without duplicating existing rows.
+        var added = 0;
+        added += await TopUpLanguageAsync(Language.En, UiTranslationSeedData.En, ct);
+        added += await TopUpLanguageAsync(Language.Fa, UiTranslationSeedData.Fa, ct);
+
+        if (added == 0) return;
+
+        await context.SaveChangesAsync(ct);
+        logger.LogInformation("Seeded {Count} UI translations.", added);
+    }
+
+    private async Task<int> TopUpLanguageAsync(
+        Language language, (string Key, string Value)[] seed, CancellationToken ct)
+    {
+        var existing = new HashSet<string>(await context.UiTranslations
+            .Where(t => t.Language == language)
             .Select(t => t.Key)
-            .ToListAsync(ct);
-        var existing = new HashSet<string>(existingKeys);
+            .ToListAsync(ct));
 
         var added = 0;
-        foreach (var (key, fa) in UiTranslationSeedData.Fa)
+        foreach (var (key, value) in seed)
         {
             if (existing.Contains(key)) continue;
 
@@ -65,18 +79,15 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
             {
                 Id = Guid.NewGuid(),
                 Key = key,
-                Language = Language.Fa,
-                Value = fa,
+                Language = language,
+                Value = value,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             }, ct);
             added++;
         }
 
-        if (added == 0) return;
-
-        await context.SaveChangesAsync(ct);
-        logger.LogInformation("Seeded {Count} UI translations (fa).", added);
+        return added;
     }
 
     private async Task SeedProfileAsync(CancellationToken ct)
