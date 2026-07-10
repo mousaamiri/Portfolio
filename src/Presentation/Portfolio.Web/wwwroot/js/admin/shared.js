@@ -227,6 +227,7 @@ var AdminSidebar = {
       if (e.target.closest(".admin-nav-link") && window.innerWidth < 768) close();
     });
   }
+};
 
 // The old client-side AdminCRUD table/modal framework (and its in-memory
 // AdminData store) was retired in Phase 3 — every admin screen is now a
