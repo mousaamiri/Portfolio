@@ -14,11 +14,6 @@ public class UiTranslationService(IUnitOfWork unitOfWork) : IUiTranslationServic
     {
         var language = ParseLanguage(languageCode);
 
-        // English is the inline default in the views/JS — no DB round-trip needed.
-        if (language == Language.En)
-            return Result<IReadOnlyDictionary<string, string>>.Success(
-                new Dictionary<string, string>());
-
         var rows = await unitOfWork.UiTranslations.GetByLanguageAsync(language, cancellationToken);
 
         // Last-write-wins on the off chance of a duplicate key (the unique index
