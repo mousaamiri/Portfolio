@@ -195,6 +195,8 @@ window.__translations = {
     "cta.network_title": "بیایید با هم بسازیم.",
     "cta.network_desc": "برای همکاری یا حتی یک سلام ساده پیام دهید.",
     "cta.network_link": "ارتباط",
+    "cta.gear_title": "ابزارهای روزانه من",
+    "cta.guestbook_title": "امضای خود را بگذارید",
 
     /* ---- Experience Page ---- */
     "exp.title": "نمونه‌کارها — تجربه‌ها",
