@@ -9,7 +9,7 @@ public class HomeController(IPortfolioApiClient api) : Controller
 {
     public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
-        var language = WebLanguage.Resolve(lang);
+        var language = WebLanguage.ResolveFromRequest(HttpContext, lang);
 
         // Hero now comes from the Profile entity (Portfolio.API). Until a profile is
         // seeded, fall back to the mock hero so the page still renders (retired once

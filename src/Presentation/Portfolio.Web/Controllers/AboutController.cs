@@ -9,7 +9,7 @@ public class AboutController(IPortfolioApiClient api) : Controller
 {
     public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
-        var language = WebLanguage.Resolve(lang);
+        var language = WebLanguage.ResolveFromRequest(HttpContext, lang);
 
         // Skills, Education, Journey, Interests, Footprint and Endorsements all come
         // from Portfolio.API. Only the hero stat *values* (role/experience/degree

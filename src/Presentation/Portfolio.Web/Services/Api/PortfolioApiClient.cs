@@ -79,6 +79,22 @@ public class PortfolioApiClient(HttpClient httpClient, ILogger<PortfolioApiClien
         }
     }
 
+    public async Task<IReadOnlyDictionary<string, string>> GetUiTranslationsAsync(string lang, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await httpClient.GetFromJsonAsync<ApiResponse<Dictionary<string, string>>>(
+                $"api/public/ui-translations?lang={lang}", cancellationToken);
+
+            return response?.Data ?? new Dictionary<string, string>();
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
+        {
+            logger.LogWarning(ex, "Failed to fetch UI translations from Portfolio.API; returning empty map.");
+            return new Dictionary<string, string>();
+        }
+    }
+
     private async Task<IReadOnlyList<T>> GetListAsync<T>(string resource, string lang, CancellationToken cancellationToken)
     {
         try

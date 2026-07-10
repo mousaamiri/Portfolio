@@ -12,7 +12,7 @@ public class ContactController(IPortfolioApiClient api) : Controller
     // FAQ list from Portfolio.API. The form posts for real (Submit below).
     public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
-        var language = WebLanguage.Resolve(lang);
+        var language = WebLanguage.ResolveFromRequest(HttpContext, lang);
         var profile = await api.GetProfileAsync(language, cancellationToken);
         var info = MockDataService.GetContactViewModel();
         var faqs = await api.GetFaqsAsync(language, cancellationToken);

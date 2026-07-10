@@ -33,4 +33,10 @@ public interface IPortfolioApiClient
 
     /// <summary>Submits a contact-form message to the public API. Returns true on success.</summary>
     Task<bool> SendMessageAsync(ContactMessageRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the localized UI-chrome key→value map for the given language.
+    /// English yields an empty map (the views/JS use their inline defaults).
+    /// </summary>
+    Task<IReadOnlyDictionary<string, string>> GetUiTranslationsAsync(string lang, CancellationToken cancellationToken = default);
 }
