@@ -5,22 +5,14 @@
     ViewData["ActivePage"] = "work";
 
     // Shape the data exactly as work.js expects ({id, name, subtitle,
-    // description, techs:[{name,color}], github}), per language.
-    var projectsEn = Model.Select(p => new
+    // description, techs:[{name,color}], github}). Language is resolved
+    // server-side, so this is a single already-localized array.
+    var projects = Model.Select(p => new
     {
         id = p.DisplayId,
         name = p.NameEn,
         subtitle = p.SubtitleEn,
         description = p.DescriptionEn,
-        techs = p.Techs.Select(t => new { name = t.Name, color = t.Color }),
-        github = p.GithubUrl
-    });
-    var projectsFa = Model.Select(p => new
-    {
-        id = p.DisplayId,
-        name = p.NameFa,
-        subtitle = p.SubtitleFa,
-        description = p.DescriptionFa,
         techs = p.Techs.Select(t => new { name = t.Name, color = t.Color }),
         github = p.GithubUrl
     });
@@ -44,10 +36,10 @@
 
         @* ===== SECTION 1: HEADER ===== *@
         <div class="about-eyebrow-row">
-            <span class="eyebrow" data-i18n="work.eyebrow">WORK</span>
+            <span class="eyebrow">@Html.T("work.eyebrow", "WORK")</span>
             <span class="eyebrow-rule" aria-hidden="true"></span>
         </div>
-        <h2 class="work-heading" data-i18n="work.heading">SELECTED SYSTEMS &amp; ARCHITECTURE</h2>
+        <h2 class="work-heading">@Html.T("work.heading", "SELECTED SYSTEMS &amp; ARCHITECTURE")</h2>
 
         @* ===== SECTION 2: MASTER/DETAIL SHOWCASE ===== *@
         <div class="work-showcase">
@@ -97,7 +89,7 @@
                             <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
                             <path d="M9 18c-4.51 2-5-2-7-2"/>
                         </svg>
-                        <span data-i18n="work.view_github">View GitHub</span>
+                        <span>@Html.T("work.view_github", "View GitHub")</span>
                     </a>
                 </div>
             </div>
@@ -121,7 +113,7 @@
                         <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
                         <path d="M9 18c-4.51 2-5-2-7-2"/>
                     </svg>
-                    <span data-i18n="work.view_github">View GitHub</span>
+                    <span>@Html.T("work.view_github", "View GitHub")</span>
                 </a>
             </div>
         </div>
@@ -132,12 +124,9 @@
          NOT the shared _ClosingCta partial) ===== *@
     <div class="closing-cta-block">
         <div class="closing-cta-eyebrow-row">
-            <span class="eyebrow" data-i18n="cta.inner_mechanics">INNER MECHANICS</span>
+            <span class="eyebrow">@Html.T("cta.inner_mechanics", "INNER MECHANICS")</span>
         </div>
-        <h2 class="closing-cta-heading" data-i18n="cta.heading">
-            Where logic meets<br />
-            <span class="script-gradient">rhythm.</span>
-        </h2>
+        <h2 class="closing-cta-heading">@Html.T("cta.heading", "Where logic meets<br />\n            <span class=\"script-gradient\">rhythm.</span>")</h2>
 
         <div class="closing-cta-grid">
 
@@ -147,24 +136,24 @@
                         <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
                         <path d="M9 18c-4.51 2-5-2-7-2"/>
                     </svg>
-                    <span class="closing-cta-github-name" data-i18n="cta.github_name">Mousa's Github</span>
+                    <span class="closing-cta-github-name">@Html.T("cta.github_name", "Mousa's Github")</span>
                 </div>
                 <div class="closing-cta-latest-push">
-                    <span class="closing-cta-latest-label" data-i18n="cta.latest_push">LATEST PUSH</span>
-                    <span class="closing-cta-latest-badge" data-i18n="cta.ago">Recently</span>
+                    <span class="closing-cta-latest-label">@Html.T("cta.latest_push", "LATEST PUSH")</span>
+                    <span class="closing-cta-latest-badge">@Html.T("cta.ago", "Recently")</span>
                 </div>
-                <p class="closing-cta-commit-msg" data-i18n="cta.pushed_updates">Latest commits</p>
+                <p class="closing-cta-commit-msg">@Html.T("cta.pushed_updates", "Latest commits")</p>
                 <div class="closing-cta-commit-files">
                     <span class="closing-cta-file-badge">portfolio</span>
                 </div>
                 <div class="closing-cta-github-stats">
                     <div>
                         <span class="closing-cta-stat-number">3</span>
-                        <span class="closing-cta-stat-label" data-i18n="cta.public_repos">PUBLIC REPOS</span>
+                        <span class="closing-cta-stat-label">@Html.T("cta.public_repos", "PUBLIC REPOS")</span>
                     </div>
                     <div>
                         <span class="closing-cta-stat-number">&mdash;</span>
-                        <span class="closing-cta-stat-label" data-i18n="cta.followers">FOLLOWERS</span>
+                        <span class="closing-cta-stat-label">@Html.T("cta.followers", "FOLLOWERS")</span>
                     </div>
                 </div>
                 <div class="closing-cta-social-row">
@@ -190,24 +179,21 @@
             </div>
 
             <div class="closing-cta-card">
-                <span class="eyebrow eyebrow--sm" data-i18n="cta.writing">WRITING</span>
-                <h4 class="closing-cta-card-title" data-i18n="cta.article_title">Clean Architecture in ASP.NET Core: Boundaries that Scale</h4>
-                <span class="closing-cta-meta" data-i18n="cta.published_date">Draft</span>
+                <span class="eyebrow eyebrow--sm">@Html.T("cta.writing", "WRITING")</span>
+                <h4 class="closing-cta-card-title">@Html.T("cta.article_title", "Clean Architecture in ASP.NET Core: Boundaries that Scale")</h4>
+                <span class="closing-cta-meta">@Html.T("cta.published_date", "Draft")</span>
                 <a asp-controller="Blog" asp-action="Index" class="closing-cta-link">
-                    <span data-i18n="cta.read_article">Read Article</span>
+                    <span>@Html.T("cta.read_article", "Read Article")</span>
                     <span class="closing-cta-link-arrow">&rarr;</span>
                 </a>
             </div>
 
             <div class="closing-cta-card">
-                <span class="eyebrow eyebrow--sm" data-i18n="cta.workspace">WORKSPACE</span>
-                <h4 class="closing-cta-card-title--large" data-i18n="cta.gear_title">
-                    My daily<br />
-                    <span class="script-gradient">drivers</span>
-                </h4>
-                <p class="closing-cta-card-desc" data-i18n="cta.gear_desc">A detailed list of the software and hardware I use every day.</p>
+                <span class="eyebrow eyebrow--sm">@Html.T("cta.workspace", "WORKSPACE")</span>
+                <h4 class="closing-cta-card-title--large">@Html.T("cta.gear_title", "My daily<br />\n                    <span class=\"script-gradient\">drivers</span>")</h4>
+                <p class="closing-cta-card-desc">@Html.T("cta.gear_desc", "A detailed list of the software and hardware I use every day.")</p>
                 <a href="#" class="closing-cta-link">
-                    <span data-i18n="cta.view_gear">View Gear</span>
+                    <span>@Html.T("cta.view_gear", "View Gear")</span>
                     <span class="closing-cta-link-arrow">&rarr;</span>
                 </a>
             </div>
@@ -217,11 +203,10 @@
 </section>
 
 @section PageScripts {
-    @* Server-injected project data (single source of truth = MockDataService).
-       work.js reads these globals via getActiveProjects(). *@
+    @* Server-injected project data, already in the resolved language.
+       work.js reads this global via getActiveProjects(). *@
     <script>
-        window.__workProjects = @Html.Raw(Json.Serialize(projectsEn));
-        window.__workProjectsFa = @Html.Raw(Json.Serialize(projectsFa));
+        window.__workProjects = @Html.Raw(Json.Serialize(projects));
     </script>
     <script src="~/js/pages/work.js"></script>
 }

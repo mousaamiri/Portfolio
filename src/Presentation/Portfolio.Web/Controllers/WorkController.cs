@@ -1,23 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Web.Models.ViewModels;
+using Portfolio.Web.Services;
 using Portfolio.Web.Services.Api;
 
 namespace Portfolio.Web.Controllers;
 
 public class WorkController(IPortfolioApiClient api) : Controller
 {
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
-        // Work keeps a client-side EN/FA switch (work.js), so fetch both languages
-        // and merge them into the bilingual ProjectViewModel the view serializes.
-        var enProjects = await api.GetProjectsAsync("en", cancellationToken);
-        var faProjects = await api.GetProjectsAsync("fa", cancellationToken);
+        // Language is resolved server-side (cookie); the page renders in that one
+        // language — no client-side EN/FA swap anymore.
+        var language = WebLanguage.ResolveFromRequest(HttpContext, lang);
+        var projects = await api.GetProjectsAsync(language, cancellationToken);
 
-        var faById = faProjects.ToDictionary(p => p.Id);
-
-        var model = enProjects
-            .Select(en => ApiViewModelMapper.MergeToWorkViewModel(
-                en, faById.GetValueOrDefault(en.Id)))
+        var model = projects
+            .Select(ApiViewModelMapper.ToViewModel)
             .ToList();
 
         return View(model);

@@ -204,16 +204,12 @@
     },
   ];
 
-  /* ---- Get active projects based on language ---- */
-  // MVC migration: prefer server-injected data (window.__workProjects /
-  // __workProjectsFa, written by the Work Razor view from MockDataService) so
-  // the ViewModel is the single source of truth. Falls back to the hardcoded
-  // arrays above when the globals aren't present (e.g. the static site).
+  /* ---- Get active projects ---- */
+  // Language is resolved server-side, so window.__workProjects is already in the
+  // right language. Falls back to the hardcoded array only when the global isn't
+  // present (e.g. the original static site).
   function getActiveProjects() {
-    var en = window.__workProjects || projects;
-    var fa = window.__workProjectsFa || projectsFa;
-    if (window.i18n && window.i18n.lang() === "fa") return fa;
-    return en;
+    return window.__workProjects || projects;
   }
 
   /* ---- DOM references ---- */
