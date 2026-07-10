@@ -1,8 +1,10 @@
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Portfolio.Web.Controllers;
 using Portfolio.Web.Models.ViewModels;
+using Portfolio.Web.Services;
 using Portfolio.Web.Services.Api;
 
 namespace Portfolio.Web.Tests.Controllers;
@@ -26,46 +28,61 @@ public class WorkControllerTests
             .ReturnsAsync([new ProjectApiDto
             {
                 Id = _id, DisplayOrder = 1, Title = "گیت‌گلنس",
-                ShortDescription = "مصورساز گیت‌هاب", Description = "یک داشبورد."
+                ShortDescription = "مصورساز گیت‌هاب", Description = "یک داشبورد.",
+                Technologies = "React, Java"
             }]);
 
         _sut = new WorkController(_api.Object);
     }
 
-    private async Task<List<ProjectViewModel>> InvokeAsync()
+    /// <summary>Attaches an HttpContext (optionally with a language cookie) so the
+    /// controller's cookie-based language resolution works in tests.</summary>
+    private void WithLanguageCookie(string? lang)
     {
-        var result = await _sut.Index(CancellationToken.None) as ViewResult;
+        var httpContext = new DefaultHttpContext();
+        if (lang is not null)
+            httpContext.Request.Headers.Cookie = $"{WebLanguage.CookieName}={lang}";
+
+        _sut.ControllerContext = new ControllerContext { HttpContext = httpContext };
+    }
+
+    private async Task<List<ProjectViewModel>> InvokeAsync(string? lang = null)
+    {
+        WithLanguageCookie(lang);
+        var result = await _sut.Index(null, CancellationToken.None) as ViewResult;
         return (List<ProjectViewModel>)result!.Model!;
     }
 
     [Fact]
     public async Task Index_ReturnsViewWithProjectList()
     {
-        var result = await _sut.Index(CancellationToken.None);
+        WithLanguageCookie(null);
+        var result = await _sut.Index(null, CancellationToken.None);
 
         result.Should().BeOfType<ViewResult>();
         (await InvokeAsync()).Should().NotBeEmpty();
     }
 
     [Fact]
-    public async Task Index_MergesEnglishAndFarsiTranslations()
+    public async Task Index_DefaultsToEnglish_WhenNoCookie()
     {
         var model = await InvokeAsync();
 
         model.Should().ContainSingle();
         model[0].NameEn.Should().Be("GitGlance");
-        model[0].NameFa.Should().Be("گیت‌گلنس");
-        model[0].SubtitleEn.Should().Be("GitHub visualizer");
-        model[0].SubtitleFa.Should().Be("مصورساز گیت‌هاب");
+        _api.Verify(a => a.GetProjectsAsync("en", It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+        _api.Verify(a => a.GetProjectsAsync("fa", It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task Index_FetchesBothLanguages()
+    public async Task Index_UsesFarsi_WhenLanguageCookieIsFa()
     {
-        await InvokeAsync();
+        var model = await InvokeAsync("fa");
 
-        _api.Verify(a => a.GetProjectsAsync("en", It.IsAny<CancellationToken>()), Times.Once);
-        _api.Verify(a => a.GetProjectsAsync("fa", It.IsAny<CancellationToken>()), Times.Once);
+        model.Should().ContainSingle();
+        // The single fetched language is mapped into the (legacy-named) NameEn slot.
+        model[0].NameEn.Should().Be("گیت‌گلنس");
+        _api.Verify(a => a.GetProjectsAsync("fa", It.IsAny<CancellationToken>()), Times.AtLeastOnce);
     }
 
     [Fact]
@@ -75,16 +92,5 @@ public class WorkControllerTests
 
         var java = model[0].Techs.Single(t => t.Name == "Java");
         java.Color.Should().Be("#f0a63b");
-    }
-
-    [Fact]
-    public async Task Index_FarsiMissing_FallsBackToEnglish()
-    {
-        _api.Setup(a => a.GetProjectsAsync("fa", It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
-
-        var model = await InvokeAsync();
-
-        model[0].NameFa.Should().Be("GitGlance");
     }
 }
