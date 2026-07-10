@@ -18,6 +18,8 @@ public static class AdminProfileMapper
             GitHubUrl = en.GitHubUrl,
             LinkedInUrl = en.LinkedInUrl,
             InstagramUrl = en.InstagramUrl,
+            TelegramUrl = en.TelegramUrl,
+            TwitterUrl = en.TwitterUrl,
             WebsiteUrl = en.WebsiteUrl,
             ResumeUrlEn = en.ResumeUrlEn,
             ResumeUrlFa = en.ResumeUrlFa,
@@ -60,6 +62,7 @@ public static class AdminProfileMapper
         return new UpsertProfileApiRequest
         {
             Email = m.Email, GitHubUrl = m.GitHubUrl, LinkedInUrl = m.LinkedInUrl, InstagramUrl = m.InstagramUrl,
+            TelegramUrl = m.TelegramUrl, TwitterUrl = m.TwitterUrl,
             WebsiteUrl = m.WebsiteUrl, ResumeUrlEn = m.ResumeUrlEn, ResumeUrlFa = m.ResumeUrlFa,
             PortraitUrl = m.PortraitUrl, LearningDate = m.LearningDate, Translations = list
         };

@@ -268,6 +268,8 @@ public class UpsertProfileApiRequest
     public string? GitHubUrl { get; set; }
     public string? LinkedInUrl { get; set; }
     public string? InstagramUrl { get; set; }
+    public string? TelegramUrl { get; set; }
+    public string? TwitterUrl { get; set; }
     public string? WebsiteUrl { get; set; }
     public string? ResumeUrlEn { get; set; }
     public string? ResumeUrlFa { get; set; }

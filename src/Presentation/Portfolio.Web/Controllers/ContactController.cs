@@ -27,6 +27,8 @@ public class ContactController(IPortfolioApiClient api) : Controller
             GitHubUrl = string.IsNullOrWhiteSpace(profile?.GitHubUrl) ? info.GitHubUrl : profile!.GitHubUrl!,
             LinkedInUrl = string.IsNullOrWhiteSpace(profile?.LinkedInUrl) ? info.LinkedInUrl : profile!.LinkedInUrl!,
             InstagramUrl = string.IsNullOrWhiteSpace(profile?.InstagramUrl) ? info.InstagramUrl : profile!.InstagramUrl!,
+            TelegramUrl = string.IsNullOrWhiteSpace(profile?.TelegramUrl) ? info.TelegramUrl : profile!.TelegramUrl!,
+            TwitterUrl = string.IsNullOrWhiteSpace(profile?.TwitterUrl) ? info.TwitterUrl : profile!.TwitterUrl!,
             WebsiteUrl = string.IsNullOrWhiteSpace(profile?.WebsiteUrl) ? info.WebsiteUrl : profile!.WebsiteUrl!,
             Faqs = faqs.Select(ApiViewModelMapper.ToViewModel).ToList()
         };

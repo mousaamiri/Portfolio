@@ -94,6 +94,8 @@ public static class MockDataService
         GitHubUrl = "https://github.com/mousaamiri",
         LinkedInUrl = "#",
         InstagramUrl = "#",
+        TelegramUrl = "#",
+        TwitterUrl = "#",
         WebsiteUrl = "https://mousaamiri.ir"
     };
 }

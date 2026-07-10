@@ -36,6 +36,8 @@ public class ProfileService(IUnitOfWork unitOfWork) : IProfileService
         profile.GitHubUrl = request.GitHubUrl;
         profile.LinkedInUrl = request.LinkedInUrl;
         profile.InstagramUrl = request.InstagramUrl;
+        profile.TelegramUrl = request.TelegramUrl;
+        profile.TwitterUrl = request.TwitterUrl;
         profile.WebsiteUrl = request.WebsiteUrl;
         profile.ResumeUrlEn = request.ResumeUrlEn;
         profile.ResumeUrlFa = request.ResumeUrlFa;
@@ -93,6 +95,8 @@ public class ProfileService(IUnitOfWork unitOfWork) : IProfileService
             GitHubUrl = profile.GitHubUrl,
             LinkedInUrl = profile.LinkedInUrl,
             InstagramUrl = profile.InstagramUrl,
+            TelegramUrl = profile.TelegramUrl,
+            TwitterUrl = profile.TwitterUrl,
             WebsiteUrl = profile.WebsiteUrl,
             ResumeUrlEn = profile.ResumeUrlEn,
             ResumeUrlFa = profile.ResumeUrlFa,
