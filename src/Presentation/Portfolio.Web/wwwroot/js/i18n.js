@@ -1,115 +1,39 @@
 /* ==========================================================================
-   i18n.js — Language manager for EN/FA bilingual portfolio
+   i18n.js — server-backed language runtime (shim)
    --------------------------------------------------------------------------
-   Must be loaded AFTER translations.js.
-   Provides: window.i18n.lang(), window.i18n.t(key), window.i18n.setLang(lang)
+   Language is now resolved SERVER-SIDE from the `portfolio-lang` cookie: the
+   Razor layout renders <html lang/dir> and injects window.__lang plus the
+   DB-sourced UI-chrome map window.__ui. This file preserves the historical
+   window.i18n API so the client-built components (navbar/footer/command
+   palette/theme switcher) keep working unchanged:
+     - lang()            -> the server-resolved language
+     - t(key, fallback)  -> window.__ui[key] || fallback
+     - setLang(lang)     -> full server round-trip via /set-language (persists
+                            the cookie, reloads, re-renders in that language)
+   translateElements()/updateLangSwitcher() remain for callers but element text
+   is already server-rendered, so they are effectively no-ops (the lang button
+   label is still refreshed for safety).
    ========================================================================== */
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "portfolio-lang";
-  var translations = (window.__translations && window.__translations.fa) || {};
+  var ui = window.__ui || {};
+  var currentLang = window.__lang || "en";
 
-  function getStored() {
-    try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
-  }
-
-  function setStored(lang) {
-    try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) { /* noop */ }
-  }
-
-  var currentLang = getStored() || "en";
+  function lang() { return currentLang; }
 
   function t(key, fallback) {
-    if (currentLang === "fa" && translations[key]) {
-      return translations[key];
-    }
+    if (currentLang !== "en" && ui[key]) return ui[key];
     return fallback || key;
   }
 
-  function applyDirection() {
-    var html = document.documentElement;
-    if (currentLang === "fa") {
-      html.setAttribute("dir", "rtl");
-      html.setAttribute("lang", "fa");
-      document.body.classList.add("is-rtl");
-      document.body.classList.remove("is-ltr");
-    } else {
-      html.setAttribute("dir", "ltr");
-      html.setAttribute("lang", "en");
-      document.body.classList.add("is-ltr");
-      document.body.classList.remove("is-rtl");
-    }
-  }
-
-  function applyFont() {
-    /* Font switching is handled by rtl.css [dir="rtl"] selectors.
-       No inline style override needed — that would clobber CSS specificity. */
-  }
-
-  function translateElements() {
-    var els = document.querySelectorAll("[data-i18n]");
-    els.forEach(function (el) {
-      var key = el.getAttribute("data-i18n");
-      if (currentLang === "fa" && translations[key]) {
-        if (!el.hasAttribute("data-i18n-original")) {
-          el.setAttribute("data-i18n-original", el.innerHTML);
-        }
-        el.innerHTML = translations[key];
-      } else {
-        var original = el.getAttribute("data-i18n-original");
-        if (original !== null) {
-          el.innerHTML = original;
-        }
-      }
-    });
-
-    var placeholderEls = document.querySelectorAll("[data-i18n-placeholder]");
-    placeholderEls.forEach(function (el) {
-      var key = el.getAttribute("data-i18n-placeholder");
-      if (currentLang === "fa" && translations[key]) {
-        if (!el.hasAttribute("data-i18n-placeholder-original")) {
-          el.setAttribute("data-i18n-placeholder-original", el.placeholder);
-        }
-        el.placeholder = translations[key];
-      } else {
-        var original = el.getAttribute("data-i18n-placeholder-original");
-        if (original !== null) {
-          el.placeholder = original;
-        }
-      }
-    });
-
-    var titleEls = document.querySelectorAll("[data-i18n-title]");
-    titleEls.forEach(function (el) {
-      var key = el.getAttribute("data-i18n-title");
-      if (currentLang === "fa" && translations[key]) {
-        if (!el.hasAttribute("data-i18n-title-original")) {
-          el.setAttribute("data-i18n-title-original", document.title);
-        }
-        document.title = translations[key];
-      } else {
-        var original = el.getAttribute("data-i18n-title-original");
-        if (original !== null) {
-          document.title = original;
-        }
-      }
-    });
-  }
-
-  function rebuildComponents() {
-    if (typeof window.__rebuildNavbar === "function") {
-      window.__rebuildNavbar();
-    }
-    if (typeof window.__rebuildFooter === "function") {
-      window.__rebuildFooter();
-    }
-    if (typeof window.__rebuildCommandPalette === "function") {
-      window.__rebuildCommandPalette();
-    }
-    if (typeof window.__rebuildWorkProjects === "function") {
-      window.__rebuildWorkProjects();
-    }
+  function setLang(newLang) {
+    // Server round-trip: persist the cookie and reload so both dynamic content
+    // and UI chrome render in the chosen language.
+    var returnUrl = window.location.pathname + window.location.search;
+    window.location.href =
+      "/set-language?lang=" + encodeURIComponent(newLang) +
+      "&returnUrl=" + encodeURIComponent(returnUrl);
   }
 
   function updateLangSwitcher() {
@@ -125,27 +49,10 @@
     });
   }
 
-  function setLang(lang) {
-    currentLang = lang;
-    setStored(lang);
-    applyDirection();
-    applyFont();
-    rebuildComponents();
-    translateElements();
-    updateLangSwitcher();
-
-    window.dispatchEvent(new CustomEvent("langchange", { detail: { lang: lang } }));
-  }
-
-  function init() {
-    applyDirection();
-    applyFont();
-  }
-
-  init();
+  function translateElements() { /* no-op: text is server-rendered */ }
 
   window.i18n = {
-    lang: function () { return currentLang; },
+    lang: lang,
     t: t,
     setLang: setLang,
     translateElements: translateElements,

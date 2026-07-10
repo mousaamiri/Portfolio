@@ -33,7 +33,7 @@
   var TRICKLE_SEED  = 0.08;
 
   var SHARED_SCRIPTS = [
-    'translations.js', 'i18n.js', 'navbar-component.js', 'text-reveal.js',
+    'i18n.js', 'navbar-component.js', 'text-reveal.js',
     'navbar.js', 'command-palette.js', 'footer-component.js', 'theme-switcher.js',
     'spa-router.js', 'site.js'
   ];

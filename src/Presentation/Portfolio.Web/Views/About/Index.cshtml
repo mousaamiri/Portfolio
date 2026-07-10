@@ -35,10 +35,10 @@
 
         @* ===== SECTION 1: HEADER ===== *@
         <div class="about-eyebrow-row">
-            <span class="eyebrow" data-i18n="about.eyebrow">ABOUT</span>
+            <span class="eyebrow">@Html.T("about.eyebrow", "ABOUT")</span>
             <span class="eyebrow-rule" aria-hidden="true"></span>
         </div>
-        <h2 class="about-heading" data-i18n="about.heading">THE ENGINEER BEHIND THE CODE</h2>
+        <h2 class="about-heading">@Html.T("about.heading", "THE ENGINEER BEHIND THE CODE")</h2>
 
         @* ===== SECTION 2: BIO ROW ===== *@
         <div class="bio-row">
@@ -49,35 +49,35 @@
             </div>
             <div class="bio-content-col">
                 <h3 class="bio-subheading">
-                    <span data-i18n="about.bio_subheading">Engineering with Purpose.</span>
-                    <span class="accent" data-i18n="about.bio_accent">Driven by Curiosity.</span>
+                    <span>@Html.T("about.bio_subheading", "Engineering with Purpose.")</span>
+                    <span class="accent">@Html.T("about.bio_accent", "Driven by Curiosity.")</span>
                 </h3>
-                <blockquote class="bio-quote" data-i18n="about.bio_quote">I believe the best code is the code you can explain to someone who didn't write it.</blockquote>
-                <p class="bio-paragraph" data-i18n="about.bio_p1">I'm a self-taught <span class="highlight">C#/.NET backend developer</span> who fell for the gap between "it compiles" and "it actually works." Years of building side projects — not a classroom — taught me how to think like an engineer.</p>
-                <p class="bio-paragraph" data-i18n="about.bio_p2">Most of my learning has come from shipping real code: rebuilding tangled logic into <span class="highlight">maintainable services</span>, wiring up data access, and chasing down the difference between code that runs on my machine and code that survives production.</p>
-                <p class="bio-paragraph" data-i18n="about.bio_p3">Today I focus on <span class="highlight">Clean Architecture</span> and <span class="highlight">DDD</span> with ASP.NET Core — drawn to problems at the intersection of performance and simplicity, the kind of engineering that disappears when it's done right.</p>
+                <blockquote class="bio-quote">@Html.T("about.bio_quote", "I believe the best code is the code you can explain to someone who didn't write it.")</blockquote>
+                <p class="bio-paragraph">@Html.T("about.bio_p1", "I'm a self-taught <span class=\"highlight\">C#/.NET backend developer</span> who fell for the gap between \"it compiles\" and \"it actually works.\" Years of building side projects — not a classroom — taught me how to think like an engineer.")</p>
+                <p class="bio-paragraph">@Html.T("about.bio_p2", "Most of my learning has come from shipping real code: rebuilding tangled logic into <span class=\"highlight\">maintainable services</span>, wiring up data access, and chasing down the difference between code that runs on my machine and code that survives production.")</p>
+                <p class="bio-paragraph">@Html.T("about.bio_p3", "Today I focus on <span class=\"highlight\">Clean Architecture</span> and <span class=\"highlight\">DDD</span> with ASP.NET Core — drawn to problems at the intersection of performance and simplicity, the kind of engineering that disappears when it's done right.")</p>
 
                 <div class="bio-stats">
                     <div class="bio-stat">
                         <i data-lucide="briefcase" class="bio-stat-icon"></i>
-                        <span class="bio-stat-label" data-i18n="about.stat_role">ROLE</span>
-                        <span class="bio-stat-value" data-i18n="about.stat_role_value">@Model.RoleValue</span>
+                        <span class="bio-stat-label">@Html.T("about.stat_role", "ROLE")</span>
+                        <span class="bio-stat-value">@Html.T("about.stat_role_value", Model.RoleValue)</span>
                     </div>
                     <div class="bio-stat">
                         <i data-lucide="calendar-clock" class="bio-stat-icon"></i>
-                        <span class="bio-stat-label" data-i18n="about.stat_experience">EXPERIENCE</span>
-                        <span class="bio-stat-value" data-i18n="about.stat_experience_value">@Model.ExperienceValue</span>
+                        <span class="bio-stat-label">@Html.T("about.stat_experience", "EXPERIENCE")</span>
+                        <span class="bio-stat-value">@Html.T("about.stat_experience_value", Model.ExperienceValue)</span>
                     </div>
                     <div class="bio-stat">
                         <i data-lucide="cake" class="bio-stat-icon"></i>
-                        <span class="bio-stat-label" data-i18n="about.stat_age">AGE</span>
+                        <span class="bio-stat-label">@Html.T("about.stat_age", "AGE")</span>
                         @* Live-updating age (computed in about.js from a fixed birthdate) *@
                         <span class="bio-stat-value bio-stat-value--mono" id="live-age">--</span>
                     </div>
                     <div class="bio-stat">
                         <i data-lucide="graduation-cap" class="bio-stat-icon"></i>
-                        <span class="bio-stat-label" data-i18n="about.stat_degree">DEGREE</span>
-                        <span class="bio-stat-value" data-i18n="about.stat_degree_value">@Model.DegreeValue</span>
+                        <span class="bio-stat-label">@Html.T("about.stat_degree", "DEGREE")</span>
+                        <span class="bio-stat-value">@Html.T("about.stat_degree_value", Model.DegreeValue)</span>
                     </div>
                 </div>
             </div>
@@ -86,7 +86,7 @@
         @* ===== SECTION 3: JOURNEY / TIMELINE ===== *@
         <div class="journey-block">
             <div class="about-eyebrow-row">
-                <span class="eyebrow" data-i18n="about.journey">JOURNEY</span>
+                <span class="eyebrow">@Html.T("about.journey", "JOURNEY")</span>
                 <span class="eyebrow-rule" aria-hidden="true"></span>
             </div>
             <div class="timeline">
@@ -100,8 +100,8 @@
                         {
                             <div class="timeline-content timeline-content--right">
                                 <span class="timeline-year-mobile">@e.Year</span>
-                                <h4 class="timeline-title" data-i18n="@e.TitleKey">@e.Title</h4>
-                                <p class="timeline-desc" data-i18n="@e.DescKey">@e.Description</p>
+                                <h4 class="timeline-title">@e.Title</h4>
+                                <p class="timeline-desc">@e.Description</p>
                             </div>
                             <div class="timeline-node"><i data-lucide="@e.Icon"></i></div>
                             <div class="timeline-year">@e.Year</div>
@@ -112,8 +112,8 @@
                             <div class="timeline-node"><i data-lucide="@e.Icon"></i></div>
                             <div class="timeline-content">
                                 <span class="timeline-year-mobile">@e.Year</span>
-                                <h4 class="timeline-title" data-i18n="@e.TitleKey">@e.Title</h4>
-                                <p class="timeline-desc" data-i18n="@e.DescKey">@e.Description</p>
+                                <h4 class="timeline-title">@e.Title</h4>
+                                <p class="timeline-desc">@e.Description</p>
                             </div>
                         }
                     </div>
@@ -124,7 +124,7 @@
         @* ===== SECTION 4: TECHNICAL FOOTPRINT ===== *@
         <div class="footprint-block">
             <div class="about-eyebrow-row">
-                <span class="eyebrow" data-i18n="about.footprint">TECHNICAL FOOTPRINT</span>
+                <span class="eyebrow">@Html.T("about.footprint", "TECHNICAL FOOTPRINT")</span>
                 <span class="eyebrow-rule" aria-hidden="true"></span>
             </div>
             <div class="footprint-grid">
@@ -139,7 +139,7 @@
                         }
                         <div class="footprint-icon"><i data-lucide="@s.Icon"></i></div>
                         <div class="footprint-number" data-count-target="@s.CountTarget" data-suffix="@(s.Suffix ?? "")">0</div>
-                        <div class="footprint-label" data-i18n="@s.LabelKey">@s.Label</div>
+                        <div class="footprint-label">@s.Label</div>
                     </div>
                 }
             </div>
@@ -148,7 +148,7 @@
         @* ===== SECTION 5: SKILLS ===== *@
         <div class="skills-block">
             <div class="about-eyebrow-row">
-                <span class="eyebrow" data-i18n="about.skills">SKILLS</span>
+                <span class="eyebrow">@Html.T("about.skills", "SKILLS")</span>
                 <span class="eyebrow-rule" aria-hidden="true"></span>
             </div>
             <div class="skills-grid">
@@ -156,8 +156,8 @@
                 {
                     var meta = skillMeta[cat];
                     <div class="skills-card">
-                        <div class="skills-card-title" data-i18n="@meta.Key">
-                            <span class="skills-bullet skills-bullet--@meta.Color" aria-hidden="true"></span>@cat.ToUpper()
+                        <div class="skills-card-title">
+                            <span class="skills-bullet skills-bullet--@meta.Color" aria-hidden="true"></span>@Html.T(meta.Key, cat.ToUpper())
                         </div>
                         @foreach (var sk in Model.Skills.Where(x => x.Category == cat))
                         {
@@ -179,7 +179,7 @@
         @* ===== SECTION 6: HANDS-ON ===== (static tech pills) *@
         <div class="handson-block">
             <div class="about-eyebrow-row">
-                <span class="eyebrow" data-i18n="about.handson">HANDS-ON</span>
+                <span class="eyebrow">@Html.T("about.handson", "HANDS-ON")</span>
                 <span class="eyebrow-rule" aria-hidden="true"></span>
             </div>
             <div class="pill-grid">
@@ -203,7 +203,7 @@
         @* ===== SECTION 7: INTERESTS ===== *@
         <div class="interests-block">
             <div class="about-eyebrow-row">
-                <span class="eyebrow" data-i18n="about.interests">INTERESTS</span>
+                <span class="eyebrow">@Html.T("about.interests", "INTERESTS")</span>
                 <span class="eyebrow-rule" aria-hidden="true"></span>
             </div>
             <div class="interests-grid">
@@ -211,7 +211,7 @@
                 {
                     <div class="interest-card">
                         <i data-lucide="@it.Icon" class="interest-icon"></i>
-                        <span class="interest-label" data-i18n="@it.LabelKey">@it.Label</span>
+                        <span class="interest-label">@it.Label</span>
                     </div>
                 }
             </div>
@@ -220,7 +220,7 @@
         @* ===== SECTION 7b: EDUCATION (public section — migration decision #6) ===== *@
         <div class="education-block">
             <div class="about-eyebrow-row">
-                <span class="eyebrow" data-i18n="about.education">EDUCATION</span>
+                <span class="eyebrow">@Html.T("about.education", "EDUCATION")</span>
                 <span class="eyebrow-rule" aria-hidden="true"></span>
             </div>
             <div class="education-grid">
@@ -232,8 +232,8 @@
                     <div class="education-card">
                         <div class="education-icon"><i data-lucide="graduation-cap"></i></div>
                         <div class="education-body">
-                            <h4 class="education-degree" data-i18n="about.edu_@(n)_degree">@ed.Degree — @ed.FieldOfStudy</h4>
-                            <span class="education-institution" data-i18n="about.edu_@(n)_institution">@ed.InstitutionName</span>
+                            <h4 class="education-degree">@ed.Degree — @ed.FieldOfStudy</h4>
+                            <span class="education-institution">@ed.InstitutionName</span>
                             <div class="education-meta">
                                 <span class="education-years">@years</span>
                                 @if (!string.IsNullOrEmpty(ed.Score))
@@ -243,7 +243,7 @@
                             </div>
                             @if (!string.IsNullOrEmpty(ed.Description))
                             {
-                                <p class="education-desc" data-i18n="about.edu_@(n)_desc">@ed.Description</p>
+                                <p class="education-desc">@ed.Description</p>
                             }
                         </div>
                     </div>
@@ -254,7 +254,7 @@
         @* ===== SECTION 8: ENDORSEMENTS ===== *@
         <div class="endorsements-block">
             <div class="about-eyebrow-row">
-                <span class="eyebrow" data-i18n="about.endorsements">ENDORSEMENTS</span>
+                <span class="eyebrow">@Html.T("about.endorsements", "ENDORSEMENTS")</span>
                 <span class="eyebrow-rule" aria-hidden="true"></span>
             </div>
             <div class="endorsements-row">
@@ -262,13 +262,13 @@
                 {
                     <div class="endorsement-card">
                         <div class="endorsement-quote-mask">
-                            <p class="endorsement-quote" data-i18n="@en.QuoteKey">@en.Quote</p>
+                            <p class="endorsement-quote">@en.Quote</p>
                         </div>
                         <div class="endorsement-person">
                             <div class="endorsement-avatar" style="--avatar-color: @en.AvatarColor">@en.Initials</div>
                             <div>
-                                <div class="endorsement-name" data-i18n="@en.NameKey">@en.Name</div>
-                                <div class="endorsement-role" data-i18n="@en.RoleKey">@en.Role</div>
+                                <div class="endorsement-name">@en.Name</div>
+                                <div class="endorsement-role">@en.Role</div>
                             </div>
                         </div>
                     </div>
