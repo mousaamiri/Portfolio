@@ -84,6 +84,8 @@
         </div>
 
         @* ===== SECTION 3: JOURNEY / TIMELINE ===== *@
+        @if (Model.Journey.Any())
+        {
         <div class="journey-block">
             <div class="about-eyebrow-row">
                 <span class="eyebrow">@Html.T("about.journey", "JOURNEY")</span>
@@ -120,8 +122,11 @@
                 }
             </div>
         </div>
+        }
 
         @* ===== SECTION 4: TECHNICAL FOOTPRINT ===== *@
+        @if (Model.Footprint.Any())
+        {
         <div class="footprint-block">
             <div class="about-eyebrow-row">
                 <span class="eyebrow">@Html.T("about.footprint", "TECHNICAL FOOTPRINT")</span>
@@ -144,8 +149,11 @@
                 }
             </div>
         </div>
+        }
 
         @* ===== SECTION 5: SKILLS ===== *@
+        @if (Model.Skills.Any())
+        {
         <div class="skills-block">
             <div class="about-eyebrow-row">
                 <span class="eyebrow">@Html.T("about.skills", "SKILLS")</span>
@@ -175,6 +183,7 @@
                 }
             </div>
         </div>
+        }
 
         @* ===== SECTION 6: HANDS-ON ===== (static tech pills) *@
         <div class="handson-block">
@@ -201,6 +210,8 @@
         </div>
 
         @* ===== SECTION 7: INTERESTS ===== *@
+        @if (Model.Interests.Any())
+        {
         <div class="interests-block">
             <div class="about-eyebrow-row">
                 <span class="eyebrow">@Html.T("about.interests", "INTERESTS")</span>
@@ -216,8 +227,11 @@
                 }
             </div>
         </div>
+        }
 
         @* ===== SECTION 7b: EDUCATION (public section — migration decision #6) ===== *@
+        @if (Model.Education.Any())
+        {
         <div class="education-block">
             <div class="about-eyebrow-row">
                 <span class="eyebrow">@Html.T("about.education", "EDUCATION")</span>
@@ -250,8 +264,11 @@
                 }
             </div>
         </div>
+        }
 
         @* ===== SECTION 8: ENDORSEMENTS ===== *@
+        @if (Model.Endorsements.Any())
+        {
         <div class="endorsements-block">
             <div class="about-eyebrow-row">
                 <span class="eyebrow">@Html.T("about.endorsements", "ENDORSEMENTS")</span>
@@ -275,6 +292,7 @@
                 }
             </div>
         </div>
+        }
 
     </div>
 
