@@ -15,6 +15,7 @@ using Portfolio.Domain.Entities.Skills;
 using Portfolio.Domain.Entities.Stats;
 using Portfolio.Domain.Entities.Testimonials;
 using Portfolio.Domain.Entities.Timeline;
+using Portfolio.Domain.Entities.UiTranslations;
 
 namespace Portfolio.Infrastructure.Data;
 
@@ -66,6 +67,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Testimonial> Testimonials => Set<Testimonial>();
     public DbSet<TestimonialTranslation> TestimonialTranslations => Set<TestimonialTranslation>();
 
+    public DbSet<UiTranslation> UiTranslations => Set<UiTranslation>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -76,6 +79,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Article>()
             .HasIndex(a => a.Slug)
+            .IsUnique();
+
+        modelBuilder.Entity<UiTranslation>()
+            .HasIndex(t => new { t.Key, t.Language })
             .IsUnique();
     }
 }

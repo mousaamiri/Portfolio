@@ -20,6 +20,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     private IPrincipleRepository? _principles;
     private IProficiencyGroupRepository? _proficiencyGroups;
     private ITestimonialRepository? _testimonials;
+    private IUiTranslationRepository? _uiTranslations;
 
     public IEducationRepository Educations => _educations ??= new EducationRepository(context);
     public IExperienceRepository Experiences => _experiences ??= new ExperienceRepository(context);
@@ -36,6 +37,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     public IPrincipleRepository Principles => _principles ??= new PrincipleRepository(context);
     public IProficiencyGroupRepository ProficiencyGroups => _proficiencyGroups ??= new ProficiencyGroupRepository(context);
     public ITestimonialRepository Testimonials => _testimonials ??= new TestimonialRepository(context);
+    public IUiTranslationRepository UiTranslations => _uiTranslations ??= new UiTranslationRepository(context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

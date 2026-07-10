@@ -17,6 +17,7 @@ public interface IUnitOfWork : IDisposable
     IPrincipleRepository Principles { get; }
     IProficiencyGroupRepository ProficiencyGroups { get; }
     ITestimonialRepository Testimonials { get; }
+    IUiTranslationRepository UiTranslations { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
