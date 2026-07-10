@@ -25,6 +25,8 @@ public class ProfileServiceTests
             Id = Guid.NewGuid(),
             Email = "me@example.com",
             GitHubUrl = "https://github.com/x",
+            TelegramUrl = "https://t.me/x",
+            TwitterUrl = "https://x.com/x",
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -47,6 +49,8 @@ public class ProfileServiceTests
         result.IsSuccess.Should().BeTrue();
         result.Value!.FullName.Should().Be("Mousa Amiri");
         result.Value.Email.Should().Be("me@example.com");
+        result.Value.TelegramUrl.Should().Be("https://t.me/x");
+        result.Value.TwitterUrl.Should().Be("https://x.com/x");
     }
 
     [Fact]
@@ -74,6 +78,8 @@ public class ProfileServiceTests
         var request = new UpsertProfileRequest
         {
             Email = "new@example.com",
+            TelegramUrl = "https://t.me/mousaamiri",
+            TwitterUrl = "https://x.com/mousaamiri",
             Translations = [new() { LanguageCode = "en", FullName = "N", JobTitle = "Dev" }]
         };
 
@@ -82,6 +88,8 @@ public class ProfileServiceTests
         result.IsSuccess.Should().BeTrue();
         captured.Should().NotBeNull();
         captured!.Email.Should().Be("new@example.com");
+        captured.TelegramUrl.Should().Be("https://t.me/mousaamiri");
+        captured.TwitterUrl.Should().Be("https://x.com/mousaamiri");
         _unitOfWorkMock.Verify(u => u.Profiles.AddAsync(It.IsAny<Profile>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 

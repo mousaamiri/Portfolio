@@ -16,6 +16,8 @@ public class ContactViewModel
     public string GitHubUrl { get; init; } = "#";
     public string LinkedInUrl { get; init; } = "#";
     public string InstagramUrl { get; init; } = "#";
+    public string TelegramUrl { get; init; } = "#";
+    public string TwitterUrl { get; init; } = "#";
     public string WebsiteUrl { get; init; } = "#";
     public List<FaqItemViewModel> Faqs { get; init; } = [];
 }

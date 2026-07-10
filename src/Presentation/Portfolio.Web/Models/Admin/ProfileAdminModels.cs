@@ -12,6 +12,8 @@ public class ProfileFormModel
     [Display(Name = "GitHub URL")] public string? GitHubUrl { get; set; }
     [Display(Name = "LinkedIn URL")] public string? LinkedInUrl { get; set; }
     [Display(Name = "Instagram URL")] public string? InstagramUrl { get; set; }
+    [Display(Name = "Telegram URL")] public string? TelegramUrl { get; set; }
+    [Display(Name = "X (Twitter) URL")] public string? TwitterUrl { get; set; }
     [Display(Name = "Website URL")] public string? WebsiteUrl { get; set; }
     [Display(Name = "Resume URL (EN)")] public string? ResumeUrlEn { get; set; }
     [Display(Name = "Resume URL (FA)")] public string? ResumeUrlFa { get; set; }
