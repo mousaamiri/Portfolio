@@ -1,6 +1,8 @@
 # MousaAmiri Portfolio
 
-A multilingual portfolio website with admin panel, built with ASP.NET Core using Clean Architecture.
+A bilingual (English / Persian) portfolio website with an admin panel, built with ASP.NET Core using Clean Architecture.
+
+![Home page](docs/images/banner.png)
 
 ---
 
@@ -10,14 +12,47 @@ This same dynamic behavior applies to every type of content on the site, so addi
 
 ---
 
-<!-- 👇 Paste your existing technical sections (installation, architecture, tech stack) below this line -->
+## Demo
+
+[![Watch the demo](docs/images/demo-cover.png)](docs/demo.mp4)
+
+> ▶️ Click the cover to play the walkthrough video (`docs/demo.mp4`).
+
+## Screenshots
+
+### Home
+
+| English (amber) | Persian (RTL) |
+|---|---|
+| ![Home — English](docs/images/home-en.png) | ![Home — Persian](docs/images/home-fa.png) |
+
+The whole site ships with a **live accent-color switcher** (the palette button, bottom-left) — every section re-themes instantly:
+
+| English — emerald accent | Persian — indigo accent |
+|---|---|
+| ![Home — emerald accent](docs/images/home-en-emerald.png) | ![Home — indigo accent](docs/images/home-fa-indigo.png) |
+
+### About & Contact
+
+| About | Contact |
+|---|---|
+| ![About page](docs/images/about-en.png) | ![Contact page](docs/images/contact-en.png) |
+
+## Features
+
+- **Bilingual (EN / FA)** — language resolved server-side via a cookie, with full RTL support.
+- **Live theming** — runtime accent-color and light/dark switching, no reload.
+- **Admin panel** — JWT-secured CRUD over every content type (projects, skills, experience, articles, FAQs, …).
+- **Dynamic content** — everything on the public site is database-backed and editable; no redeploy to publish.
+- **Command palette** — `Cmd/Ctrl + K` for quick navigation.
 
 ## Tech Stack
 
 - **Backend:** .NET 10, ASP.NET Core Web API
-- **ORM:** Entity Framework Core
+- **Frontend:** ASP.NET Core MVC (Razor Views) — consumes the API over HTTP
+- **ORM:** Entity Framework Core (SQL Server)
 - **Testing:** xUnit + FluentAssertions + Moq
-- **Architecture:** Clean Architecture (Monolith with internal layer separation)
+- **Architecture:** Clean Architecture (monolith with internal layer separation)
 
 ## Project Structure
 
@@ -28,14 +63,17 @@ Portfolio/
 │   │   ├── Portfolio.Domain/            # Entities, Value Objects, Enums
 │   │   └── Portfolio.Application/       # Interfaces, DTOs, Use Cases/Services
 │   ├── Infrastructure/
-│   │   └── Portfolio.Infrastructure/    # EF Core, Repository implementations, Migrations
+│   │   └── Portfolio.Infrastructure/    # EF Core, Repositories, Migrations, Seed
 │   └── Presentation/
-│       └── Portfolio.API/               # ASP.NET Core Web API (Public + Admin Controllers)
+│       ├── Portfolio.API/               # ASP.NET Core Web API (Public + Admin Controllers)
+│       └── Portfolio.Web/               # ASP.NET Core MVC front-end (consumes the API)
 ├── tests/
 │   ├── Portfolio.Domain.Tests/
 │   ├── Portfolio.Application.Tests/
 │   ├── Portfolio.Infrastructure.Tests/
-│   └── Portfolio.API.Tests/
+│   ├── Portfolio.API.Tests/
+│   └── Portfolio.Web.Tests/
+├── docs/                                # Screenshots and demo video
 ├── .gitignore
 ├── Portfolio.sln
 └── README.md
@@ -44,16 +82,19 @@ Portfolio/
 ## Layers
 
 ### Domain (`Portfolio.Domain`)
-The innermost layer containing business entities, value objects, and enums. Has no dependencies on other projects. Entity folders: `Projects`, `Skills`, `Experiences`, `Educations`.
+The innermost layer containing business entities, value objects, and enums. Has no dependencies on other projects.
 
 ### Application (`Portfolio.Application`)
 Contains interfaces, DTOs, and service contracts. Depends only on Domain. Defines the application's use cases without knowing implementation details.
 
 ### Infrastructure (`Portfolio.Infrastructure`)
-Implements the interfaces defined in Application. Contains EF Core DbContext, repository implementations, and migrations. Depends on Application and Domain.
+Implements the interfaces defined in Application. Contains the EF Core DbContext, repository implementations, migrations, and content seeding. Depends on Application and Domain.
 
 ### API (`Portfolio.API`)
-The entry point of the application. Contains ASP.NET Core controllers split into `Public` (portfolio display) and `Admin` (content management) areas. Depends on Application (for service interfaces) and Infrastructure (for DI registration).
+The back-end entry point. Contains ASP.NET Core controllers split into `Public` (portfolio display) and `Admin` (content management) areas. Depends on Application (service interfaces) and Infrastructure (DI registration).
+
+### Web (`Portfolio.Web`)
+The MVC front-end. Renders the public site and the admin panel with Razor views, and talks to `Portfolio.API` over HTTP — it holds no direct database dependency.
 
 ## Dependency Rule
 
@@ -62,15 +103,18 @@ Domain  <--  Application  <--  Infrastructure
                 ^                    |
                 |                    |
                 +----  API  ---------+
+                        ^
+                        |  (HTTP)
+                      Web
 ```
 
-Domain has zero dependencies. Each outer layer depends only on inner layers, never the reverse.
+Domain has zero dependencies. Each outer layer depends only on inner layers, never the reverse. The Web front-end depends on the API only over HTTP.
 
 ## Getting Started
 
 ### Prerequisites
 
-- .NET 10 SDK
+- .NET 10 SDK (see `global.json` — `10.0.301`)
 - SQL Server (or SQL Server LocalDB for development)
 
 ### 1. Clone and Build
@@ -106,11 +150,17 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;
 
 ### 4. Run
 
+The site is two processes — start the API first, then the Web front-end:
+
 ```bash
+# Terminal 1 — API
 dotnet run --project src/Presentation/Portfolio.API
+
+# Terminal 2 — Web front-end
+dotnet run --project src/Presentation/Portfolio.Web
 ```
 
-On first startup, the `AdminSeeder` automatically creates the admin user if the `Admins` table is empty.
+On first startup the `AdminSeeder` creates the admin user (if the `Admins` table is empty) and the `ContentSeeder` seeds the real portfolio content. The Web front-end reaches the API via the `PortfolioApi:BaseUrl` setting in its `appsettings.json`.
 
 ### 5. Run Tests
 
