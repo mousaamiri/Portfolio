@@ -164,6 +164,15 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.work-detail-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
 }
 
 .work-detail-preview-icon {
@@ -395,6 +404,23 @@
     color: var(--accent);
     display: block;
     margin-bottom: 8px;
+  }
+
+  .work-modal-preview {
+    width: 100%;
+    height: 180px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .work-modal-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
   }
 
   .work-modal-title {
