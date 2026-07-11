@@ -52,7 +52,7 @@ public class ContentSeederTests
         await sut.SeedAsync();
 
         var profile = await context.Profiles.Include(p => p.Translations).FirstAsync();
-        profile.Email.Should().Be("mousa.amiri.dev@gmail.com");
+        profile.Email.Should().Be("mousaamiri.code@gmail.com");
         profile.Translations.Should().HaveCount(2);
     }
 }

@@ -49,14 +49,14 @@ public class ContactControllerTests
         _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ProfileApiDto
             {
-                Email = "mousa.amiri.dev@gmail.com",
+                Email = "mousaamiri.code@gmail.com",
                 GitHubUrl = "https://github.com/mousaamiri"
             });
 
         var result = await _sut.Index(null, CancellationToken.None) as ViewResult;
         var model = (ContactViewModel)result!.Model!;
 
-        model.Email.Should().Be("mousa.amiri.dev@gmail.com");
+        model.Email.Should().Be("mousaamiri.code@gmail.com");
         model.GitHubUrl.Should().Be("https://github.com/mousaamiri");
         // Phone/location have no Profile field, so they always come from the real mock config.
         model.Phone.Should().Be("09906720069");

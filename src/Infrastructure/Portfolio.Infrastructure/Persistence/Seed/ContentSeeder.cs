@@ -97,9 +97,10 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
         var profile = new Profile
         {
             Id = Guid.NewGuid(),
-            Email = "mousa.amiri.dev@gmail.com",
+            Email = "mousaamiri.code@gmail.com",
             GitHubUrl = "https://github.com/mousaamiri",
             WebsiteUrl = "https://mousaamiri.ir",
+            TelegramUrl= "https://t.me/mousaamiri_code",
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };

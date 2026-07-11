@@ -86,7 +86,7 @@ public static class MockDataService
     // Portfolio.API.
     public static ContactViewModel GetContactViewModel() => new()
     {
-        Email = "mousa.amiri.dev@gmail.com",
+        Email = "mousaamiri.code@gmail.com",
         Phone = "09906720069",
         Location = "Tehran",
         Country = "Iran",
