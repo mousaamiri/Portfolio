@@ -1,0 +1,62 @@
+name: Deploy to Plesk Host
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-api:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Publish API
+        run: dotnet publish src\Presentation\Portfolio.API\Portfolio.API.csproj -c Release -o ./publish-api
+
+      - name: Deploy API via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME_API }}
+          password: ${{ secrets.FTP_PASSWORD_API }}
+          local-dir: ./publish-api/
+          server-dir: /
+          exclude: |
+            **/appsettings.Production.json
+
+  deploy-web:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Publish Web
+        run: dotnet publish src\Presentation\Portfolio.Web\Portfolio.Web.csproj -c Release -o ./publish-web
+
+      - name: Deploy Web via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME_WEB }}
+          password: ${{ secrets.FTP_PASSWORD_WEB }}
+          local-dir: ./publish-web/
+          server-dir: /
+          exclude: |
+            **/appsettings.Production.json
