@@ -113,4 +113,73 @@ public class ProfileServiceTests
         existing.Email.Should().Be("updated@example.com");
         _unitOfWorkMock.Verify(u => u.Profiles.AddAsync(It.IsAny<Profile>(), It.IsAny<CancellationToken>()), Times.Never);
     }
+
+    [Fact]
+    public async Task UpsertAsync_PersistsContactAndLocalizedBadgeFields()
+    {
+        Profile? captured = null;
+        _unitOfWorkMock.Setup(u => u.Profiles.GetFirstActiveWithTranslationsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Profile?)null);
+        _unitOfWorkMock.Setup(u => u.Profiles.AddAsync(It.IsAny<Profile>(), It.IsAny<CancellationToken>()))
+            .Callback<Profile, CancellationToken>((p, _) => captured = p)
+            .Returns(Task.CompletedTask);
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        var request = new UpsertProfileRequest
+        {
+            Email = "me@example.com",
+            Phone = "09906720069",
+            CountryCode = "IR",
+            Translations =
+            [
+                new()
+                {
+                    LanguageCode = "en", FullName = "Mousa", JobTitle = "Dev",
+                    RoleBadge = "Software Engineer", ExperienceBadge = "9+ Years",
+                    DegreeBadge = "Self-taught", PortraitAlt = "portrait",
+                    Location = "Tehran", Country = "Iran"
+                }
+            ]
+        };
+
+        var result = await _sut.UpsertAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        captured!.Phone.Should().Be("09906720069");
+        captured.CountryCode.Should().Be("IR");
+
+        var t = captured.Translations.Single();
+        t.RoleBadge.Should().Be("Software Engineer");
+        t.ExperienceBadge.Should().Be("9+ Years");
+        t.DegreeBadge.Should().Be("Self-taught");
+        t.PortraitAlt.Should().Be("portrait");
+        t.Location.Should().Be("Tehran");
+        t.Country.Should().Be("Iran");
+    }
+
+    [Fact]
+    public async Task GetPublicAsync_MapsContactAndBadgeFieldsToDto()
+    {
+        var profile = CreateProfile();
+        profile.Phone = "09906720069";
+        profile.CountryCode = "IR";
+        var t = profile.Translations.First();
+        t.RoleBadge = "Software Engineer";
+        t.ExperienceBadge = "9+ Years";
+        t.Location = "Tehran";
+        t.Country = "Iran";
+
+        _unitOfWorkMock.Setup(u => u.Profiles.GetFirstActiveWithTranslationsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(profile);
+
+        var result = await _sut.GetPublicAsync("en");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value!.Phone.Should().Be("09906720069");
+        result.Value.CountryCode.Should().Be("IR");
+        result.Value.RoleBadge.Should().Be("Software Engineer");
+        result.Value.ExperienceBadge.Should().Be("9+ Years");
+        result.Value.Location.Should().Be("Tehran");
+        result.Value.Country.Should().Be("Iran");
+    }
 }

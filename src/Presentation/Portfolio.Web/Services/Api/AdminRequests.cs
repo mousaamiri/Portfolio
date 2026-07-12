@@ -260,6 +260,12 @@ public class ProfileTranslationApiRequest
     public string? Bio { get; set; }
     public string? LearningTitle { get; set; }
     public string? LearningDesc { get; set; }
+    public string? RoleBadge { get; set; }
+    public string? ExperienceBadge { get; set; }
+    public string? DegreeBadge { get; set; }
+    public string? PortraitAlt { get; set; }
+    public string? Location { get; set; }
+    public string? Country { get; set; }
 }
 
 public class UpsertProfileApiRequest
@@ -275,6 +281,8 @@ public class UpsertProfileApiRequest
     public string? ResumeUrlFa { get; set; }
     public string? PortraitUrl { get; set; }
     public string? LearningDate { get; set; }
+    public string? Phone { get; set; }
+    public string? CountryCode { get; set; }
     public List<ProfileTranslationApiRequest> Translations { get; set; } = [];
 }
 

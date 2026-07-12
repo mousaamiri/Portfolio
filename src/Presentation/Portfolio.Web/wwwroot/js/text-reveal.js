@@ -86,37 +86,55 @@
         return;
       }
 
-      var isRTL = document.documentElement.getAttribute("dir") === "rtl";
-      var splitType = isRTL ? "words" : opts.type;
-      var split = SplitText.create(el, { type: splitType });
-      var units = splitType === "words" ? split.words : split.chars;
-
-      gsap.set(units, {
-        filter: "blur(" + opts.blurAmount + "px)",
-        opacity: 0,
-        y: opts.yOffset,
-      });
-
-      var tweenVars = {
-        filter: "blur(0px)",
-        opacity: 1,
-        y: 0,
-        duration: opts.duration,
-        ease: opts.ease,
-        stagger: opts.stagger,
-        delay: opts.delay,
-      };
-
-      if (opts.scroll) {
-        tweenVars.scrollTrigger = {
-          trigger: el,
-          start: "top 85%",
-          once: true,
-        };
-      }
-
-      gsap.to(units, tweenVars);
+      // SplitText measures glyph geometry, so it must run AFTER webfonts load —
+      // otherwise it splits fallback-font metrics and GSAP warns "SplitText called
+      // before fonts loaded". Defer the split/animate until document.fonts is ready
+      // (resolves immediately if fonts are already cached).
+      whenFontsReady(function () { splitAndAnimate(el, opts); });
     });
+  }
+
+  function splitAndAnimate(el, opts) {
+    var isRTL = document.documentElement.getAttribute("dir") === "rtl";
+    var splitType = isRTL ? "words" : opts.type;
+    var split = SplitText.create(el, { type: splitType });
+    var units = splitType === "words" ? split.words : split.chars;
+
+    gsap.set(units, {
+      filter: "blur(" + opts.blurAmount + "px)",
+      opacity: 0,
+      y: opts.yOffset,
+    });
+
+    var tweenVars = {
+      filter: "blur(0px)",
+      opacity: 1,
+      y: 0,
+      duration: opts.duration,
+      ease: opts.ease,
+      stagger: opts.stagger,
+      delay: opts.delay,
+    };
+
+    if (opts.scroll) {
+      tweenVars.scrollTrigger = {
+        trigger: el,
+        start: "top 85%",
+        once: true,
+      };
+    }
+
+    gsap.to(units, tweenVars);
+  }
+
+  /* Run cb once webfonts are ready. Falls back to an immediate call where the
+     Font Loading API is unavailable. */
+  function whenFontsReady(cb) {
+    if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === "function") {
+      document.fonts.ready.then(cb);
+    } else {
+      cb();
+    }
   }
 
   window.typewriterEffect = typewriterEffect;

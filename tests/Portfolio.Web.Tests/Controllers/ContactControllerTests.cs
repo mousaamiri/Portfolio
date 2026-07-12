@@ -50,7 +50,11 @@ public class ContactControllerTests
             .ReturnsAsync(new ProfileApiDto
             {
                 Email = "mousaamiri.code@gmail.com",
-                GitHubUrl = "https://github.com/mousaamiri"
+                GitHubUrl = "https://github.com/mousaamiri",
+                Phone = "09906720069",
+                Location = "Tehran",
+                Country = "Iran",
+                CountryCode = "IR"
             });
 
         var result = await _sut.Index(null, CancellationToken.None) as ViewResult;
@@ -58,14 +62,15 @@ public class ContactControllerTests
 
         model.Email.Should().Be("mousaamiri.code@gmail.com");
         model.GitHubUrl.Should().Be("https://github.com/mousaamiri");
-        // Phone/location have no Profile field, so they always come from the real mock config.
+        // All contact details now come from the Profile entity (no mock fallback).
         model.Phone.Should().Be("09906720069");
         model.Location.Should().Be("Tehran");
         model.Country.Should().Be("Iran");
+        model.CountryCode.Should().Be("IR");
     }
 
     [Fact]
-    public async Task Index_WhenNoProfile_FallsBackToMockContactInfo()
+    public async Task Index_WhenNoProfile_ContactInfoIsEmpty()
     {
         _api.Setup(a => a.GetFaqsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
         _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -74,7 +79,10 @@ public class ContactControllerTests
         var result = await _sut.Index(null, CancellationToken.None) as ViewResult;
         var model = (ContactViewModel)result!.Model!;
 
-        model.Email.Should().NotBeNullOrWhiteSpace();
+        // No mock fallback anymore — a missing profile yields empty contact fields
+        // (the page still renders). An outage is a separate ApiUnavailable path.
+        model.Email.Should().BeEmpty();
+        model.Phone.Should().BeEmpty();
     }
 
     [Fact]

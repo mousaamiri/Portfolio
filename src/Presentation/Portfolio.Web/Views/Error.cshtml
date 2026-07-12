@@ -1,0 +1,143 @@
+@model Portfolio.Web.Models.ViewModels.ErrorViewModel
+@{
+    Layout = null;
+    var fa = Model.Language == "fa";
+    var ar = Model.Language == "ar";
+    var rtl = fa || ar;
+    var dir = rtl ? "rtl" : "ltr";
+
+    // Bilingual copy, chosen server-side from the language cookie. Kept inline (no
+    // @Html.T / API) so the page renders during a full backend outage.
+    string title, lead, hint, retry, home;
+    if (Model.IsServerUnavailable)
+    {
+        if (fa)
+        {
+            title = "ارتباط با سرور برقرار نشد";
+            lead = "در حال حاضر نمی‌توانیم به سرور یا پایگاه‌داده متصل شویم، بنابراین محتوای این صفحه بارگذاری نشد.";
+            hint = "این معمولاً موقتی است. لطفاً چند لحظه دیگر دوباره تلاش کنید.";
+        }
+        else if (ar)
+        {
+            title = "تعذّر الاتصال بالخادم";
+            lead = "لا يمكننا الوصول إلى الخادم أو قاعدة البيانات حاليًا، لذلك لم يتم تحميل محتوى هذه الصفحة.";
+            hint = "عادةً ما يكون هذا مؤقتًا. يُرجى المحاولة مرة أخرى بعد لحظات.";
+        }
+        else
+        {
+            title = "Couldn't reach the server";
+            lead = "We can't connect to the server or database right now, so this page's content didn't load.";
+            hint = "This is usually temporary. Please try again in a moment.";
+        }
+    }
+    else
+    {
+        if (fa)
+        {
+            title = "یک خطای غیرمنتظره رخ داد";
+            lead = "مشکلی در پردازش درخواست شما پیش آمد.";
+            hint = "لطفاً دوباره تلاش کنید. اگر مشکل ادامه داشت، بعداً سر بزنید.";
+        }
+        else if (ar)
+        {
+            title = "حدث خطأ غير متوقع";
+            lead = "حدثت مشكلة أثناء معالجة طلبك.";
+            hint = "يُرجى المحاولة مجددًا. إذا استمرت المشكلة، عُد لاحقًا.";
+        }
+        else
+        {
+            title = "Something went wrong";
+            lead = "There was a problem processing your request.";
+            hint = "Please try again. If it keeps happening, check back later.";
+        }
+    }
+    retry = fa ? "تلاش مجدد" : ar ? "إعادة المحاولة" : "Try again";
+    home = fa ? "خانه" : ar ? "الرئيسية" : "Home";
+    var statusLabel = Model.IsServerUnavailable ? "503" : "500";
+}
+<!DOCTYPE html>
+<html lang="@Model.Language" dir="@dir">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>@title</title>
+    <link rel="icon" type="image/svg+xml" href="~/images/favicon.svg" />
+    <script>
+        (function () { var t; try { t = localStorage.getItem('portfolio-theme'); } catch (e) { } if (!t) t = matchMedia('(prefers-color-scheme:light)').matches ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); })();
+    </script>
+    <style>
+        :root {
+            --bg: #0b0b0f; --panel: #14141b; --text: #f4f4f7; --muted: #a1a1b3;
+            --accent: #f5b301; --border: rgba(255,255,255,.08); --ring: rgba(245,179,1,.25);
+        }
+        [data-theme="light"] {
+            --bg: #f7f7fb; --panel: #ffffff; --text: #16161d; --muted: #5a5a6e;
+            --accent: #d99400; --border: rgba(0,0,0,.08); --ring: rgba(217,148,0,.18);
+        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0; background: var(--bg); color: var(--text);
+            font-family: @(rtl ? "Vazirmatn, Tahoma, sans-serif" : "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif");
+            display: flex; align-items: center; justify-content: center; padding: 24px;
+            -webkit-font-smoothing: antialiased;
+        }
+        .card {
+            width: 100%; max-width: 480px; background: var(--panel);
+            border: 1px solid var(--border); border-radius: 20px; padding: 40px 32px;
+            text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.28);
+        }
+        .status { font-size: 13px; font-weight: 700; letter-spacing: .18em; color: var(--muted); margin: 0 0 20px; }
+        .icon {
+            width: 64px; height: 64px; margin: 0 auto 24px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--ring); color: var(--accent);
+        }
+        .icon svg { width: 32px; height: 32px; }
+        h1 { font-size: 24px; line-height: 1.25; margin: 0 0 12px; font-weight: 700; }
+        .lead { font-size: 16px; line-height: 1.6; color: var(--text); margin: 0 0 8px; }
+        .hint { font-size: 14px; line-height: 1.6; color: var(--muted); margin: 0 0 28px; }
+        .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            appearance: none; cursor: pointer; border: 1px solid var(--border);
+            border-radius: 12px; padding: 12px 22px; font-size: 15px; font-weight: 600;
+            text-decoration: none; transition: transform .06s ease, background .2s ease;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn--primary { background: var(--accent); color: #16161d; border-color: transparent; }
+        .btn--ghost { background: transparent; color: var(--text); }
+        .rid { margin: 24px 0 0; font-size: 11px; color: var(--muted); font-family: JetBrains Mono, ui-monospace, monospace; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <main class="card" role="alert">
+        <p class="status">@statusLabel</p>
+        <div class="icon" aria-hidden="true">
+            @if (Model.IsServerUnavailable)
+            {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="14" width="20" height="8" rx="2"/><rect x="2" y="2" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/><line x1="18" y1="4" x2="10" y2="20"/></svg>
+            }
+            else
+            {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            }
+        </div>
+        <h1>@title</h1>
+        <p class="lead">@lead</p>
+        <p class="hint">@hint</p>
+        <div class="actions">
+            <button type="button" class="btn btn--primary" onclick="location.reload()">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                <span>@retry</span>
+            </button>
+            <a href="/" class="btn btn--ghost">@home</a>
+        </div>
+        @if (Model.ShowRequestId)
+        {
+            <p class="rid">@Model.RequestId</p>
+        }
+    </main>
+</body>
+</html>

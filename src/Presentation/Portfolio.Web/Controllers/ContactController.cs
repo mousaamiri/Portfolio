@@ -7,29 +7,27 @@ namespace Portfolio.Web.Controllers;
 
 public class ContactController(IPortfolioApiClient api) : Controller
 {
-    // GET /Contact — email/socials prefer the Profile entity (fall back to the real
-    // mock config); phone/location/website come from the mock (no Profile field yet).
-    // FAQ list from Portfolio.API. The form posts for real (Submit below).
+    // GET /Contact — all contact details come from the Profile entity (Portfolio.API,
+    // database-backed). FAQ list from Portfolio.API. The form posts for real (Submit below).
     public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
         var language = WebLanguage.ResolveFromRequest(HttpContext, lang);
         var profile = await api.GetProfileAsync(language, cancellationToken);
-        var info = MockDataService.GetContactViewModel();
         var faqs = await api.GetFaqsAsync(language, cancellationToken);
 
         var model = new ContactViewModel
         {
-            Email = string.IsNullOrWhiteSpace(profile?.Email) ? info.Email : profile!.Email,
-            Phone = info.Phone,
-            Location = info.Location,
-            Country = info.Country,
-            CountryCode = info.CountryCode,
-            GitHubUrl = string.IsNullOrWhiteSpace(profile?.GitHubUrl) ? info.GitHubUrl : profile!.GitHubUrl!,
-            LinkedInUrl = string.IsNullOrWhiteSpace(profile?.LinkedInUrl) ? info.LinkedInUrl : profile!.LinkedInUrl!,
-            InstagramUrl = string.IsNullOrWhiteSpace(profile?.InstagramUrl) ? info.InstagramUrl : profile!.InstagramUrl!,
-            TelegramUrl = string.IsNullOrWhiteSpace(profile?.TelegramUrl) ? info.TelegramUrl : profile!.TelegramUrl!,
-            TwitterUrl = string.IsNullOrWhiteSpace(profile?.TwitterUrl) ? info.TwitterUrl : profile!.TwitterUrl!,
-            WebsiteUrl = string.IsNullOrWhiteSpace(profile?.WebsiteUrl) ? info.WebsiteUrl : profile!.WebsiteUrl!,
+            Email = profile?.Email ?? string.Empty,
+            Phone = profile?.Phone ?? string.Empty,
+            Location = profile?.Location ?? string.Empty,
+            Country = profile?.Country ?? string.Empty,
+            CountryCode = profile?.CountryCode ?? string.Empty,
+            GitHubUrl = profile?.GitHubUrl ?? string.Empty,
+            LinkedInUrl = profile?.LinkedInUrl ?? string.Empty,
+            InstagramUrl = profile?.InstagramUrl ?? string.Empty,
+            TelegramUrl = profile?.TelegramUrl ?? string.Empty,
+            TwitterUrl = profile?.TwitterUrl ?? string.Empty,
+            WebsiteUrl = profile?.WebsiteUrl ?? string.Empty,
             Faqs = faqs.Select(ApiViewModelMapper.ToViewModel).ToList()
         };
 

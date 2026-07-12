@@ -16,7 +16,10 @@ public class LanguageMiddleware(RequestDelegate next)
     public async Task InvokeAsync(HttpContext context, LocalizationState state, IPortfolioApiClient api)
     {
         var path = context.Request.Path.Value ?? string.Empty;
-        if (path.StartsWith("/Admin", StringComparison.OrdinalIgnoreCase))
+        // Admin renders from its own literals. The error page must not re-hit the API
+        // (it may be the very thing that's down) — skip both to avoid a fault loop.
+        if (path.StartsWith("/Admin", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWith("/Error", StringComparison.OrdinalIgnoreCase))
         {
             await next(context);
             return;

@@ -11,12 +11,9 @@ public class HomeController(IPortfolioApiClient api) : Controller
     {
         var language = WebLanguage.ResolveFromRequest(HttpContext, lang);
 
-        // Hero now comes from the Profile entity (Portfolio.API). Until a profile is
-        // seeded, fall back to the mock hero so the page still renders (retired once
-        // real content is seeded in F1).
+        // All content comes from Portfolio.API (backed by the database). If the API
+        // is unreachable, PortfolioApiClient throws and the global error page renders.
         var profile = await api.GetProfileAsync(language, cancellationToken);
-        var hero = MockDataService.GetHomeViewModel();
-
         var projects = await api.GetProjectsAsync(language, cancellationToken);
         var skills = await api.GetSkillsAsync(language, cancellationToken);
         var experiences = await api.GetExperiencesAsync(language, cancellationToken);
@@ -24,17 +21,17 @@ public class HomeController(IPortfolioApiClient api) : Controller
 
         var model = new HomeViewModel
         {
-            FullName = profile?.FullName ?? hero.FullName,
-            JobTitle = profile?.JobTitle ?? hero.JobTitle,
-            Bio = profile?.Bio ?? hero.Bio,
-            ResumeUrlEn = profile?.ResumeUrlEn ?? hero.ResumeUrlEn,
-            ResumeUrlFa = profile?.ResumeUrlFa ?? hero.ResumeUrlFa,
-            GitHubUrl = profile?.GitHubUrl ?? hero.GitHubUrl,
-            InstagramUrl = profile?.InstagramUrl ?? hero.InstagramUrl,
-            LinkedInUrl = profile?.LinkedInUrl ?? hero.LinkedInUrl,
-            LearningTitle = profile?.LearningTitle ?? hero.LearningTitle,
-            LearningDesc = profile?.LearningDesc ?? hero.LearningDesc,
-            LearningDate = profile?.LearningDate ?? hero.LearningDate,
+            FullName = profile?.FullName ?? string.Empty,
+            JobTitle = profile?.JobTitle ?? string.Empty,
+            Bio = profile?.Bio ?? string.Empty,
+            ResumeUrlEn = profile?.ResumeUrlEn ?? string.Empty,
+            ResumeUrlFa = profile?.ResumeUrlFa ?? string.Empty,
+            GitHubUrl = profile?.GitHubUrl ?? string.Empty,
+            InstagramUrl = profile?.InstagramUrl ?? string.Empty,
+            LinkedInUrl = profile?.LinkedInUrl ?? string.Empty,
+            LearningTitle = profile?.LearningTitle ?? string.Empty,
+            LearningDesc = profile?.LearningDesc ?? string.Empty,
+            LearningDate = profile?.LearningDate ?? string.Empty,
             Projects = projects.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Skills = skills.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Experiences = experiences.Select(ApiViewModelMapper.ToViewModel).ToList(),

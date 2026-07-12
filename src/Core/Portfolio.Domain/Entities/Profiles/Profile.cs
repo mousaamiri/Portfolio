@@ -21,5 +21,10 @@ public class Profile : BaseEntity, ITranslatable<ProfileTranslation>
     public string? PortraitUrl { get; set; }
     public string? LearningDate { get; set; }
 
+    // Language-neutral contact details surfaced on the Contact page. Localized
+    // parts (Location/Country label) live on ProfileTranslation.
+    public string? Phone { get; set; }
+    public string? CountryCode { get; set; }
+
     public ICollection<ProfileTranslation> Translations { get; set; } = [];
 }
