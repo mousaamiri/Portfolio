@@ -10,12 +10,10 @@
 }
 
 @* ======================================================
-   TODO: Experience page — currently from MockDataService
-   Model: ExperiencePageViewModel (metrics, principles, CV education, role, proficiency)
-   Future: will be replaced by a real data source (out of scope for now)
-   Note: text stays English-in-markup with data-i18n keys; translations.js → Farsi.
-   NOTE (Step 5): the Proficiency Matrix is NOT the About skills data — different
-   structure (name lists, no percentages), so it is modeled/rendered separately.
+   Experience page. Model: ExperiencePageViewModel — populated from Portfolio.API
+   (Profile summary + ImpactMetrics/Principles/Proficiency/Experiences).
+   NOTE: the Proficiency Matrix is NOT the About skills data — different structure
+   (name lists, no percentages), so it is modeled/rendered separately.
    ====================================================== *@
 <section id="experience" class="experience-section">
     <div class="container">

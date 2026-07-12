@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Portfolio.Web.Models.ViewModels;
 using Portfolio.Web.Services;
 using Portfolio.Web.Services.Api;
 
@@ -12,9 +13,8 @@ public class ExperienceController(IPortfolioApiClient api) : Controller
 
         // Impact metrics, core principles, proficiency matrix and professional history
         // all come from Portfolio.API; the Summary name/text come from the Profile
-        // entity. The static site's fabricated CV-education / single-role / Stack are
-        // intentionally left empty (no real equivalent) and hidden by the view.
-        var model = MockDataService.GetExperiencePageViewModel();
+        // entity. Sections with no real data stay empty and are hidden by the view.
+        var model = new ExperiencePageViewModel();
 
         var profile = await api.GetProfileAsync(language, cancellationToken);
         var experiences = await api.GetExperiencesAsync(language, cancellationToken);

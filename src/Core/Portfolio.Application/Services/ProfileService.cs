@@ -43,6 +43,8 @@ public class ProfileService(IUnitOfWork unitOfWork) : IProfileService
         profile.ResumeUrlFa = request.ResumeUrlFa;
         profile.PortraitUrl = request.PortraitUrl;
         profile.LearningDate = request.LearningDate;
+        profile.Phone = request.Phone;
+        profile.CountryCode = request.CountryCode;
 
         if (!isNew)
             profile.UpdatedAt = DateTime.UtcNow;
@@ -57,7 +59,13 @@ public class ProfileService(IUnitOfWork unitOfWork) : IProfileService
                 Tagline = t.Tagline,
                 Bio = t.Bio,
                 LearningTitle = t.LearningTitle,
-                LearningDesc = t.LearningDesc
+                LearningDesc = t.LearningDesc,
+                RoleBadge = t.RoleBadge,
+                ExperienceBadge = t.ExperienceBadge,
+                DegreeBadge = t.DegreeBadge,
+                PortraitAlt = t.PortraitAlt,
+                Location = t.Location,
+                Country = t.Country
             }).ToList(),
             (existing, incoming) =>
             {
@@ -67,6 +75,12 @@ public class ProfileService(IUnitOfWork unitOfWork) : IProfileService
                 existing.Bio = incoming.Bio;
                 existing.LearningTitle = incoming.LearningTitle;
                 existing.LearningDesc = incoming.LearningDesc;
+                existing.RoleBadge = incoming.RoleBadge;
+                existing.ExperienceBadge = incoming.ExperienceBadge;
+                existing.DegreeBadge = incoming.DegreeBadge;
+                existing.PortraitAlt = incoming.PortraitAlt;
+                existing.Location = incoming.Location;
+                existing.Country = incoming.Country;
             });
 
         if (isNew)
@@ -102,6 +116,8 @@ public class ProfileService(IUnitOfWork unitOfWork) : IProfileService
             ResumeUrlFa = profile.ResumeUrlFa,
             PortraitUrl = profile.PortraitUrl,
             LearningDate = profile.LearningDate,
+            Phone = profile.Phone,
+            CountryCode = profile.CountryCode,
             IsActive = profile.IsActive,
             CreatedAt = profile.CreatedAt,
             FullName = t?.FullName ?? string.Empty,
@@ -109,7 +125,13 @@ public class ProfileService(IUnitOfWork unitOfWork) : IProfileService
             Tagline = t?.Tagline,
             Bio = t?.Bio,
             LearningTitle = t?.LearningTitle,
-            LearningDesc = t?.LearningDesc
+            LearningDesc = t?.LearningDesc,
+            RoleBadge = t?.RoleBadge,
+            ExperienceBadge = t?.ExperienceBadge,
+            DegreeBadge = t?.DegreeBadge,
+            PortraitAlt = t?.PortraitAlt,
+            Location = t?.Location,
+            Country = t?.Country
         };
     }
 }

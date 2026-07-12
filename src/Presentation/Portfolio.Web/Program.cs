@@ -46,6 +46,9 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
+    // Any unhandled exception (notably ApiUnavailableException when Portfolio.API /
+    // the database is unreachable) renders the clean error page instead of a 500.
+    app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 

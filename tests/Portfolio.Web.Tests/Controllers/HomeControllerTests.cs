@@ -85,6 +85,9 @@ public class HomeControllerTests
     [Fact]
     public async Task Index_Model_HasFullName()
     {
+        _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ProfileApiDto { FullName = "Mousa Amiri", JobTitle = "Backend Dev" });
+
         var model = await InvokeIndexAsync();
 
         model.FullName.Should().NotBeNullOrWhiteSpace();
@@ -93,6 +96,9 @@ public class HomeControllerTests
     [Fact]
     public async Task Index_Model_HasJobTitle()
     {
+        _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ProfileApiDto { FullName = "Mousa Amiri", JobTitle = "Backend Dev" });
+
         var model = await InvokeIndexAsync();
 
         model.JobTitle.Should().NotBeNullOrWhiteSpace();
@@ -121,14 +127,17 @@ public class HomeControllerTests
     }
 
     [Fact]
-    public async Task Index_FallsBackToMockHeroWhenProfileMissing()
+    public async Task Index_WhenProfileMissing_HeroFieldsAreEmpty()
     {
         _api.Setup(a => a.GetProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ProfileApiDto?)null);
 
         var model = await InvokeIndexAsync();
 
-        model.FullName.Should().NotBeNullOrWhiteSpace();
+        // No mock hero fallback anymore — a missing profile yields empty hero copy
+        // (the page still renders; an outage is the separate ApiUnavailable path).
+        model.FullName.Should().BeEmpty();
+        model.JobTitle.Should().BeEmpty();
     }
 
     #endregion

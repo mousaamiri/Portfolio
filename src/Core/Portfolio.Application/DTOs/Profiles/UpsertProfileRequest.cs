@@ -17,6 +17,8 @@ public class UpsertProfileRequest
     public string? ResumeUrlFa { get; set; }
     public string? PortraitUrl { get; set; }
     public string? LearningDate { get; set; }
+    public string? Phone { get; set; }
+    public string? CountryCode { get; set; }
 
     [Required]
     [MinLength(1)]

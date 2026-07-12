@@ -92,7 +92,17 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
 
     private async Task SeedProfileAsync(CancellationToken ct)
     {
-        if (await context.Profiles.AnyAsync(ct)) return;
+        // A profile may already exist from an earlier seed (before the contact/badge
+        // fields were added). Backfill only the still-empty fields so a redeploy
+        // populates them without clobbering anything edited from the admin panel.
+        var existing = await context.Profiles
+            .Include(p => p.Translations)
+            .FirstOrDefaultAsync(ct);
+        if (existing is not null)
+        {
+            await BackfillProfileAsync(existing, ct);
+            return;
+        }
 
         var profile = new Profile
         {
@@ -101,6 +111,14 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
             GitHubUrl = "https://github.com/mousaamiri",
             WebsiteUrl = "https://mousaamiri.ir",
             TelegramUrl= "https://t.me/mousaamiri_code",
+            ResumeUrlEn = "/resumes/resume-en.pdf",
+            ResumeUrlFa = "/resumes/resume-fa.pdf",
+            PortraitUrl = "/images/about-portrait.jpg",
+            LearningDate = "Jul 6, 2026",
+            Phone = "09906720069",
+            CountryCode = "IR",
+            // LinkedIn/Instagram intentionally left null — no real profiles yet, so
+            // the hero/contact icons hide instead of linking to "#".
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -113,7 +131,15 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
             Bio = "Backend developer focused on .NET and C#, working with Clean Architecture, " +
                   "Domain-Driven Design, and CQRS. Nine years of hands-on, self-directed engineering " +
                   "across Java, WordPress, and the .NET ecosystem, now concentrated on building " +
-                  "maintainable, well-structured backend systems."
+                  "maintainable, well-structured backend systems.",
+            LearningTitle = "Learning LangChain",
+            LearningDesc = "Exploring LLM orchestration, chains, agents, and tool integration with the LangChain framework.",
+            RoleBadge = "Software Engineer",
+            ExperienceBadge = "9+ Years",
+            DegreeBadge = "Self-taught",
+            PortraitAlt = "Mousa — portrait photo",
+            Location = "Tehran",
+            Country = "Iran"
         });
         profile.Translations.Add(new ProfileTranslation
         {
@@ -123,12 +149,77 @@ public class ContentSeeder(AppDbContext context, ILogger<ContentSeeder> logger)
             Tagline = "PRESS CMD+K FOR COMMANDS",
             Bio = "برنامه‌نویس بک‌اند با تمرکز بر دات‌نت و سی‌شارپ، با تجربه در Clean Architecture، " +
                   "Domain-Driven Design و CQRS. نه سال تجربه‌ی عملی و خودآموز در جاوا، وردپرس و " +
-                  "اکوسیستم دات‌نت، که اکنون بر ساخت سیستم‌های بک‌اند قابل‌نگهداری و ساختاریافته متمرکز شده است."
+                  "اکوسیستم دات‌نت، که اکنون بر ساخت سیستم‌های بک‌اند قابل‌نگهداری و ساختاریافته متمرکز شده است.",
+            LearningTitle = "در حال یادگیری LangChain",
+            LearningDesc = "کاوش در ارکستراسیون مدل‌های زبانی، زنجیره‌ها، عامل‌ها و یکپارچه‌سازی ابزارها با فریم‌ورک LangChain.",
+            RoleBadge = "مهندس نرم‌افزار",
+            ExperienceBadge = "بیش از ۹ سال",
+            DegreeBadge = "خودآموز",
+            PortraitAlt = "موسی — عکس پرتره",
+            Location = "تهران",
+            Country = "ایران"
         });
 
         await context.Profiles.AddAsync(profile, ct);
         await context.SaveChangesAsync(ct);
         logger.LogInformation("Seeded profile.");
+    }
+
+    // Fills fields added after the profile was first seeded, only where still empty,
+    // so contact/badge/learning data appears after a redeploy without overwriting
+    // anything the owner set via the admin panel.
+    private async Task BackfillProfileAsync(Profile profile, CancellationToken ct)
+    {
+        var changed = false;
+
+        changed |= SetIfEmpty(() => profile.ResumeUrlEn, v => profile.ResumeUrlEn = v, "/resumes/resume-en.pdf");
+        changed |= SetIfEmpty(() => profile.ResumeUrlFa, v => profile.ResumeUrlFa = v, "/resumes/resume-fa.pdf");
+        changed |= SetIfEmpty(() => profile.PortraitUrl, v => profile.PortraitUrl = v, "/images/about-portrait.jpg");
+        changed |= SetIfEmpty(() => profile.LearningDate, v => profile.LearningDate = v, "Jul 6, 2026");
+        changed |= SetIfEmpty(() => profile.Phone, v => profile.Phone = v, "09906720069");
+        changed |= SetIfEmpty(() => profile.CountryCode, v => profile.CountryCode = v, "IR");
+
+        foreach (var t in profile.Translations)
+        {
+            if (t.Language == Language.En)
+            {
+                changed |= SetIfEmpty(() => t.LearningTitle, v => t.LearningTitle = v, "Learning LangChain");
+                changed |= SetIfEmpty(() => t.LearningDesc, v => t.LearningDesc = v,
+                    "Exploring LLM orchestration, chains, agents, and tool integration with the LangChain framework.");
+                changed |= SetIfEmpty(() => t.RoleBadge, v => t.RoleBadge = v, "Software Engineer");
+                changed |= SetIfEmpty(() => t.ExperienceBadge, v => t.ExperienceBadge = v, "9+ Years");
+                changed |= SetIfEmpty(() => t.DegreeBadge, v => t.DegreeBadge = v, "Self-taught");
+                changed |= SetIfEmpty(() => t.PortraitAlt, v => t.PortraitAlt = v, "Mousa — portrait photo");
+                changed |= SetIfEmpty(() => t.Location, v => t.Location = v, "Tehran");
+                changed |= SetIfEmpty(() => t.Country, v => t.Country = v, "Iran");
+            }
+            else if (t.Language == Language.Fa)
+            {
+                changed |= SetIfEmpty(() => t.LearningTitle, v => t.LearningTitle = v, "در حال یادگیری LangChain");
+                changed |= SetIfEmpty(() => t.LearningDesc, v => t.LearningDesc = v,
+                    "کاوش در ارکستراسیون مدل‌های زبانی، زنجیره‌ها، عامل‌ها و یکپارچه‌سازی ابزارها با فریم‌ورک LangChain.");
+                changed |= SetIfEmpty(() => t.RoleBadge, v => t.RoleBadge = v, "مهندس نرم‌افزار");
+                changed |= SetIfEmpty(() => t.ExperienceBadge, v => t.ExperienceBadge = v, "بیش از ۹ سال");
+                changed |= SetIfEmpty(() => t.DegreeBadge, v => t.DegreeBadge = v, "خودآموز");
+                changed |= SetIfEmpty(() => t.PortraitAlt, v => t.PortraitAlt = v, "موسی — عکس پرتره");
+                changed |= SetIfEmpty(() => t.Location, v => t.Location = v, "تهران");
+                changed |= SetIfEmpty(() => t.Country, v => t.Country = v, "ایران");
+            }
+        }
+
+        if (changed)
+        {
+            profile.UpdatedAt = DateTime.UtcNow;
+            await context.SaveChangesAsync(ct);
+            logger.LogInformation("Backfilled new profile fields on the existing profile.");
+        }
+    }
+
+    private static bool SetIfEmpty(Func<string?> get, Action<string> set, string value)
+    {
+        if (!string.IsNullOrWhiteSpace(get())) return false;
+        set(value);
+        return true;
     }
 
     private async Task SeedSkillsAsync(CancellationToken ct)

@@ -703,8 +703,18 @@
     return resolveURL(href);
   }
 
+  /* Resolve the nearest <a> ancestor of an event target. On capture-phase
+     mouseenter/mouseleave and on touchstart, e.target can be a text node or the
+     document itself — neither has .closest — so normalise to an Element first. */
+  function closestLink(target) {
+    var el = target;
+    if (el && el.nodeType === 3) el = el.parentElement;   // text node → element
+    if (!el || typeof el.closest !== 'function') return null; // document/window/etc.
+    return el.closest('a');
+  }
+
   function onLinkHoverIn(e) {
-    var link = e.target.closest('a');
+    var link = closestLink(e.target);
     if (!link) return;
     var url = getPrefetchURL(link);
     if (!url || prefetchedURLs.has(url) || cacheHas(url)) return;
@@ -717,7 +727,7 @@
   }
 
   function onTouchStart(e) {
-    var link = e.target.closest('a');
+    var link = closestLink(e.target);
     if (!link) return;
     var url = getPrefetchURL(link);
     if (url) prefetchURL(url);
@@ -753,7 +763,7 @@
   /* ======================== EVENT HANDLERS ======================== */
 
   document.addEventListener('click', function (e) {
-    var link = e.target.closest('a');
+    var link = closestLink(e.target);
     if (!link) return;
 
     var href = link.getAttribute('href');

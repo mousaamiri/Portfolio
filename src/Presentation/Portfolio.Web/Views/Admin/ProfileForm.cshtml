@@ -38,9 +38,13 @@
         <div class="admin-form-group"><label class="admin-form-label" asp-for="ResumeUrlFa"></label><input class="admin-form-input" asp-for="ResumeUrlFa" /></div>
         <div class="admin-form-group"><label class="admin-form-label" asp-for="PortraitUrl"></label><input class="admin-form-input" asp-for="PortraitUrl" /></div>
     </div>
-    <div class="admin-form-group" style="max-width:260px">
-        <label class="admin-form-label" asp-for="LearningDate"></label>
-        <input class="admin-form-input" asp-for="LearningDate" placeholder="Jul 6, 2026" />
+    <div class="admin-form-row">
+        <div class="admin-form-group" style="max-width:260px">
+            <label class="admin-form-label" asp-for="LearningDate"></label>
+            <input class="admin-form-input" asp-for="LearningDate" placeholder="Jul 6, 2026" />
+        </div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="Phone"></label><input class="admin-form-input" asp-for="Phone" /></div>
+        <div class="admin-form-group" style="max-width:160px"><label class="admin-form-label" asp-for="CountryCode"></label><input class="admin-form-input" asp-for="CountryCode" placeholder="IR" /></div>
     </div>
 
     <h3 class="admin-form-section">English</h3>
@@ -54,6 +58,16 @@
         <div class="admin-form-group"><label class="admin-form-label" asp-for="LearningTitleEn"></label><input class="admin-form-input" asp-for="LearningTitleEn" /></div>
         <div class="admin-form-group"><label class="admin-form-label" asp-for="LearningDescEn"></label><input class="admin-form-input" asp-for="LearningDescEn" /></div>
     </div>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="RoleBadgeEn"></label><input class="admin-form-input" asp-for="RoleBadgeEn" placeholder="Software Engineer" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="ExperienceBadgeEn"></label><input class="admin-form-input" asp-for="ExperienceBadgeEn" placeholder="3+ Years" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="DegreeBadgeEn"></label><input class="admin-form-input" asp-for="DegreeBadgeEn" /></div>
+    </div>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="PortraitAltEn"></label><input class="admin-form-input" asp-for="PortraitAltEn" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="LocationEn"></label><input class="admin-form-input" asp-for="LocationEn" placeholder="Tehran" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="CountryEn"></label><input class="admin-form-input" asp-for="CountryEn" placeholder="Iran" /></div>
+    </div>
 
     <h3 class="admin-form-section">Persian (optional)</h3>
     <div class="admin-form-row">
@@ -65,6 +79,16 @@
     <div class="admin-form-row">
         <div class="admin-form-group"><label class="admin-form-label" asp-for="LearningTitleFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="LearningTitleFa" dir="rtl" /></div>
         <div class="admin-form-group"><label class="admin-form-label" asp-for="LearningDescFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="LearningDescFa" dir="rtl" /></div>
+    </div>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="RoleBadgeFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="RoleBadgeFa" dir="rtl" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="ExperienceBadgeFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="ExperienceBadgeFa" dir="rtl" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="DegreeBadgeFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="DegreeBadgeFa" dir="rtl" /></div>
+    </div>
+    <div class="admin-form-row">
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="PortraitAltFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="PortraitAltFa" dir="rtl" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="LocationFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="LocationFa" dir="rtl" /></div>
+        <div class="admin-form-group"><label class="admin-form-label" asp-for="CountryFa"></label><input class="admin-form-input admin-form-input--rtl" asp-for="CountryFa" dir="rtl" /></div>
     </div>
 
     <div class="admin-form-actions">

@@ -103,6 +103,7 @@ ServiceFabricBackup/
 # Sensitive appsettings
 appsettings.Development.json
 appsettings.Production.json
+appsettings.json
 
 # Git backup
 .git-backup/

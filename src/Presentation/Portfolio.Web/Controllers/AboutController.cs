@@ -11,10 +11,9 @@ public class AboutController(IPortfolioApiClient api) : Controller
     {
         var language = WebLanguage.ResolveFromRequest(HttpContext, lang);
 
-        // Skills, Education, Journey, Interests, Footprint and Endorsements all come
-        // from Portfolio.API. Only the hero stat *values* (role/experience/degree
-        // badges) and portrait remain mock-backed. TODO: source those from Profile.
-        var about = MockDataService.GetAboutViewModel();
+        // Everything comes from Portfolio.API (database-backed). Hero stat badges and
+        // portrait now live on the Profile entity; lists come from their endpoints.
+        var profile = await api.GetProfileAsync(language, cancellationToken);
 
         var skills = await api.GetSkillsAsync(language, cancellationToken);
         var educations = await api.GetEducationsAsync(language, cancellationToken);
@@ -25,11 +24,11 @@ public class AboutController(IPortfolioApiClient api) : Controller
 
         var model = new AboutViewModel
         {
-            RoleValue = about.RoleValue,
-            ExperienceValue = about.ExperienceValue,
-            DegreeValue = about.DegreeValue,
-            PortraitUrl = about.PortraitUrl,
-            PortraitAlt = about.PortraitAlt,
+            RoleValue = profile?.RoleBadge ?? string.Empty,
+            ExperienceValue = profile?.ExperienceBadge ?? string.Empty,
+            DegreeValue = profile?.DegreeBadge ?? string.Empty,
+            PortraitUrl = string.IsNullOrWhiteSpace(profile?.PortraitUrl) ? "/images/about-portrait.jpg" : profile!.PortraitUrl!,
+            PortraitAlt = profile?.PortraitAlt ?? string.Empty,
             Journey = journey.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Footprint = footprint.Select(ApiViewModelMapper.ToViewModel).ToList(),
             Interests = interests.Select(ApiViewModelMapper.ToViewModel).ToList(),
