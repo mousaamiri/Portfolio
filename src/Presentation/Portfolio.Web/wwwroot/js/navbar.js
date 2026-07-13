@@ -54,6 +54,7 @@
     var themeToggle = navbar.querySelector(".navbar-theme-toggle");
     var hamburger = navbar.querySelector(".navbar-hamburger");
     var mobilePanel = navbar.querySelector(".navbar-mobile-panel");
+    var mobileClose = navbar.querySelector(".navbar-mobile-close");
     var mobileThemeToggle = navbar.querySelector(".navbar-mobile-theme-toggle");
     var mobileLinks = navbar.querySelectorAll("[data-mobile-link]");
 
@@ -188,6 +189,16 @@
         else openMobilePanel();
       });
     }
+
+    if (mobileClose) {
+      mobileClose.addEventListener("click", closeMobilePanel);
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (mobileOpen && (e.key === "Escape" || e.key === "Esc")) {
+        closeMobilePanel();
+      }
+    });
 
     function doInit() {
       initActivePill();
