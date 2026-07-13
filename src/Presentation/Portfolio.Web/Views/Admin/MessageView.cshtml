@@ -11,6 +11,10 @@
 </div>
 
 <div class="admin-form" style="max-width:760px">
+    @if (!string.IsNullOrWhiteSpace(Model.Phone))
+    {
+        <div class="admin-form-group"><span class="admin-form-label">Phone</span><p><a href="tel:@Model.Phone" dir="ltr">@Model.Phone</a></p></div>
+    }
     @if (!string.IsNullOrWhiteSpace(Model.Subject))
     {
         <div class="admin-form-group"><span class="admin-form-label">Subject</span><p>@Model.Subject</p></div>

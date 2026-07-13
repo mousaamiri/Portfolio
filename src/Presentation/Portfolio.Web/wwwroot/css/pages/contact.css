@@ -383,6 +383,25 @@ a.contact-detail-value:hover {
   text-transform: uppercase;
 }
 
+.contact-form-optional {
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.6;
+}
+
+/* Honeypot: kept in the DOM (bots fill it) but removed from view and the
+   accessibility tree for real users. Not display:none — some bots skip that. */
+.contact-hp {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .contact-input {
   background: transparent;
   border: 1px solid var(--border);

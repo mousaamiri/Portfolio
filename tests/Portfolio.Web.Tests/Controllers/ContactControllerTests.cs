@@ -93,7 +93,7 @@ public class ContactControllerTests
 
         var form = new ContactFormModel
         {
-            Name = "Jane", Email = "jane@example.com", Message = "Hello", Interest = "freelance"
+            Name = "Jane", Email = "jane@example.com", Phone = "09120000000", Message = "Hello", Interest = "freelance"
         };
 
         var result = await _sut.Submit(form, CancellationToken.None) as JsonResult;
@@ -101,8 +101,23 @@ public class ContactControllerTests
         result.Should().NotBeNull();
         result!.Value!.GetType().GetProperty("success")!.GetValue(result.Value).Should().Be(true);
         _api.Verify(a => a.SendMessageAsync(
-            It.Is<ContactMessageRequest>(r => r.Name == "Jane" && r.Body == "Hello" && r.Interest == "freelance"),
+            It.Is<ContactMessageRequest>(r => r.Name == "Jane" && r.Body == "Hello" && r.Phone == "09120000000" && r.Interest == "freelance"),
             It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Submit_FilledHoneypot_ReturnsSuccessWithoutCallingApi()
+    {
+        // A bot fills the hidden Website field. We fake success but never persist/email.
+        var form = new ContactFormModel
+        {
+            Name = "Bot", Email = "bot@spam.com", Message = "Buy now", Website = "http://spam.example"
+        };
+
+        var result = await _sut.Submit(form, CancellationToken.None) as JsonResult;
+
+        result!.Value!.GetType().GetProperty("success")!.GetValue(result.Value).Should().Be(true);
+        _api.Verify(a => a.SendMessageAsync(It.IsAny<ContactMessageRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
