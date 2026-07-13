@@ -149,6 +149,8 @@
       // Basic validation
       var name = form.querySelector("#contactName");
       var email = form.querySelector("#contactEmail");
+      var phone = form.querySelector("#contactPhone");
+      var subject = form.querySelector("#contactSubject");
       var message = form.querySelector("#contactMessage");
 
       if (!name.value.trim() || !email.value.trim() || !message.value.trim()) {
@@ -201,12 +203,21 @@
         body: JSON.stringify({
           name: name.value.trim(),
           email: email.value.trim(),
+          phone: phone ? phone.value.trim() : "",
+          subject: subject ? subject.value.trim() : "",
           message: message.value.trim(),
           interest: interest
         })
       })
-        .then(function (res) { return res.ok ? res.json() : { success: false }; })
+        .then(function (res) {
+          if (res.status === 429) {
+            showError(window.i18n ? window.i18n.t("contact.error_ratelimit", "Too many attempts. Please wait a few minutes and try again.") : "Too many attempts. Please wait a few minutes and try again.");
+            return null;
+          }
+          return res.ok ? res.json() : { success: false };
+        })
         .then(function (data) {
+          if (data === null) return; // rate-limited; message already shown
           if (!data || !data.success) {
             showError(window.i18n ? window.i18n.t("contact.error_generic", "Something went wrong. Please try again.") : "Something went wrong. Please try again.");
             return;

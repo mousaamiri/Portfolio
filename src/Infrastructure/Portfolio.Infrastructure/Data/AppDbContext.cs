@@ -84,5 +84,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<UiTranslation>()
             .HasIndex(t => new { t.Key, t.Language })
             .IsUnique();
+
+        modelBuilder.Entity<Message>()
+            .Property(m => m.Phone)
+            .HasMaxLength(40);
     }
 }

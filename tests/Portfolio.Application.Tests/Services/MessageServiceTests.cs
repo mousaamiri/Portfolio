@@ -1,7 +1,9 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Portfolio.Application.DTOs.Messages;
 using Portfolio.Application.Interfaces;
+using Portfolio.Application.Interfaces.Services;
 using Portfolio.Application.Services;
 using Portfolio.Domain.Entities.Messages;
 
@@ -10,11 +12,12 @@ namespace Portfolio.Application.Tests.Services;
 public class MessageServiceTests
 {
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<IEmailSender> _emailSenderMock = new();
     private readonly MessageService _sut;
 
     public MessageServiceTests()
     {
-        _sut = new MessageService(_unitOfWorkMock.Object);
+        _sut = new MessageService(_unitOfWorkMock.Object, _emailSenderMock.Object, Mock.Of<ILogger<MessageService>>());
     }
 
     private static Message CreateMessage(Guid? id = null, bool isRead = false) => new()
@@ -53,6 +56,44 @@ public class MessageServiceTests
         captured!.Name.Should().Be("Jane");
         captured.Body.Should().Be("Hello");
         captured.IsRead.Should().BeFalse();
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateAsync_SendsEmailNotification()
+    {
+        _unitOfWorkMock.Setup(u => u.Messages.AddAsync(It.IsAny<Message>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        var request = new CreateMessageRequest
+        {
+            Name = "Jane", Email = "jane@example.com", Phone = "09120000000", Body = "Hello"
+        };
+
+        var result = await _sut.CreateAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        _emailSenderMock.Verify(e => e.SendContactNotificationAsync(
+            It.Is<ContactNotification>(n => n.Name == "Jane" && n.Phone == "09120000000" && n.Body == "Hello"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateAsync_WhenEmailFails_StillSucceeds()
+    {
+        _unitOfWorkMock.Setup(u => u.Messages.AddAsync(It.IsAny<Message>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _unitOfWorkMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+        _emailSenderMock.Setup(e => e.SendContactNotificationAsync(It.IsAny<ContactNotification>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("SMTP down"));
+
+        var request = new CreateMessageRequest { Name = "Jane", Email = "jane@example.com", Body = "Hello" };
+
+        var result = await _sut.CreateAsync(request);
+
+        // Email is best-effort — a mail failure must not fail the persisted submission.
+        result.IsSuccess.Should().BeTrue();
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

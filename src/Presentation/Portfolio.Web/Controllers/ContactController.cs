@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Portfolio.Web.Models.ViewModels;
 using Portfolio.Web.Services;
 using Portfolio.Web.Services.Api;
@@ -35,11 +36,18 @@ public class ContactController(IPortfolioApiClient api) : Controller
     }
 
     // POST /Contact/Submit — real contact-form submission, forwarded to the public
-    // API which persists it as a Message (admin inbox). Replaces the old
-    // client-side setTimeout simulation. Returns JSON for contact.js.
+    // API which persists it as a Message (admin inbox) and emails a notification.
+    // Protected by a honeypot (Website decoy) and per-IP rate limiting ("contact").
+    // Returns JSON for contact.js.
     [HttpPost]
+    [EnableRateLimiting("contact")]
     public async Task<IActionResult> Submit([FromBody] ContactFormModel form, CancellationToken cancellationToken)
     {
+        // Honeypot: a real visitor never sees or fills the Website field. A bot that
+        // does gets a fake success — nothing is persisted or emailed.
+        if (!string.IsNullOrWhiteSpace(form.Website))
+            return Json(new { success = true });
+
         if (!ModelState.IsValid)
             return BadRequest(new { success = false });
 
@@ -47,6 +55,7 @@ public class ContactController(IPortfolioApiClient api) : Controller
         {
             Name = form.Name,
             Email = form.Email,
+            Phone = form.Phone,
             Subject = form.Subject,
             Body = form.Message,
             Interest = form.Interest

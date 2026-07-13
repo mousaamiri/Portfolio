@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Portfolio.Application.Common;
 using Portfolio.Application.DTOs.Messages;
 using Portfolio.Application.Interfaces;
@@ -6,7 +7,10 @@ using Portfolio.Domain.Entities.Messages;
 
 namespace Portfolio.Application.Services;
 
-public class MessageService(IUnitOfWork unitOfWork) : IMessageService
+public class MessageService(
+    IUnitOfWork unitOfWork,
+    IEmailSender emailSender,
+    ILogger<MessageService> logger) : IMessageService
 {
     public async Task<Result<Guid>> CreateAsync(CreateMessageRequest request, CancellationToken cancellationToken = default)
     {
@@ -15,6 +19,7 @@ public class MessageService(IUnitOfWork unitOfWork) : IMessageService
             Id = Guid.NewGuid(),
             Name = request.Name,
             Email = request.Email,
+            Phone = request.Phone,
             Subject = request.Subject,
             Body = request.Body,
             Interest = request.Interest,
@@ -25,6 +30,26 @@ public class MessageService(IUnitOfWork unitOfWork) : IMessageService
 
         await unitOfWork.Messages.AddAsync(message, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Best-effort email notification. The message is already persisted, so a
+        // mail failure must never fail the submission — log and swallow.
+        try
+        {
+            await emailSender.SendContactNotificationAsync(
+                new ContactNotification(
+                    message.Name,
+                    message.Email,
+                    message.Phone,
+                    message.Subject,
+                    message.Interest,
+                    message.Body,
+                    message.CreatedAt),
+                cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to send contact-form notification email for message {MessageId}.", message.Id);
+        }
 
         return Result<Guid>.Success(message.Id);
     }
@@ -76,6 +101,7 @@ public class MessageService(IUnitOfWork unitOfWork) : IMessageService
         Id = message.Id,
         Name = message.Name,
         Email = message.Email,
+        Phone = message.Phone,
         Subject = message.Subject,
         Body = message.Body,
         Interest = message.Interest,

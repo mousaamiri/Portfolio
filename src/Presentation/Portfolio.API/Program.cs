@@ -11,10 +11,12 @@ using Portfolio.API.Common;
 using Portfolio.API.Middleware;
 using Portfolio.Application;
 using Portfolio.Application.Interfaces;
+using Portfolio.Application.Interfaces.Services;
 using Portfolio.Application.Services;
 using Portfolio.Domain.Admins;
 using Portfolio.Infrastructure.Auth;
 using Portfolio.Infrastructure.Data;
+using Portfolio.Infrastructure.Email;
 using Portfolio.Infrastructure.Persistence.Seed;
 using Portfolio.Infrastructure.Repositories;
 using Scalar.AspNetCore;
@@ -57,6 +59,11 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddSingleton<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
 builder.Services.AddApplicationServices();
+
+// Email notifications (contact form). SMTP secrets come from user-secrets /
+// environment; disabled by default so a machine without creds still runs.
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 
 // JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -117,6 +124,18 @@ builder.Services.AddRateLimiter(options =>
         limiter.Window = TimeSpan.FromMinutes(1);
         limiter.QueueLimit = 0;
     });
+    // Defense-in-depth for the public contact endpoint. The primary per-visitor
+    // limit lives in the Web layer (which sees the real client IP); this coarse
+    // limit guards direct hits to the API. Keyed by remote IP.
+    options.AddPolicy("messages", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0
+            }));
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
