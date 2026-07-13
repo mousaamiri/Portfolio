@@ -28,6 +28,11 @@
   margin-right: auto;
 }
 
+[dir="rtl"] .navbar-mobile-close {
+  right: auto;
+  left: var(--gutter, 24px);
+}
+
 [dir="rtl"] .navbar-chevron {
   margin-left: 0;
   margin-right: 2px;

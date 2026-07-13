@@ -477,6 +477,32 @@ html { scroll-padding-top: 80px; }
   background: rgba(245, 245, 240, 0.98);
 }
 
+.navbar-mobile-close {
+  position: absolute;
+  top: 24px;
+  right: var(--gutter, 24px);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: transparent;
+  color: var(--text, #f2f1ec);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.navbar-mobile-close:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: rotate(90deg);
+}
+
+[data-theme="light"] .navbar-mobile-close:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .navbar-mobile-panel {
     transition: none;
