@@ -1,8 +1,8 @@
 /* ==========================================================================
    tokens.css — SINGLE source of truth for design tokens
    --------------------------------------------------------------------------
-   Reconciliation (migration decision #3, see .claude/MIGRATION_DECISIONS.md):
-   - The static site's visual identity is canonical: amber accent, dark-first
+   Reconciliation:
+   - The site's visual identity is canonical: amber accent, dark-first
      surfaces, Inter / Instrument Serif / JetBrains Mono (Latin) + self-hosted
      AzarMehr / Pinar (Farsi). Values ported from the static `style.css`.
    - Light/dark is CENTRALIZED here: dark = :root default, light overrides in

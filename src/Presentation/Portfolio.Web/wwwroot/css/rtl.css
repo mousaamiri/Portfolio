@@ -1,5 +1,6 @@
 /* ==========================================================================
-   rtl.css — RTL overrides for Persian (Farsi) layout
+   rtl.css — RTL overrides for right-to-left layouts (Persian & Arabic)
+   Applied whenever <html dir="rtl">, which the server sets for fa and ar.
    ========================================================================== */
 
 /* ---- Font overrides for RTL ---- */

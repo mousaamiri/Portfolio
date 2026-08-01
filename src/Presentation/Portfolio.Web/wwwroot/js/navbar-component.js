@@ -13,7 +13,19 @@
     var config = window.__navConfig || {};
     var bp = config.basePath || "../../";
     var current = config.currentPage || "home";
-    var isFa = window.i18n && window.i18n.lang() === "fa";
+    var currentLang = (window.i18n && window.i18n.lang()) || "en";
+    var isFa = currentLang === "fa";
+
+    // Language cycle: en → fa → ar → en. The switcher is a single button that
+    // shows the NEXT language, so all three stay reachable without a dropdown.
+    var LANG_ORDER = ["en", "fa", "ar"];
+    var LANG_SHORT = { en: "EN", fa: "فا", ar: "ع" };
+    var LANG_NAME = { en: "English", fa: "فارسی", ar: "العربية" };
+
+    function nextLang() {
+      var i = LANG_ORDER.indexOf(currentLang);
+      return LANG_ORDER[(i + 1) % LANG_ORDER.length] || "fa";
+    }
 
     function t(key, fallback) {
       if (window.i18n) return window.i18n.t(key, fallback);
@@ -40,8 +52,9 @@
     var navbar = document.getElementById("navbar");
     if (!navbar) return;
 
-    var langBtnText = isFa ? "EN" : "فا";
-    var langBtnLabel = isFa ? "Switch to English" : "تغییر زبان به فارسی";
+    var target = nextLang();
+    var langBtnText = LANG_SHORT[target];
+    var langBtnLabel = "Switch language to " + LANG_NAME[target];
 
     var logoFa =
       '<svg class="navbar-logo-svg" width="50" height="50" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">' +
@@ -137,27 +150,21 @@
             '<span>' + t("nav.toggle_theme", "Toggle theme") + '</span>' +
           '</button>' +
           '<button class="navbar-mobile-lang-switch" type="button" aria-label="' + langBtnLabel + '">' +
-            (isFa ? "English" : "فارسی") +
+            LANG_NAME[target] +
           '</button>' +
           '<a href="' + pages.contact + '" class="navbar-mobile-contact">' + t("nav.contact", "Contact") + '</a>' +
         '</div>' +
       '</div>';
 
-    var langBtn = navbar.querySelector(".lang-switch-btn");
-    if (langBtn) {
-      langBtn.addEventListener("click", function () {
-        var newLang = (window.i18n && window.i18n.lang() === "fa") ? "en" : "fa";
-        if (window.i18n) window.i18n.setLang(newLang);
-      });
+    function switchToNext() {
+      if (window.i18n) window.i18n.setLang(nextLang());
     }
 
+    var langBtn = navbar.querySelector(".lang-switch-btn");
+    if (langBtn) langBtn.addEventListener("click", switchToNext);
+
     var mobileLangBtn = navbar.querySelector(".navbar-mobile-lang-switch");
-    if (mobileLangBtn) {
-      mobileLangBtn.addEventListener("click", function () {
-        var newLang = (window.i18n && window.i18n.lang() === "fa") ? "en" : "fa";
-        if (window.i18n) window.i18n.setLang(newLang);
-      });
-    }
+    if (mobileLangBtn) mobileLangBtn.addEventListener("click", switchToNext);
   }
 
   buildNavbar();

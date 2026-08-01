@@ -1,29 +1,63 @@
 @*
     _Layout.cshtml — shared shell for all PUBLIC pages
     ---------------------------------------------------------------------------
-    Ported from the static site's per-page shell (PROJECT_CONTEXT.md §1).
     The navbar, footer, command palette, accent-color picker and scroll-progress
     button are all built CLIENT-SIDE by their component scripts (navbar builds
-    into #navbar; footer/palette/accent inject into <body>) — this is faithful
-    to the source, which ships empty placeholders and hydrates them with JS.
-    Routing is wired for MVC via window.__navConfig.routes (migration decision
-    #1: SPA-router ported onto MVC routes; #page-content == @RenderBody()).
+    into #navbar; footer/palette/accent inject into <body>) — the markup ships
+    empty placeholders and hydrates them with JS.
+    Routing is wired for MVC via window.__navConfig.routes (the SPA-router runs
+    on MVC routes; #page-content == @RenderBody()).
 
     Login / Forgot-Password use their OWN minimal layout (Layout = null) — they
-    must NOT inherit this shell (AI_PROJECT_RULES.md).
+    must NOT inherit this shell.
 *@
 @inject Portfolio.Web.Localization.LocalizationState Loc
 @{
     var uiJson = System.Text.Json.JsonSerializer.Serialize(Loc.Map);
+
+    // ── SEO ──────────────────────────────────────────────────────────────────
+    // Absolute base + canonical (path only, query stripped) for OG/canonical/hreflang.
+    var seoBase = $"{Context.Request.Scheme}://{Context.Request.Host}";
+    var seoPath = Context.Request.Path.HasValue ? Context.Request.Path.Value : "/";
+    var canonicalUrl = seoBase + seoPath;
+    var pageTitle = Html.TA((string)(ViewData["I18nTitle"] ?? ""), $"{ViewData["Title"]} — Portfolio");
+    var pageDescription = (string)(ViewData["Description"] ?? "Portfolio of Mousa Amiri Motlagh — Backend Engineer");
+    var ogImage = seoBase + Url.Content((string)(ViewData["OgImage"] ?? "~/images/about-portrait.jpg"));
+    // OG locale: BCP-47-ish region tags for the supported languages.
+    var ogLocale = Loc.Language switch { "fa" => "fa_IR", "ar" => "ar", _ => "en_US" };
 }
 <!DOCTYPE html>
 <html lang="@Loc.Language" dir="@Loc.Dir">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="@(ViewData["Description"] ?? "Portfolio of Mousa Amiri Motlagh — Backend Engineer")" />
+    <meta name="description" content="@pageDescription" />
     <link rel="icon" type="image/svg+xml" href="~/images/favicon.svg" />
-    <title>@Html.T((string)(ViewData["I18nTitle"] ?? ""), $"{ViewData["Title"]} — Portfolio")</title>
+    <title>@pageTitle</title>
+
+    @* ── Canonical + hreflang: each supported language is the same URL with ?lang=,
+         mirroring SitemapController so search engines index every language. ── *@
+    <link rel="canonical" href="@canonicalUrl" />
+    @foreach (var lang in Portfolio.Web.Services.WebLanguage.Supported)
+    {
+        <link rel="alternate" hreflang="@lang" href="@($"{canonicalUrl}?lang={lang}")" />
+    }
+    <link rel="alternate" hreflang="x-default" href="@canonicalUrl" />
+
+    @* ── Open Graph (Facebook, LinkedIn, Telegram…) ── *@
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MousaAmiri Portfolio" />
+    <meta property="og:title" content="@pageTitle" />
+    <meta property="og:description" content="@pageDescription" />
+    <meta property="og:url" content="@canonicalUrl" />
+    <meta property="og:image" content="@ogImage" />
+    <meta property="og:locale" content="@ogLocale" />
+
+    @* ── Twitter Card ── *@
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@pageTitle" />
+    <meta name="twitter:description" content="@pageDescription" />
+    <meta name="twitter:image" content="@ogImage" />
 
     @* ── FOUC-prevention: set theme BEFORE paint. Language/dir are now rendered
          server-side on <html> (from the portfolio-lang cookie), so only the theme

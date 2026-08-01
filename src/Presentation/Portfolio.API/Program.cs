@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -46,6 +47,18 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 builder.Services.AddOpenApi();
+
+// Trust X-Forwarded-* from a reverse proxy so RemoteIpAddress is the real client
+// IP (the rate-limit "messages" policy partitions by it). Without this, every
+// request behind a proxy shares the proxy's IP and one partition. KnownNetworks/
+// KnownProxies are cleared to accept the standard headers in typical single-proxy
+// hosting (IIS/Nginx/Azure); tighten these if the proxy topology is known.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // EF Core
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -164,6 +177,9 @@ using (var scope = app.Services.CreateScope())
     var contentSeeder = scope.ServiceProvider.GetRequiredService<ContentSeeder>();
     await contentSeeder.SeedAsync();
 }
+
+// Must run before rate limiting so the limiter sees the real client IP.
+app.UseForwardedHeaders();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

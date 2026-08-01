@@ -12,6 +12,8 @@ public class LocalizationState
     public IReadOnlyDictionary<string, string> Map { get; set; } = new Dictionary<string, string>();
 
     public bool IsFa => Language == "fa";
-    public bool IsRtl => IsFa;
+
+    /// <summary>Right-to-left languages: Persian and Arabic. Drives <c>&lt;html dir&gt;</c> and rtl.css.</summary>
+    public bool IsRtl => Language is "fa" or "ar";
     public string Dir => IsRtl ? "rtl" : "ltr";
 }
