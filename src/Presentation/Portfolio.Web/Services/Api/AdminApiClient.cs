@@ -171,7 +171,7 @@ public class AdminApiClient(HttpClient httpClient, ILogger<AdminApiClient> logge
         try
         {
             var response = await httpClient.PutAsync($"api/admin/messages/{id}/read", null, cancellationToken);
-            return response.IsSuccessStatusCode;
+            return await SucceededAsync(response, "MarkMessageRead", cancellationToken);
         }
         catch (Exception ex) when (IsTransport(ex))
         {
@@ -185,7 +185,7 @@ public class AdminApiClient(HttpClient httpClient, ILogger<AdminApiClient> logge
         try
         {
             var response = await httpClient.DeleteAsync($"api/admin/messages/{id}", cancellationToken);
-            return response.IsSuccessStatusCode;
+            return await SucceededAsync(response, "DeleteMessage", cancellationToken);
         }
         catch (Exception ex) when (IsTransport(ex))
         {
@@ -227,6 +227,27 @@ public class AdminApiClient(HttpClient httpClient, ILogger<AdminApiClient> logge
             logger.LogWarning(ex, "Admin ChangePassword request failed.");
             return false;
         }
+    }
+
+    // Returns whether the API answered 2xx. On a non-success status the reason is
+    // otherwise lost (the caller only sees a bare false), so read the status and body
+    // and log them — this is what tells a 405 (verb blocked at the host / WebDAV) apart
+    // from a 404 (record gone), 401 (token) or 500 (server-side fault).
+    private async Task<bool> SucceededAsync(
+        HttpResponseMessage response, string operation, CancellationToken cancellationToken)
+    {
+        if (response.IsSuccessStatusCode)
+            return true;
+
+        string body;
+        try { body = await response.Content.ReadAsStringAsync(cancellationToken); }
+        catch { body = "<unreadable>"; }
+
+        logger.LogWarning(
+            "Admin {Operation} returned {StatusCode} ({ReasonPhrase}). Body: {Body}",
+            operation, (int)response.StatusCode, response.ReasonPhrase, body);
+
+        return false;
     }
 
     private static bool IsTransport(Exception ex)
