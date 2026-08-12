@@ -29,6 +29,7 @@ public class HomeController(IPortfolioApiClient api) : Controller
             GitHubUrl = profile?.GitHubUrl ?? string.Empty,
             InstagramUrl = profile?.InstagramUrl ?? string.Empty,
             LinkedInUrl = profile?.LinkedInUrl ?? string.Empty,
+            TelegramUrl = profile?.TelegramUrl ?? string.Empty,
             LearningTitle = profile?.LearningTitle ?? string.Empty,
             LearningDesc = profile?.LearningDesc ?? string.Empty,
             LearningDate = profile?.LearningDate ?? string.Empty,

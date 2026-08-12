@@ -14,6 +14,7 @@ public class HomeViewModel
     public string GitHubUrl { get; init; } = string.Empty;
     public string InstagramUrl { get; init; } = string.Empty;
     public string LinkedInUrl { get; init; } = string.Empty;
+    public string TelegramUrl { get; init; } = string.Empty;
     public string LearningTitle { get; init; } = string.Empty;
     public string LearningDesc { get; init; } = string.Empty;
     public string LearningDate { get; init; } = string.Empty;
