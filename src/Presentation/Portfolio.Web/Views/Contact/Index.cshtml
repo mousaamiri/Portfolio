@@ -13,6 +13,9 @@
    Contact page. Model: ContactViewModel (+ FaqItemViewModel) — populated from
    Portfolio.API (Profile + FAQ). The form POSTs to Contact/Submit, which forwards
    to the public API and persists a Message (admin inbox).
+
+   Layout order (the form is the page's primary action, so it leads):
+     1. Header  →  2. Form + FAQ  →  3. Info + Map  →  4. Detail cards  →  5. Closing CTA
    ====================================================== *@
 <section id="contact" class="contact-section">
     <div class="container">
@@ -24,7 +27,104 @@
         </div>
         <h1 class="contact-heading">@Html.T("contact.heading", "LET'S BUILD SOMETHING EXTRAORDINARY")</h1>
 
-        @* ===== SECTION 2: INFO + MAP ===== *@
+        @* ===== SECTION 2: FORM (client-side simulation) + FAQ =====
+           Hero of the page: the form sits directly under the heading in an
+           elevated, accent-lit card so it's the first and most prominent element.
+           FAQ rides alongside as the lighter supporting column. *@
+        <div class="contact-form-faq">
+
+            <div class="contact-form-block">
+                <div class="about-eyebrow-row">
+                    <span class="eyebrow">@Html.T("contact.send_message", "SEND A MESSAGE")</span>
+                    <span class="eyebrow-rule" aria-hidden="true"></span>
+                </div>
+
+                <div class="contact-availability-badge contact-form-avail">
+                    <span class="contact-avail-dot"></span>
+                    <span>@Html.T("contact.available", "Available for new opportunities")</span>
+                </div>
+
+                <div class="contact-interest-pills">
+                    <button class="contact-pill active" data-interest="general">@Html.T("contact.general", "General Inquiry")</button>
+                    <button class="contact-pill" data-interest="job">@Html.T("contact.job", "Job Opportunity")</button>
+                    <button class="contact-pill" data-interest="freelance">@Html.T("contact.freelance", "Freelance Project")</button>
+                </div>
+
+                @* novalidate: contact.js validates + submits via fetch. *@
+                <form class="contact-form" id="contactForm" novalidate>
+                    <div class="contact-form-row">
+                        <div class="contact-form-group">
+                            <label class="contact-form-label" for="contactName">@Html.T("contact.name_label", "NAME")</label>
+                            <input type="text" id="contactName" name="name" class="contact-input" placeholder="@Html.TA("contact.name_placeholder", "Your name")" required />
+                        </div>
+                        <div class="contact-form-group">
+                            <label class="contact-form-label" for="contactEmail">@Html.T("contact.email_label", "EMAIL")</label>
+                            <input type="email" id="contactEmail" name="email" class="contact-input" placeholder="@Html.TA("contact.email_placeholder", "you@@email.com")" required />
+                        </div>
+                    </div>
+
+                    <div class="contact-form-row">
+                        <div class="contact-form-group">
+                            <label class="contact-form-label" for="contactPhone">@Html.T("contact.phone_label", "PHONE") <span class="contact-form-optional">@Html.T("contact.optional", "(optional)")</span></label>
+                            <input type="tel" id="contactPhone" name="phone" class="contact-input" placeholder="@Html.TA("contact.phone_placeholder", "+1 555 000 0000")" dir="ltr" autocomplete="tel" />
+                        </div>
+                        <div class="contact-form-group">
+                            <label class="contact-form-label" for="contactSubject">@Html.T("contact.subject_label", "SUBJECT")</label>
+                            <input type="text" id="contactSubject" name="subject" class="contact-input" placeholder="@Html.TA("contact.subject_placeholder", "What's this about?")" />
+                        </div>
+                    </div>
+
+                    @* Honeypot: hidden from real users (see .contact-hp in contact.css). Bots
+                       that fill it get silently dropped server-side in ContactController.Submit. *@
+                    <div class="contact-hp" aria-hidden="true">
+                        <label for="contactWebsite">Website</label>
+                        <input type="text" id="contactWebsite" name="website" tabindex="-1" autocomplete="off" />
+                    </div>
+
+                    <div class="contact-form-group">
+                        <label class="contact-form-label" for="contactMessage">@Html.T("contact.message_label", "MESSAGE")</label>
+                        <textarea id="contactMessage" name="message" class="contact-input contact-textarea" placeholder="@Html.TA("contact.message_placeholder", "Tell me about your idea...")" rows="5" required></textarea>
+                    </div>
+
+                    <button type="submit" class="contact-submit-btn">
+                        <span>@Html.T("contact.submit", "Send Message")</span>
+                        <span class="contact-submit-arrow">&rarr;</span>
+                    </button>
+
+                    <div class="contact-form-feedback" id="formFeedback" aria-live="polite"></div>
+                </form>
+            </div>
+
+            @if (Model.Faqs.Any())
+            {
+            <div class="contact-faq-block">
+                <div class="about-eyebrow-row">
+                    <span class="eyebrow">@Html.T("contact.faqs", "FAQS")</span>
+                    <span class="eyebrow-rule" aria-hidden="true"></span>
+                </div>
+
+                <div class="contact-faq-list">
+                    @foreach (var faq in Model.Faqs)
+                    {
+                        <div class="contact-faq-item">
+                            <button class="contact-faq-toggle" aria-expanded="false">
+                                <span>@faq.Question</span>
+                                <svg class="contact-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </button>
+                            <div class="contact-faq-answer">
+                                <p>@faq.Answer</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            }
+
+        </div>
+
+        @* ===== SECTION 3: INFO + MAP ===== *@
         <div class="contact-info-map">
             <div class="contact-info-card">
                 <h2 class="contact-info-title">@Html.T("contact.info_title", "Ready to bring your ideas to life?")</h2>
@@ -80,7 +180,7 @@
             </div>
         </div>
 
-        @* ===== SECTION 3: CONTACT DETAIL CARDS ===== *@
+        @* ===== SECTION 4: CONTACT DETAIL CARDS ===== *@
         <div class="contact-details-grid">
 
             <div class="contact-detail-card">
@@ -172,95 +272,6 @@
                     </svg>
                 </div>
             </div>
-
-        </div>
-
-        @* ===== SECTION 4: FORM (client-side simulation) + FAQ ===== *@
-        <div class="contact-form-faq">
-
-            <div class="contact-form-block">
-                <div class="about-eyebrow-row">
-                    <span class="eyebrow">@Html.T("contact.send_message", "SEND A MESSAGE")</span>
-                    <span class="eyebrow-rule" aria-hidden="true"></span>
-                </div>
-
-                <div class="contact-interest-pills">
-                    <button class="contact-pill active" data-interest="general">@Html.T("contact.general", "General Inquiry")</button>
-                    <button class="contact-pill" data-interest="job">@Html.T("contact.job", "Job Opportunity")</button>
-                    <button class="contact-pill" data-interest="freelance">@Html.T("contact.freelance", "Freelance Project")</button>
-                </div>
-
-                @* novalidate: contact.js validates + submits via fetch. *@
-                <form class="contact-form" id="contactForm" novalidate>
-                    <div class="contact-form-row">
-                        <div class="contact-form-group">
-                            <label class="contact-form-label" for="contactName">@Html.T("contact.name_label", "NAME")</label>
-                            <input type="text" id="contactName" name="name" class="contact-input" placeholder="@Html.TA("contact.name_placeholder", "Your name")" required />
-                        </div>
-                        <div class="contact-form-group">
-                            <label class="contact-form-label" for="contactEmail">@Html.T("contact.email_label", "EMAIL")</label>
-                            <input type="email" id="contactEmail" name="email" class="contact-input" placeholder="@Html.TA("contact.email_placeholder", "you@@email.com")" required />
-                        </div>
-                    </div>
-
-                    <div class="contact-form-row">
-                        <div class="contact-form-group">
-                            <label class="contact-form-label" for="contactPhone">@Html.T("contact.phone_label", "PHONE") <span class="contact-form-optional">@Html.T("contact.optional", "(optional)")</span></label>
-                            <input type="tel" id="contactPhone" name="phone" class="contact-input" placeholder="@Html.TA("contact.phone_placeholder", "+1 555 000 0000")" dir="ltr" autocomplete="tel" />
-                        </div>
-                        <div class="contact-form-group">
-                            <label class="contact-form-label" for="contactSubject">@Html.T("contact.subject_label", "SUBJECT")</label>
-                            <input type="text" id="contactSubject" name="subject" class="contact-input" placeholder="@Html.TA("contact.subject_placeholder", "What's this about?")" />
-                        </div>
-                    </div>
-
-                    @* Honeypot: hidden from real users (see .contact-hp in contact.css). Bots
-                       that fill it get silently dropped server-side in ContactController.Submit. *@
-                    <div class="contact-hp" aria-hidden="true">
-                        <label for="contactWebsite">Website</label>
-                        <input type="text" id="contactWebsite" name="website" tabindex="-1" autocomplete="off" />
-                    </div>
-
-                    <div class="contact-form-group">
-                        <label class="contact-form-label" for="contactMessage">@Html.T("contact.message_label", "MESSAGE")</label>
-                        <textarea id="contactMessage" name="message" class="contact-input contact-textarea" placeholder="@Html.TA("contact.message_placeholder", "Tell me about your idea...")" rows="5" required></textarea>
-                    </div>
-
-                    <button type="submit" class="contact-submit-btn">
-                        <span>@Html.T("contact.submit", "Send Message")</span>
-                        <span class="contact-submit-arrow">&rarr;</span>
-                    </button>
-
-                    <div class="contact-form-feedback" id="formFeedback" aria-live="polite"></div>
-                </form>
-            </div>
-
-            @if (Model.Faqs.Any())
-            {
-            <div class="contact-faq-block">
-                <div class="about-eyebrow-row">
-                    <span class="eyebrow">@Html.T("contact.faqs", "FAQS")</span>
-                    <span class="eyebrow-rule" aria-hidden="true"></span>
-                </div>
-
-                <div class="contact-faq-list">
-                    @foreach (var faq in Model.Faqs)
-                    {
-                        <div class="contact-faq-item">
-                            <button class="contact-faq-toggle" aria-expanded="false">
-                                <span>@faq.Question</span>
-                                <svg class="contact-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                                    <polyline points="6 9 12 15 18 9"/>
-                                </svg>
-                            </button>
-                            <div class="contact-faq-answer">
-                                <p>@faq.Answer</p>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-            }
 
         </div>
     </div>

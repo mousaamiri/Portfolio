@@ -336,6 +336,13 @@
   text-align: right;
 }
 
+/* Mirror the form hero card's accent glow to the start (top-right) side. */
+[dir="rtl"] .contact-form-block {
+  background:
+    radial-gradient(130% 110% at 100% 0%, var(--accent-soft) 0%, transparent 55%),
+    var(--card);
+}
+
 [dir="rtl"] .contact-map-info {
   text-align: right;
 }

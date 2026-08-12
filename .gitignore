@@ -107,5 +107,5 @@ appsettings.Production.json
 # Git backup
 .git-backup/
 
-# Claude Code
+#  Local tooling
 .claude/

@@ -310,18 +310,49 @@ a.contact-detail-value:hover {
   border-style: dashed;
 }
 
-/* ================= SECTION 4: FORM + FAQs ================= */
+/* ================= SECTION 2: FORM + FAQs =================
+   The form leads the page, so it's an elevated, accent-lit hero card while the
+   FAQ rides alongside as a lighter supporting column. */
 
 .contact-form-faq {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 40px;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 44px;
   align-items: start;
+  margin-bottom: 72px;
 }
 
-.contact-form-block,
+/* Form hero card — filled + glowing so the eye lands here first. */
+.contact-form-block {
+  position: relative;
+  padding: 40px 36px;
+  background:
+    radial-gradient(130% 110% at 0% 0%, var(--accent-soft) 0%, transparent 55%),
+    var(--card);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card), 0 0 34px -18px var(--accent);
+  overflow: hidden;
+}
+
+/* Gradient accent bar pinned to the top edge of the card. */
+.contact-form-block::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-script);
+}
+
 .contact-faq-block {
   padding-top: 8px;
+}
+
+/* Availability chip repeated inside the form: reassurance at the point of action. */
+.contact-form-avail {
+  margin-bottom: 24px;
 }
 
 /* Interest Pills */
@@ -353,6 +384,7 @@ a.contact-detail-value:hover {
 .contact-pill.active {
   border-color: var(--accent);
   color: var(--accent);
+  background: var(--accent-soft);
 }
 
 /* Form */
@@ -403,14 +435,14 @@ a.contact-detail-value:hover {
 }
 
 .contact-input {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 14px 16px;
   color: var(--text);
   font-family: var(--font-body);
   font-size: 14px;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   outline: none;
   width: 100%;
   box-sizing: border-box;
@@ -422,6 +454,8 @@ a.contact-detail-value:hover {
 
 .contact-input:focus {
   border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .contact-textarea {
@@ -432,23 +466,27 @@ a.contact-detail-value:hover {
 .contact-submit-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   background: var(--accent);
   color: var(--bg);
   border: none;
   border-radius: 999px;
-  padding: 14px 28px;
+  padding: 16px 28px;
   font-family: var(--font-body);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  width: fit-content;
+  width: 100%;
+  margin-top: 4px;
+  box-shadow: 0 10px 30px -12px var(--accent);
 }
 
 .contact-submit-btn:hover {
   background: var(--accent-strong);
   transform: translateY(-1px);
+  box-shadow: 0 14px 34px -12px var(--accent);
 }
 
 .contact-submit-btn:active {
@@ -549,6 +587,10 @@ a.contact-detail-value:hover {
   background: rgba(0, 0, 0, 0.02);
 }
 
+[data-theme="light"] .contact-input:focus {
+  background: rgba(0, 0, 0, 0.035);
+}
+
 [data-theme="light"] .contact-map-placeholder {
   background:
     radial-gradient(circle at 60% 65%, rgba(34, 197, 94, 0.08) 0%, transparent 50%),
@@ -599,6 +641,10 @@ a.contact-detail-value:hover {
     gap: 56px;
   }
 
+  .contact-form-block {
+    padding: 32px 24px;
+  }
+
   .contact-form-row {
     grid-template-columns: 1fr;
   }
@@ -624,6 +670,10 @@ a.contact-detail-value:hover {
   }
 
   .contact-info-card {
+    padding: 24px 20px;
+  }
+
+  .contact-form-block {
     padding: 24px 20px;
   }
 
