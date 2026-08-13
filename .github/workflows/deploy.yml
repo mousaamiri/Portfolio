@@ -28,7 +28,7 @@ jobs:
         run: |
           "Site is being updated, back shortly." | Out-File -FilePath ./publish-api/app_offline.htm -Encoding utf8
 
-      - name: Deploy API via FTP
+      - name: Deploy API via FTPS
         uses: Wandalen/wretry.action@v3
         with:
           action: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -40,17 +40,17 @@ jobs:
             password: ${{ secrets.FTP_PASSWORD_API }}
             local-dir: ./publish-api/
             server-dir: /
-            protocol: ftp
-            security: loose
+            protocol: ftps
+            security: strict
             timeout: 120000
             state-name: .ftp-deploy-sync-state-api.json
             exclude: |
               **/appsettings.Production.json
 
-      - name: Remove app_offline.htm
+      - name: Remove app_offline.htm via FTPS
         shell: pwsh
         run: |
-          curl.exe -u "${{ secrets.FTP_USERNAME_API }}:${{ secrets.FTP_PASSWORD_API }}" -Q "-DELE app_offline.htm" "ftp://${{ secrets.FTP_SERVER }}/"
+          curl.exe --ssl-reqd -k -u "${{ secrets.FTP_USERNAME_API }}:${{ secrets.FTP_PASSWORD_API }}" -Q "DELE app_offline.htm" "ftp://${{ secrets.FTP_SERVER }}/"
 
 
   deploy-web:
@@ -77,7 +77,7 @@ jobs:
         run: |
           "Site is being updated, back shortly." | Out-File -FilePath ./publish-web/app_offline.htm -Encoding utf8
 
-      - name: Deploy Web via FTP
+      - name: Deploy Web via FTPS
         uses: Wandalen/wretry.action@v3
         with:
           action: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -89,14 +89,14 @@ jobs:
             password: ${{ secrets.FTP_PASSWORD_WEB }}
             local-dir: ./publish-web/
             server-dir: /
-            protocol: ftp
-            security: loose
+            protocol: ftps
+            security: strict
             timeout: 120000
             state-name: .ftp-deploy-sync-state-web.json
             exclude: |
               **/appsettings.Production.json
 
-      - name: Remove app_offline.htm
+      - name: Remove app_offline.htm via FTPS
         shell: pwsh
         run: |
-          curl.exe -u "${{ secrets.FTP_USERNAME_WEB }}:${{ secrets.FTP_PASSWORD_WEB }}" -Q "-DELE app_offline.htm" "ftp://${{ secrets.FTP_SERVER }}/"
+          curl.exe --ssl-reqd -k -u "${{ secrets.FTP_USERNAME_WEB }}:${{ secrets.FTP_PASSWORD_WEB }}" -Q "DELE app_offline.htm" "ftp://${{ secrets.FTP_SERVER }}/"
