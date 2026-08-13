@@ -34,7 +34,7 @@ jobs:
             password: ${{ secrets.FTP_PASSWORD_API }}
             local-dir: ./publish-api/
             server-dir: /
-            protocol: ftps
+            protocol: ftp
             security: loose
             timeout: 120000
             state-name: .ftp-deploy-sync-state-api.json
@@ -78,7 +78,7 @@ jobs:
             password: ${{ secrets.FTP_PASSWORD_WEB }}
             local-dir: ./publish-web/
             server-dir: /
-            protocol: ftps
+            protocol: ftp
             security: loose
             timeout: 120000
             state-name: .ftp-deploy-sync-state-web.json
