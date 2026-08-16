@@ -1,34 +1,26 @@
 name: Deploy to Plesk Host
-
 on:
   push:
     branches: [ main ]
-
 jobs:
   deploy-api:
     runs-on: windows-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-
       - name: Restore
         run: dotnet restore
-
       - name: Publish API
         run: dotnet publish src\Presentation\Portfolio.API\Portfolio.API.csproj -c Release -o ./publish-api -p:SatelliteResourceLanguages=en
-
       - name: Create app_offline.htm
         shell: pwsh
         run: |
           "Site is being updated, back shortly." | Out-File -FilePath ./publish-api/app_offline.htm -Encoding utf8
-
-      - name: Deploy API via FTPS
+      - name: Deploy API via FTP
         uses: Wandalen/wretry.action@v3
         with:
           action: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -40,44 +32,35 @@ jobs:
             password: ${{ secrets.FTP_PASSWORD_API }}
             local-dir: ./publish-api/
             server-dir: /
-            protocol: ftps
-            security: strict
+            protocol: ftp
             timeout: 120000
             state-name: .ftp-deploy-sync-state-api.json
             exclude: |
               **/appsettings.Production.json
-
-      - name: Remove app_offline.htm via FTPS
+      - name: Remove app_offline.htm via FTP
         shell: pwsh
         run: |
-          curl.exe --ssl-reqd -k -u "${{ secrets.FTP_USERNAME_API }}:${{ secrets.FTP_PASSWORD_API }}" -Q "DELE app_offline.htm" "ftp://${{ secrets.FTP_SERVER }}/"
-
+          curl.exe -u "${{ secrets.FTP_USERNAME_API }}:${{ secrets.FTP_PASSWORD_API }}" -Q "DELE app_offline.htm" "ftp://${{ secrets.FTP_SERVER }}/"
 
   deploy-web:
     needs: deploy-api
     runs-on: windows-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-
       - name: Restore
         run: dotnet restore
-
       - name: Publish Web
         run: dotnet publish src\Presentation\Portfolio.Web\Portfolio.Web.csproj -c Release -o ./publish-web -p:SatelliteResourceLanguages=en
-
       - name: Create app_offline.htm
         shell: pwsh
         run: |
           "Site is being updated, back shortly." | Out-File -FilePath ./publish-web/app_offline.htm -Encoding utf8
-
-      - name: Deploy Web via FTPS
+      - name: Deploy Web via FTP
         uses: Wandalen/wretry.action@v3
         with:
           action: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -89,14 +72,12 @@ jobs:
             password: ${{ secrets.FTP_PASSWORD_WEB }}
             local-dir: ./publish-web/
             server-dir: /
-            protocol: ftps
-            security: strict
+            protocol: ftp
             timeout: 120000
             state-name: .ftp-deploy-sync-state-web.json
             exclude: |
               **/appsettings.Production.json
-
-      - name: Remove app_offline.htm via FTPS
+      - name: Remove app_offline.htm via FTP
         shell: pwsh
         run: |
-          curl.exe --ssl-reqd -k -u "${{ secrets.FTP_USERNAME_WEB }}:${{ secrets.FTP_PASSWORD_WEB }}" -Q "DELE app_offline.htm" "ftp://${{ secrets.FTP_SERVER }}/"
+          curl.exe -u "${{ secrets.FTP_USERNAME_WEB }}:${{ secrets.FTP_PASSWORD_WEB }}" -Q "DELE app_offline.htm" "ftp://${{ secrets.FTP_SERVER }}/"
