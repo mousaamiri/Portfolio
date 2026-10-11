@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Experiences;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class ExperiencesController(IExperienceService experienceService) : Admin
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("experiences")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateExperienceRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class ExperiencesController(IExperienceService experienceService) : Admin
         return result.ToCreatedResult("GetAdminExperienceById", id => new { id });
     }
 
+    [InvalidateCache("experiences")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateExperienceRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class ExperiencesController(IExperienceService experienceService) : Admin
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("experiences")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

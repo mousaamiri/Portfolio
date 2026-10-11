@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Skills;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class SkillsController(ISkillService skillService) : AdminControllerBase
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("skills")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateSkillRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class SkillsController(ISkillService skillService) : AdminControllerBase
         return result.ToCreatedResult("GetAdminSkillById", id => new { id });
     }
 
+    [InvalidateCache("skills")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateSkillRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class SkillsController(ISkillService skillService) : AdminControllerBase
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("skills")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

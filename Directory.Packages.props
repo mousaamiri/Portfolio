@@ -24,6 +24,10 @@
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
   </ItemGroup>
+  <!-- Caching packages -->
+  <ItemGroup>
+    <PackageVersion Include="StackExchange.Redis" Version="2.7.27" />
+  </ItemGroup>
   <!-- Test packages -->
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />

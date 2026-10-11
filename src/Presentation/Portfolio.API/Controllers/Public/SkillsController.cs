@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Portfolio.API.Common;
 using Portfolio.Application.DTOs.Skills;
 using Portfolio.Application.Interfaces.Services;
@@ -6,6 +7,7 @@ using Portfolio.Application.Interfaces.Services;
 namespace Portfolio.API.Controllers.Public;
 
 [Route("api/public/skills")]
+[OutputCache(Duration = 300, VaryByQueryKeys = ["lang"], Tags = ["skills", "public"])]
 public class SkillsController(ISkillService skillService) : PublicControllerBase
 {
     [HttpGet]

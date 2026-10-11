@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Projects;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class ProjectsController(IProjectService projectService) : AdminControlle
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("projects")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateProjectRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class ProjectsController(IProjectService projectService) : AdminControlle
         return result.ToCreatedResult("GetAdminProjectById", id => new { id });
     }
 
+    [InvalidateCache("projects")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateProjectRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class ProjectsController(IProjectService projectService) : AdminControlle
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("projects")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

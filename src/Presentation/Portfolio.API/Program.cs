@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.API.Middleware;
 using Portfolio.Application;
 using Portfolio.Application.Interfaces;
@@ -156,6 +158,23 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddScoped<AdminSeeder>();
 builder.Services.AddScoped<ContentSeeder>();
 
+// Public GET responses are output-cached in Redis (see RedisOutputCacheStore) so
+// repeat page loads skip SQL entirely; admin writes evict the affected resource's
+// entries via [InvalidateCache]. Redis is optional — without it the app serves
+// uncached.
+builder.Services.Configure<RedisOutputCacheOptions>(
+    builder.Configuration.GetSection(RedisOutputCacheOptions.SectionName));
+builder.Services.AddSingleton<RedisConnectionProvider>();
+builder.Services.AddHostedService(static sp => sp.GetRequiredService<RedisConnectionProvider>());
+
+// AddOutputCache registers the in-memory default store; replacing IOutputCacheStore
+// with the Redis-backed one moves the cache out of process so every instance shares
+// it and admin writes can evict by tag.
+builder.Services.AddOutputCache();
+builder.Services.AddSingleton<RedisOutputCacheStore>();
+builder.Services.AddSingleton<IOutputCacheStore>(static sp => sp.GetRequiredService<RedisOutputCacheStore>());
+builder.Services.AddSingleton<ICacheInvalidator>(static sp => sp.GetRequiredService<RedisOutputCacheStore>());
+
 var app = builder.Build();
 
 // Migrate and seed
@@ -183,6 +202,19 @@ app.UseForwardedHeaders();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseRateLimiter();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+// After routing and auth: only anonymous public GETs carry [OutputCache], so nothing
+// authenticated is ever stored or served from cache.
+app.UseOutputCache();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -192,12 +224,6 @@ if (app.Environment.IsDevelopment())
         options.WithTheme(ScalarTheme.DeepSpace);
     });
 }
-
-app.UseHttpsRedirection();
-
-app.UseRateLimiter();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

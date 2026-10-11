@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Principles;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class PrinciplesController(IPrincipleService service) : AdminControllerBa
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("principles")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreatePrincipleRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class PrinciplesController(IPrincipleService service) : AdminControllerBa
         return result.ToCreatedResult("GetAdminPrincipleById", id => new { id });
     }
 
+    [InvalidateCache("principles")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdatePrincipleRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class PrinciplesController(IPrincipleService service) : AdminControllerBa
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("principles")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

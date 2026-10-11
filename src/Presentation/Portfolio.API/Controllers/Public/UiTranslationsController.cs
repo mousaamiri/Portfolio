@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Portfolio.API.Common;
 using Portfolio.Application.Interfaces.Services;
 
 namespace Portfolio.API.Controllers.Public;
 
 [Route("api/public/ui-translations")]
+[OutputCache(Duration = 300, VaryByQueryKeys = ["lang"], Tags = ["ui-translations", "public"])]
 public class UiTranslationsController(IUiTranslationService uiTranslationService) : PublicControllerBase
 {
     [HttpGet]

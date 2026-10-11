@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Interests;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class InterestsController(IInterestService interestService) : AdminContro
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("interests")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateInterestRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class InterestsController(IInterestService interestService) : AdminContro
         return result.ToCreatedResult("GetAdminInterestById", id => new { id });
     }
 
+    [InvalidateCache("interests")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateInterestRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class InterestsController(IInterestService interestService) : AdminContro
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("interests")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

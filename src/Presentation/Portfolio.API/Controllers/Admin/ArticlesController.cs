@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Articles;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class ArticlesController(IArticleService articleService) : AdminControlle
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("articles")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateArticleRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class ArticlesController(IArticleService articleService) : AdminControlle
         return result.ToCreatedResult("GetAdminArticleById", id => new { id });
     }
 
+    [InvalidateCache("articles")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateArticleRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class ArticlesController(IArticleService articleService) : AdminControlle
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("articles")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

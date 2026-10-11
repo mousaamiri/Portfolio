@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.ImpactMetrics;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class ImpactMetricsController(IImpactMetricService service) : AdminContro
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("impact-metrics")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateImpactMetricRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class ImpactMetricsController(IImpactMetricService service) : AdminContro
         return result.ToCreatedResult("GetAdminImpactMetricById", id => new { id });
     }
 
+    [InvalidateCache("impact-metrics")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateImpactMetricRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class ImpactMetricsController(IImpactMetricService service) : AdminContro
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("impact-metrics")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

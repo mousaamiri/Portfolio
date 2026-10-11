@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Timeline;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class TimelineController(ITimelineEntryService timelineService) : AdminCo
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("timeline")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateTimelineEntryRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class TimelineController(ITimelineEntryService timelineService) : AdminCo
         return result.ToCreatedResult("GetAdminTimelineEntryById", id => new { id });
     }
 
+    [InvalidateCache("timeline")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateTimelineEntryRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class TimelineController(ITimelineEntryService timelineService) : AdminCo
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("timeline")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

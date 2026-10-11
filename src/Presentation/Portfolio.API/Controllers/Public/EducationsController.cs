@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Portfolio.API.Common;
 using Portfolio.Application.DTOs.Educations;
 using Portfolio.Application.Interfaces.Services;
@@ -6,6 +7,7 @@ using Portfolio.Application.Interfaces.Services;
 namespace Portfolio.API.Controllers.Public;
 
 [Route("api/public/educations")]
+[OutputCache(Duration = 300, VaryByQueryKeys = ["lang"], Tags = ["educations", "public"])]
 public class EducationsController(IEducationService educationService) : PublicControllerBase
 {
     [HttpGet]

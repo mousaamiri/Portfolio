@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Faqs;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class FaqsController(IFaqService faqService) : AdminControllerBase
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("faqs")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateFaqRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class FaqsController(IFaqService faqService) : AdminControllerBase
         return result.ToCreatedResult("GetAdminFaqById", id => new { id });
     }
 
+    [InvalidateCache("faqs")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateFaqRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class FaqsController(IFaqService faqService) : AdminControllerBase
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("faqs")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

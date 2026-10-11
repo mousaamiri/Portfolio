@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Educations;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class EducationsController(IEducationService educationService) : AdminCon
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("educations")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateEducationRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class EducationsController(IEducationService educationService) : AdminCon
         return result.ToCreatedResult("GetAdminEducationById", id => new { id });
     }
 
+    [InvalidateCache("educations")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateEducationRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class EducationsController(IEducationService educationService) : AdminCon
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("educations")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

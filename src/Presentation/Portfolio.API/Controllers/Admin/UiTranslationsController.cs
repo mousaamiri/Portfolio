@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.UiTranslations;
 using Portfolio.Application.Interfaces.Services;
 
@@ -22,6 +23,7 @@ public class UiTranslationsController(IUiTranslationService uiTranslationService
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("ui-translations")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] UpsertUiTranslationRequest request, CancellationToken ct)
@@ -30,6 +32,7 @@ public class UiTranslationsController(IUiTranslationService uiTranslationService
         return result.ToCreatedResult("GetAdminUiTranslationById", id => new { id });
     }
 
+    [InvalidateCache("ui-translations")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpsertUiTranslationRequest request, CancellationToken ct)
@@ -38,6 +41,7 @@ public class UiTranslationsController(IUiTranslationService uiTranslationService
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("ui-translations")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

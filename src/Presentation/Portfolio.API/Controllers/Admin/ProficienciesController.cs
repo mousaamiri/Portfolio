@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Proficiencies;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class ProficienciesController(IProficiencyGroupService service) : AdminCo
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("proficiencies")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateProficiencyGroupRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class ProficienciesController(IProficiencyGroupService service) : AdminCo
         return result.ToCreatedResult("GetAdminProficiencyGroupById", id => new { id });
     }
 
+    [InvalidateCache("proficiencies")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateProficiencyGroupRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class ProficienciesController(IProficiencyGroupService service) : AdminCo
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("proficiencies")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

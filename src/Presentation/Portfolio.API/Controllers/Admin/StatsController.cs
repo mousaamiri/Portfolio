@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Stats;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class StatsController(IStatCounterService statService) : AdminControllerB
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("stats")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateStatCounterRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class StatsController(IStatCounterService statService) : AdminControllerB
         return result.ToCreatedResult("GetAdminStatCounterById", id => new { id });
     }
 
+    [InvalidateCache("stats")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateStatCounterRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class StatsController(IStatCounterService statService) : AdminControllerB
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("stats")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

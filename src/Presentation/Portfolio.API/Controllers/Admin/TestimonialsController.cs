@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Common;
+using Portfolio.API.Caching;
 using Portfolio.Application.DTOs.Testimonials;
 using Portfolio.Application.Interfaces.Services;
 
@@ -26,6 +27,7 @@ public class TestimonialsController(ITestimonialService service) : AdminControll
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("testimonials")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<Guid>>> Create(
         [FromBody] CreateTestimonialRequest request, CancellationToken ct)
@@ -34,6 +36,7 @@ public class TestimonialsController(ITestimonialService service) : AdminControll
         return result.ToCreatedResult("GetAdminTestimonialById", id => new { id });
     }
 
+    [InvalidateCache("testimonials")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(
         Guid id, [FromBody] UpdateTestimonialRequest request, CancellationToken ct)
@@ -42,6 +45,7 @@ public class TestimonialsController(ITestimonialService service) : AdminControll
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("testimonials")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {

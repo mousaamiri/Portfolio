@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Portfolio.API.Caching;
 using Portfolio.API.Common;
 using Portfolio.Application.DTOs.Messages;
 using Portfolio.Application.Interfaces.Services;
@@ -22,6 +23,7 @@ public class MessagesController(IMessageService messageService) : AdminControlle
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("messages")]
     [HttpPut("{id:guid}/read")]
     public async Task<ActionResult<ApiResponse<bool>>> MarkAsRead(Guid id, CancellationToken ct)
     {
@@ -29,6 +31,7 @@ public class MessagesController(IMessageService messageService) : AdminControlle
         return result.ToOkOrNotFoundResult();
     }
 
+    [InvalidateCache("messages")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id, CancellationToken ct)
     {
