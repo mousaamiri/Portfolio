@@ -21,7 +21,7 @@
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@@latest/devicon.min.css" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@@latest/devicon.min.css" /></noscript>
-    <link rel="stylesheet" href="~/css/pages/about.css" />
+    <link rel="stylesheet" href="~/css/pages/about.min.css" asp-append-version="true" />
 }
 
 @* ======================================================
@@ -42,7 +42,10 @@
         <div class="bio-row">
             <div class="bio-photo-col">
                 <div class="bio-photo-frame">
-                    <img class="bio-photo" src="@Model.PortraitUrl" alt="@Model.PortraitAlt" width="400" height="500" fetchpriority="high" decoding="async" />
+                    <picture>
+            @Html.ModernImageSources(Model.PortraitUrl)
+            <img class="bio-photo" src="@Model.PortraitUrl" alt="@Model.PortraitAlt" width="400" height="500" fetchpriority="high" decoding="async" />
+        </picture>
                 </div>
             </div>
             <div class="bio-content-col">
@@ -299,8 +302,10 @@
 </section>
 
 @section PageScripts {
-    @* Lucide (About-only CDN) — must load before about.js calls createIcons() *@
+    @* Lucide (About-only CDN) — must load before about.min.js calls createIcons().
+       It sits at the end of <body> so it is not render-blocking; deferring it
+       would run it after about.min.js and leave the page without icons. *@
     <script src="https://unpkg.com/lucide@@latest/dist/umd/lucide.js"></script>
-    <script src="~/js/pages/about.js"></script>
-    <script src="~/js/pages/about-reveal-init.js"></script>
+    @* about.js + about-reveal-init.js, minified together in source order. *@
+    <script src="~/js/pages/about.min.js" asp-append-version="true" defer></script>
 }

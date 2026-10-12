@@ -83,15 +83,33 @@
       .join("");
   }
 
-  /* Swap a preview <img>, falling back to the placeholder icon when a project
-     has no image. `icon` may be null (the modal has no fallback icon). */
+  /* Derive a modern-format URL from a raster path ("foo.jpg" -> "foo.avif").
+     Non-raster paths and empty values return "" so the source is skipped. */
+  function modernImageSrc(src, format) {
+    if (!src) return "";
+    var dot = src.lastIndexOf(".");
+    var slash = src.lastIndexOf("/");
+    if (dot <= slash) return "";
+    return src.slice(0, dot) + "." + format;
+  }
+
+  /* Swap a preview <img> together with the <picture> sources wrapping it,
+     falling back to the placeholder icon when a project has no image.
+     `icon` may be null (the modal has no fallback icon). */
   function setPreviewImage(imgEl, icon, src) {
     if (!imgEl) return;
+    var picture = imgEl.closest("picture");
+    var sources = picture ? picture.querySelectorAll("source") : [];
     if (src) {
+      sources.forEach(function (source) {
+        var format = (source.getAttribute("type") || "").replace("image/", "");
+        source.srcset = modernImageSrc(src, format);
+      });
       imgEl.src = src;
       imgEl.style.display = "";
       if (icon) icon.style.display = "none";
     } else {
+      sources.forEach(function (source) { source.removeAttribute("srcset"); });
       imgEl.removeAttribute("src");
       imgEl.style.display = "none";
       if (icon) icon.style.display = "";

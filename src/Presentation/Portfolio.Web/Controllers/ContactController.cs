@@ -13,8 +13,14 @@ public class ContactController(IPortfolioApiClient api) : Controller
     public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
         var language = WebLanguage.ResolveFromRequest(HttpContext, lang);
-        var profile = await api.GetProfileAsync(language, cancellationToken);
-        var faqs = await api.GetFaqsAsync(language, cancellationToken);
+
+        // Both calls are independent, so they run concurrently (one round-trip, not two).
+        var profileTask = api.GetProfileAsync(language, cancellationToken);
+        var faqsTask = api.GetFaqsAsync(language, cancellationToken);
+        await Task.WhenAll(profileTask, faqsTask);
+
+        var profile = profileTask.Result;
+        var faqs = faqsTask.Result;
 
         var model = new ContactViewModel
         {
@@ -43,6 +49,11 @@ public class ContactController(IPortfolioApiClient api) : Controller
     [EnableRateLimiting("contact")]
     public async Task<IActionResult> Submit([FromBody] ContactFormModel form, CancellationToken cancellationToken)
     {
+        // Malformed/absent body (bad JSON, wrong content-type): nothing to submit.
+        // Returns the same shape as a validation failure so contact.js handles both.
+        if (form is null)
+            return BadRequest(new { success = false });
+
         // Honeypot: a real visitor never sees or fills the Website field. A bot that
         // does gets a fake success — nothing is persisted or emailed.
         if (!string.IsNullOrWhiteSpace(form.Website))

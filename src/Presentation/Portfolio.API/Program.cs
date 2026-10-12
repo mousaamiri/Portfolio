@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.API.Common;
@@ -158,6 +159,17 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddScoped<AdminSeeder>();
 builder.Services.AddScoped<ContentSeeder>();
 
+// Text payloads are large (the UI-translation map alone ships ~425 KB of JSON) and
+// every public response is compressible, so Brotli/Gzip are enabled for HTTPS too —
+// these responses hold no user secrets (only GETs are cached/compressed; the
+// contact-form POST is neither).
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+
 // Public GET responses are output-cached in Redis (see RedisOutputCacheStore) so
 // repeat page loads skip SQL entirely; admin writes evict the affected resource's
 // entries via [InvalidateCache]. Redis is optional — without it the app serves
@@ -201,6 +213,11 @@ using (var scope = app.Services.CreateScope())
 app.UseForwardedHeaders();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// Compression wraps output caching so stored payloads are uncompressed and get
+// re-compressed per client on the way out (never serving a Brotli body to a client
+// that asked for gzip).
+app.UseResponseCompression();
 
 app.UseHttpsRedirection();
 

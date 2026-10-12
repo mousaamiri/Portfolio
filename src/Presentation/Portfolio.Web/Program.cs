@@ -1,13 +1,27 @@
+using System.Net;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Http.Resilience;
+using Polly;
 using Portfolio.Web.Localization;
 using Portfolio.Web.Services.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+// HTML/CSS/JS are highly compressible; UiTranslations-heavy pages shrink 60–80%.
+// No secrets in these responses (contact-form POSTs are neither cached nor
+// compressed), so compression is enabled for HTTPS too.
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
 
 // Trust X-Forwarded-* from a reverse proxy so RemoteIpAddress is the visitor's
 // real IP. The "contact" rate-limit partitions by it — without this, everyone
@@ -30,8 +44,32 @@ var configuredBaseUrl = builder.Configuration["PortfolioApi:BaseUrl"];
 // content page and contact-form submit fails silently — warn after the app builds.
 var baseUrlMissing = string.IsNullOrWhiteSpace(configuredBaseUrl);
 var apiBaseUrl = baseUrlMissing ? "https://localhost:7003" : configuredBaseUrl!;
+// A transient blip in front of the API (a proxy 403/404/429 or a 5xx during an
+// app-pool recycle or the FTP deploy window) is retried before the visitor sees it,
+// so a content page self-heals (second render has data) instead of flashing an empty
+// shell or the error page for a second or two. Added to the public client only — the
+// admin clients deliberately surface failures to the signed-in admin.
 builder.Services.AddHttpClient<IPortfolioApiClient, PortfolioApiClient>(
-    client => client.BaseAddress = new Uri(apiBaseUrl));
+    client =>
+    {
+        client.BaseAddress = new Uri(apiBaseUrl);
+        // Bound well below the 100s default so a hung API call fails fast and the
+        // retry below still fits inside a sane page-load budget.
+        client.Timeout = TimeSpan.FromSeconds(30);
+    })
+    .AddResilienceHandler("public-api", pipeline => pipeline.AddRetry(
+        new HttpRetryStrategyOptions
+        {
+            MaxRetryAttempts = 2,
+            BackoffType = DelayBackoffType.Exponential,
+            Delay = TimeSpan.FromMilliseconds(500),
+            // The built-in default retries only 408/429/5xx. A reverse proxy in front
+            // of the API answers 403/404 while the route is briefly gone, so those are
+            // added here. Network-level failures (HttpRequestException) always retry.
+            ShouldHandle = args => ValueTask.FromResult(
+                args.Outcome.Exception is HttpRequestException
+                || args.Outcome.Result?.StatusCode is { } status && IsTransientProxyBlip(status))
+        }));
 
 // The admin client's requests carry the admin's JWT (from the auth cookie) as a
 // Bearer header via BearerTokenHandler.
@@ -96,7 +134,18 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
+// Before UseStaticFiles so served files are compressed; before response caching is
+// not needed here (the Web app does not cache responses server-side).
+app.UseResponseCompression();
+
+// Static assets are content-addressed via asp-append-version in the views, so they
+// can be cached immutably for a year: a file edit changes its hash and thus its URL.
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable"
+});
+
 app.UseRouting();
 
 // Must run before rate limiting so the "contact" limiter partitions by the real
@@ -118,4 +167,15 @@ app.MapControllerRoute(
 
 app.Run();
 
-public partial class Program;
+public partial class Program
+{
+    // Status codes the public-api retry treats as transient. Beyond the usual set
+    // (408 / 429 / 5xx), this includes the 403/404 a reverse proxy emits while the
+    // downstream route is briefly unavailable.
+    internal static bool IsTransientProxyBlip(HttpStatusCode status)
+        => status is HttpStatusCode.Forbidden
+            or HttpStatusCode.NotFound
+            or HttpStatusCode.RequestTimeout
+            or HttpStatusCode.TooManyRequests
+            or >= HttpStatusCode.InternalServerError;
+}

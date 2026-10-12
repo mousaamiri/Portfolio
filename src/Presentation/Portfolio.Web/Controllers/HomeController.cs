@@ -13,11 +13,19 @@ public class HomeController(IPortfolioApiClient api) : Controller
 
         // All content comes from Portfolio.API (backed by the database). If the API
         // is unreachable, PortfolioApiClient throws and the global error page renders.
-        var profile = await api.GetProfileAsync(language, cancellationToken);
-        var projects = await api.GetProjectsAsync(language, cancellationToken);
-        var skills = await api.GetSkillsAsync(language, cancellationToken);
-        var experiences = await api.GetExperiencesAsync(language, cancellationToken);
-        var educations = await api.GetEducationsAsync(language, cancellationToken);
+        // All calls are independent, so they run concurrently (one round-trip, not five).
+        var profileTask = api.GetProfileAsync(language, cancellationToken);
+        var projectsTask = api.GetProjectsAsync(language, cancellationToken);
+        var skillsTask = api.GetSkillsAsync(language, cancellationToken);
+        var experiencesTask = api.GetExperiencesAsync(language, cancellationToken);
+        var educationsTask = api.GetEducationsAsync(language, cancellationToken);
+        await Task.WhenAll(profileTask, projectsTask, skillsTask, experiencesTask, educationsTask);
+
+        var profile = profileTask.Result;
+        var projects = projectsTask.Result;
+        var skills = skillsTask.Result;
+        var experiences = experiencesTask.Result;
+        var educations = educationsTask.Result;
 
         var model = new HomeViewModel
         {

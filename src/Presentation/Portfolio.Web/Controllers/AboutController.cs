@@ -13,14 +13,23 @@ public class AboutController(IPortfolioApiClient api) : Controller
 
         // Everything comes from Portfolio.API (database-backed). Hero stat badges and
         // portrait now live on the Profile entity; lists come from their endpoints.
-        var profile = await api.GetProfileAsync(language, cancellationToken);
+        // All calls are independent, so they run concurrently (one round-trip, not seven).
+        var profileTask = api.GetProfileAsync(language, cancellationToken);
+        var skillsTask = api.GetSkillsAsync(language, cancellationToken);
+        var educationsTask = api.GetEducationsAsync(language, cancellationToken);
+        var journeyTask = api.GetTimelineAsync(language, cancellationToken);
+        var interestsTask = api.GetInterestsAsync(language, cancellationToken);
+        var footprintTask = api.GetStatsAsync(language, cancellationToken);
+        var endorsementsTask = api.GetTestimonialsAsync(language, cancellationToken);
+        await Task.WhenAll(profileTask, skillsTask, educationsTask, journeyTask, interestsTask, footprintTask, endorsementsTask);
 
-        var skills = await api.GetSkillsAsync(language, cancellationToken);
-        var educations = await api.GetEducationsAsync(language, cancellationToken);
-        var journey = await api.GetTimelineAsync(language, cancellationToken);
-        var interests = await api.GetInterestsAsync(language, cancellationToken);
-        var footprint = await api.GetStatsAsync(language, cancellationToken);
-        var endorsements = await api.GetTestimonialsAsync(language, cancellationToken);
+        var profile = profileTask.Result;
+        var skills = skillsTask.Result;
+        var educations = educationsTask.Result;
+        var journey = journeyTask.Result;
+        var interests = interestsTask.Result;
+        var footprint = footprintTask.Result;
+        var endorsements = endorsementsTask.Result;
 
         var model = new AboutViewModel
         {

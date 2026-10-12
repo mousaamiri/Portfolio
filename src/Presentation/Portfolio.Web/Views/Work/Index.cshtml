@@ -23,7 +23,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/pages/work.css" />
+    <link rel="stylesheet" href="~/css/pages/work.min.css" asp-append-version="true" />
 }
 
 <section id="work" class="work-section">
@@ -73,9 +73,12 @@
                     <p class="work-detail-subtitle" id="detail-subtitle">@(first?.SubtitleEn)</p>
 
                     <div class="work-detail-preview" id="detail-preview">
-                        <img class="work-detail-preview-img" id="detail-preview-img"
-                             src="@firstImage" alt="" loading="lazy"
-                             style="@(string.IsNullOrEmpty(firstImage) ? "display:none" : "")" />
+                        <picture>
+                            @Html.ModernImageSources(firstImage)
+                            <img class="work-detail-preview-img" id="detail-preview-img"
+                                 src="@firstImage" alt="" loading="lazy"
+                                 style="@(string.IsNullOrEmpty(firstImage) ? "display:none" : "")" />
+                        </picture>
                         <svg class="work-detail-preview-icon" id="detail-preview-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="@(string.IsNullOrEmpty(firstImage) ? "" : "display:none")">
                             <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
                             <polyline points="14 2 14 8 20 8"/>
@@ -118,7 +121,12 @@
                 </button>
                 <span class="work-modal-number" id="modal-number">01</span>
                 <div class="work-modal-preview" id="modal-preview">
-                    <img class="work-modal-preview-img" id="modal-preview-img" src="" alt="" loading="lazy" />
+                    <picture>
+                        @* Sources are swapped by work.js (setPreviewImage) alongside the <img> src. *@
+                        <source type="image/avif" id="modal-preview-avif" srcset="" />
+                        <source type="image/webp" id="modal-preview-webp" srcset="" />
+                        <img class="work-modal-preview-img" id="modal-preview-img" src="" alt="" loading="lazy" />
+                    </picture>
                 </div>
                 <h3 class="work-modal-title" id="modal-title"></h3>
                 <p class="work-modal-subtitle" id="modal-subtitle"></p>
@@ -222,5 +230,5 @@
     @* Project data is delivered via the #work-data JSON island inside
        #page-content (above), NOT via a global — so it is always in the DOM
        before work.js runs, on both full loads and SPA content swaps. *@
-    <script src="~/js/pages/work.js"></script>
+    <script src="~/js/pages/work.min.js" asp-append-version="true" defer></script>
 }

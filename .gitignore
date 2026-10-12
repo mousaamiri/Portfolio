@@ -109,3 +109,9 @@ appsettings.Production.json
 
 #  Local tooling
 .claude/
+.kilo/
+
+# Bundled/minified static assets. BuildBundlerMinifier regenerates these from
+# bundleconfig.json on every dotnet build, so they are never hand-edited.
+**/wwwroot/**/*.min.css
+**/wwwroot/**/*.min.js

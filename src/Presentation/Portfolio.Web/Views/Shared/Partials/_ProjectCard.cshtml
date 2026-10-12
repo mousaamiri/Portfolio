@@ -2,7 +2,10 @@
 
 <article class="card project-card">
     <div class="project-image">
-        <img src="@Model.ImageUrl" alt="@Model.Title" loading="lazy" width="600" height="400" />
+        <picture>
+            @Html.ModernImageSources(Model.ImageUrl)
+            <img src="@Model.ImageUrl" alt="@Model.Title" loading="lazy" width="600" height="400" />
+        </picture>
     </div>
     <div class="card-body">
         <h3 class="card-title">@Model.Title</h3>

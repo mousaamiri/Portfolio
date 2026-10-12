@@ -24,13 +24,16 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@@400;500;600;700;800&family=Instrument+Serif:ital@@1&family=JetBrains+Mono:wght@@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@@400;500;600;700;800&family=Instrument+Serif:ital@@1&family=JetBrains+Mono:wght@@400;500;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@@400;500;600;700;800&family=Instrument+Serif:ital@@1&family=JetBrains+Mono:wght@@400;500;700&display=swap" /></noscript>
 
-    @* Design tokens + base (identity) + page CSS + RTL — no shell CSS. *@
-    <link rel="stylesheet" href="~/css/tokens.css" />
-    <link rel="stylesheet" href="~/css/base.css" />
+    @* Design tokens + base (identity) as one minified bundle + page CSS + RTL — no shell CSS. *@
+    <link rel="stylesheet" href="~/css/auth.min.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
-    <link rel="stylesheet" href="~/css/rtl.css" />
+    @if (Loc.IsRtl)
+    {
+        <link rel="stylesheet" href="~/css/rtl.min.css" asp-append-version="true" />
+    }
 </head>
 <body>
 
@@ -45,7 +48,7 @@
 
     @* Minimal scripts: server-backed i18n shim + the page's own simulated-form
        script. Localization is server-side (window.__ui + inline defaults). *@
-    <script src="~/js/i18n.js"></script>
+    <script src="~/js/i18n.min.js" asp-append-version="true"></script>
     @RenderSection("PageScripts", required: false)
 </body>
 </html>

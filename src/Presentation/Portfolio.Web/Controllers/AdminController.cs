@@ -265,9 +265,13 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud, IP
         string resource, Guid id, string formView,
         Func<TDto, TDto?, TForm> toForm, CancellationToken ct) where TDto : class
     {
-        var en = await crud.GetAsync<TDto>(resource, id, "en", ct);
+        // Fetch both language variants concurrently, then keep the null-check on EN.
+        var enTask = crud.GetAsync<TDto>(resource, id, "en", ct);
+        var faTask = crud.GetAsync<TDto>(resource, id, "fa", ct);
+        await Task.WhenAll(enTask, faTask);
+        var en = enTask.Result;
         if (en is null) return NotFound();
-        var fa = await crud.GetAsync<TDto>(resource, id, "fa", ct);
+        var fa = faTask.Result;
         return View(formView, toForm(en, fa));
     }
 
@@ -388,10 +392,12 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud, IP
     [HttpGet]
     public async Task<IActionResult> SkillEdit(Guid id, CancellationToken ct)
     {
-        var en = await crud.GetAsync<SkillApiDto>("skills", id, "en", ct);
+        var enTask = crud.GetAsync<SkillApiDto>("skills", id, "en", ct);
+        var faTask = crud.GetAsync<SkillApiDto>("skills", id, "fa", ct);
+        await Task.WhenAll(enTask, faTask);
+        var en = enTask.Result;
         if (en is null) return NotFound();
-        var fa = await crud.GetAsync<SkillApiDto>("skills", id, "fa", ct);
-        return View("SkillForm", AdminSkillMapper.ToFormModel(en, fa));
+        return View("SkillForm", AdminSkillMapper.ToFormModel(en, faTask.Result));
     }
 
     [HttpPost]
@@ -476,9 +482,11 @@ public class AdminController(IAdminApiClient adminApi, IAdminCrudClient crud, IP
     [HttpGet]
     public async Task<IActionResult> Profile(CancellationToken ct)
     {
-        var en = await publicApi.GetProfileAsync("en", ct);
-        var fa = await publicApi.GetProfileAsync("fa", ct);
-        return View("ProfileForm", AdminProfileMapper.ToFormModel(en, fa));
+        // Both language variants are independent — fetch them concurrently.
+        var enTask = publicApi.GetProfileAsync("en", ct);
+        var faTask = publicApi.GetProfileAsync("fa", ct);
+        await Task.WhenAll(enTask, faTask);
+        return View("ProfileForm", AdminProfileMapper.ToFormModel(enTask.Result, faTask.Result));
     }
 
     [HttpPost][ValidateAntiForgeryToken]

@@ -1,0 +1,163 @@
+[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/tokens.css",
+      "wwwroot/css/base.css",
+      "wwwroot/css/layout.css",
+      "wwwroot/css/components.css",
+      "wwwroot/css/navbar.css",
+      "wwwroot/css/footer.css",
+      "wwwroot/css/theme-switcher.css",
+      "wwwroot/css/spa-transitions.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "adjustRelativePaths": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/rtl.min.css",
+    "inputFiles": [ "wwwroot/css/rtl.css" ],
+    "minify": {
+      "enabled": true,
+      "adjustRelativePaths": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/site-core.min.js",
+    "inputFiles": [
+      "wwwroot/js/i18n.js",
+      "wwwroot/js/navbar-component.js",
+      "wwwroot/js/text-reveal.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/site-shell.min.js",
+    "inputFiles": [
+      "wwwroot/js/navbar.js",
+      "wwwroot/js/command-palette.js",
+      "wwwroot/js/footer-component.js",
+      "wwwroot/js/theme-switcher.js",
+      "wwwroot/js/spa-router.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/pages/home.min.css",
+    "inputFiles": [ "wwwroot/css/pages/home.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/pages/about.min.css",
+    "inputFiles": [ "wwwroot/css/pages/about.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/pages/blog.min.css",
+    "inputFiles": [ "wwwroot/css/pages/blog.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/pages/contact.min.css",
+    "inputFiles": [ "wwwroot/css/pages/contact.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/pages/experience.min.css",
+    "inputFiles": [ "wwwroot/css/pages/experience.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/pages/work.min.css",
+    "inputFiles": [ "wwwroot/css/pages/work.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/pages/login.min.css",
+    "inputFiles": [ "wwwroot/css/pages/login.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/pages/forgot-password.min.css",
+    "inputFiles": [ "wwwroot/css/pages/forgot-password.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/home.min.js",
+    "inputFiles": [ "wwwroot/js/pages/home.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/about.min.js",
+    "inputFiles": [ "wwwroot/js/pages/about.js", "wwwroot/js/pages/about-reveal-init.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/blog.min.js",
+    "inputFiles": [ "wwwroot/js/pages/blog.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/contact.min.js",
+    "inputFiles": [ "wwwroot/js/pages/contact.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/experience.min.js",
+    "inputFiles": [ "wwwroot/js/pages/experience.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/work.min.js",
+    "inputFiles": [ "wwwroot/js/pages/work.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/login.min.js",
+    "inputFiles": [ "wwwroot/js/pages/login.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/pages/forgot-password.min.js",
+    "inputFiles": [ "wwwroot/js/pages/forgot-password.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/admin/admin.min.css",
+    "inputFiles": [ "wwwroot/css/tokens.css", "wwwroot/css/base.css", "wwwroot/css/admin/admin.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/auth.min.css",
+    "inputFiles": [ "wwwroot/css/tokens.css", "wwwroot/css/base.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/i18n.min.js",
+    "inputFiles": [ "wwwroot/js/i18n.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/admin/login.min.css",
+    "inputFiles": [ "wwwroot/css/admin/login.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/css/admin/forgot-password.min.css",
+    "inputFiles": [ "wwwroot/css/admin/forgot-password.css" ],
+    "minify": { "enabled": true, "adjustRelativePaths": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/admin/shared.min.js",
+    "inputFiles": [ "wwwroot/js/admin/shared.js" ],
+    "minify": { "enabled": true, "renameLocals": true }
+  }
+]
