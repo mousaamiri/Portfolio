@@ -5,9 +5,11 @@
    IntersectionObserver scroll tracking for in-page sections, scroll-based
    "scrolled" state, More dropdown, theme toggle, hamburger / mobile panel.
 
-   Reads window.__navConfig.currentPage to set the initial active link.
-   Exposes window.__initNavbarBehavior for re-init after i18n rebuild.
-   ========================================================================== */
+    Reads window.__navConfig.currentPage to set the initial active link.
+    Exposes window.__initNavbarBehavior for re-init (idempotent: listeners bind
+    once) and window.__setActiveNavPage for the SPA router to sync the active
+    link + sliding pill after a navigation without rebuilding the navbar.
+    ========================================================================== */
 
 (function () {
   "use strict";
@@ -38,6 +40,15 @@
   if (!document.documentElement.getAttribute("data-theme")) {
     applyTheme(getPreferredTheme());
   }
+
+  // Idempotency: the navbar DOM is built once and never rebuilt during SPA
+  // navigation (the router only syncs the active link). Re-running this init on
+  // every navigation would stack duplicate window/document listeners —
+  // scroll/resize handlers that run on every frame and a render loop that gets
+  // progressively heavier ("gets worse after a few clicks"). behaviorBound
+  // guarantees listeners attach exactly once; later calls only refresh derived
+  // state (active pill + "scrolled" class).
+  var behaviorBound = false;
 
   function initNavbarBehavior() {
     var config = window.__navConfig || {};
@@ -78,6 +89,7 @@
         activePillEl.classList.add("visible");
       }
       updateMobileActive(link);
+      setContactActive(false);
     }
 
     function updateMobileActive(link) {
@@ -87,19 +99,35 @@
       });
     }
 
-    function initActivePill() {
-      var activeLink = navbar.querySelector('[data-nav-link][data-page="' + currentPage + '"]');
-      if (!activeLink) activeLink = navbar.querySelector("[data-nav-link]");
-      if (activeLink) setActiveLink(activeLink);
+    function setContactActive(on) {
+      var contactBtn = navbar.querySelector(".navbar-contact-btn");
+      var mobileContact = navbar.querySelector(".navbar-mobile-contact");
+      if (contactBtn) contactBtn.classList.toggle("active", on);
+      if (mobileContact) mobileContact.classList.toggle("active", on);
     }
 
-    navLinks.forEach(function (link) {
-      link.addEventListener("click", function (e) {
-        var href = link.getAttribute("href");
-        if (!href || href === "#") { e.preventDefault(); return; }
-        if (href.charAt(0) === "#") setActiveLink(link);
-      });
-    });
+    function setActivePage(page) {
+      var activeLink = page
+        ? navbar.querySelector('[data-nav-link][data-page="' + page + '"]')
+        : null;
+
+      if (activeLink) {
+        setActiveLink(activeLink);
+      } else {
+        // The current page isn't part of the pill nav (e.g. the standalone
+        // Contact CTA). Clear the highlight instead of falling back to the
+        // first link, which would wrongly light up Home.
+        navLinks.forEach(function (l) { l.classList.remove("active"); });
+        mobileLinks.forEach(function (ml) { ml.classList.remove("active"); });
+        currentActiveLink = null;
+        if (activePillEl) activePillEl.classList.remove("visible");
+        setContactActive(page === "contact");
+      }
+    }
+
+    function initActivePill() {
+      setActivePage(currentPage);
+    }
 
     var mobileOpen = false;
 
@@ -115,60 +143,6 @@
       }, 350);
     }
 
-    mobileLinks.forEach(function (link) {
-      link.addEventListener("click", function () {
-        closeMobilePanel();
-        var href = link.getAttribute("href");
-        if (href && href.charAt(0) === "#" && href !== "#") {
-          var matchingNavLink = navbar.querySelector('[data-nav-link][data-page="' + link.getAttribute("data-page") + '"]');
-          if (matchingNavLink) setActiveLink(matchingNavLink);
-        }
-      });
-    });
-
-    navbar.classList.toggle("scrolled", window.scrollY > 50);
-
-    var scrollTicking = false;
-    function onScroll() {
-      if (!scrollTicking) {
-        requestAnimationFrame(function () {
-          navbar.classList.toggle("scrolled", window.scrollY > 50);
-          scrollTicking = false;
-        });
-        scrollTicking = true;
-      }
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-
-    var resizeTimer;
-    window.addEventListener("resize", function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        if (currentActiveLink) moveActivePill(currentActiveLink);
-      }, 100);
-    });
-
-    if (moreBtn) {
-      moreBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        var isOpen = moreBtn.getAttribute("aria-expanded") === "true";
-        moreBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
-        if (dropdown) dropdown.classList.toggle("open", !isOpen);
-      });
-    }
-
-    document.addEventListener("click", function (e) {
-      if (dropdown && dropdown.classList.contains("open")) {
-        if (!dropdown.contains(e.target) && e.target !== moreBtn) {
-          if (moreBtn) moreBtn.setAttribute("aria-expanded", "false");
-          dropdown.classList.remove("open");
-        }
-      }
-    });
-
-    if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
-    if (mobileThemeToggle) mobileThemeToggle.addEventListener("click", toggleTheme);
-
     function openMobilePanel() {
       if (!hamburger || !mobilePanel) return;
       mobileOpen = true;
@@ -183,22 +157,103 @@
       document.body.style.overflow = "hidden";
     }
 
-    if (hamburger) {
-      hamburger.addEventListener("click", function () {
-        if (mobileOpen) closeMobilePanel();
-        else openMobilePanel();
-      });
+    var scrollTicking = false;
+    function onScroll() {
+      if (!scrollTicking) {
+        requestAnimationFrame(function () {
+          navbar.classList.toggle("scrolled", window.scrollY > 50);
+          scrollTicking = false;
+        });
+        scrollTicking = true;
+      }
     }
 
-    if (mobileClose) {
-      mobileClose.addEventListener("click", closeMobilePanel);
+    var resizeTimer;
+    function onResize() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (currentActiveLink) moveActivePill(currentActiveLink);
+      }, 100);
     }
 
-    document.addEventListener("keydown", function (e) {
+    function onDropdownClick(e) {
+      if (dropdown && dropdown.classList.contains("open")) {
+        if (!dropdown.contains(e.target) && e.target !== moreBtn) {
+          if (moreBtn) moreBtn.setAttribute("aria-expanded", "false");
+          dropdown.classList.remove("open");
+        }
+      }
+    }
+
+    function onKeydown(e) {
       if (mobileOpen && (e.key === "Escape" || e.key === "Esc")) {
         closeMobilePanel();
       }
-    });
+    }
+
+    // Bind listeners exactly once (see behaviorBound above). Everything below is
+    // idempotent by construction, so a re-init after a later navigation is a
+    // cheap state refresh rather than a full rewire.
+    if (!behaviorBound) {
+      navLinks.forEach(function (link) {
+        link.addEventListener("click", function (e) {
+          var href = link.getAttribute("href");
+          if (!href || href === "#") { e.preventDefault(); return; }
+          if (href.charAt(0) === "#") setActiveLink(link);
+        });
+      });
+
+      mobileLinks.forEach(function (link) {
+        link.addEventListener("click", function () {
+          closeMobilePanel();
+          var href = link.getAttribute("href");
+          if (href && href.charAt(0) === "#" && href !== "#") {
+            setActivePage(link.getAttribute("data-page"));
+          }
+        });
+      });
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onResize);
+
+      if (moreBtn) {
+        moreBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          var isOpen = moreBtn.getAttribute("aria-expanded") === "true";
+          moreBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+          if (dropdown) dropdown.classList.toggle("open", !isOpen);
+        });
+      }
+
+      document.addEventListener("click", onDropdownClick);
+
+      if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
+      if (mobileThemeToggle) mobileThemeToggle.addEventListener("click", toggleTheme);
+
+      if (hamburger) {
+        hamburger.addEventListener("click", function () {
+          if (mobileOpen) closeMobilePanel();
+          else openMobilePanel();
+        });
+      }
+
+      if (mobileClose) {
+        mobileClose.addEventListener("click", closeMobilePanel);
+      }
+
+      document.addEventListener("keydown", onKeydown);
+
+      behaviorBound = true;
+
+      // SPA entry point: lets the router sync the active link and reposition the
+      // sliding pill after a navigation, without rewriting navbar.innerHTML.
+      // Closed over the (stable) first-init DOM queries.
+      window.__setActiveNavPage = function (page) {
+        setActivePage(page);
+      };
+    }
+
+    navbar.classList.toggle("scrolled", window.scrollY > 50);
 
     function doInit() {
       initActivePill();

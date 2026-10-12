@@ -22,6 +22,14 @@
 
   if (window.location.protocol === 'file:') return;
 
+  // Idempotency guard. This router is bundled INSIDE site-shell.min.js. If any
+  // code path ever re-injects that bundle mid-session (e.g. a stale cached
+  // page whose script list predates the SHARED_SCRIPTS fix), running this IIFE
+  // a second time would double-register the click/popstate/prefetch handlers
+  // and make every navigation fire twice. Bail out — one router per page load.
+  if (window.__spaRouterLoaded) return;
+  window.__spaRouterLoaded = true;
+
   /* ======================== CONFIGURATION ======================== */
 
   var MAIN_SELECTOR = '#page-content';
@@ -32,15 +40,35 @@
   var TRICKLE_MS    = 220;
   var TRICKLE_SEED  = 0.08;
 
+  // MVC/bundle migration: the shell ships as two minified bundles —
+  //   site-core.min.js  = i18n + navbar-component + text-reveal
+  //   site-shell.min.js = navbar + command-palette + footer + theme-switcher
+  //                       + THIS router
+  // _Layout loads both exactly once. They must NEVER be classified as
+  // page-specific scripts: loadPageScriptsAndInline() removes the existing
+  // tag and re-executes the src, so re-running site-shell.min.js would
+  // re-run this very IIFE and stack an extra click + popstate handler set on
+  // every navigation. After N navigations one link click would fire N+1
+  // navigations in parallel (N+1 progress bars / fetches / swaps / pushStates)
+  // — exactly the "page loads several times" bug.
   var SHARED_SCRIPTS = [
-    'i18n.js', 'navbar-component.js', 'text-reveal.js',
+    'site-core.min.js', 'site-shell.min.js',
+    // Legacy individual filenames. No view references them anymore, but
+    // recognising them keeps any leftover markup (e.g. i18n.min.js in
+    // _AuthLayout) treated as shared instead of re-executed per navigation.
+    'i18n.js', 'i18n.min.js', 'navbar-component.js', 'text-reveal.js',
     'navbar.js', 'command-palette.js', 'footer-component.js', 'theme-switcher.js',
     'spa-router.js', 'site.js'
   ];
 
   var SHARED_CSS = [
-    // MVC migration: shared shell stylesheets live in /css/ now. Everything
-    // NOT in this list is treated as page-specific and swapped per navigation.
+    // Bundled design system (tokens → base → layout → components → shell) and
+    // the RTL override bundle — shipped by _Layout on every page, so treat
+    // them as shared. Otherwise a ?v= mismatch between a cached page and the
+    // live document would append a SECOND copy of the whole stylesheet and
+    // then removeOldCSS() would strip the original (flash of unstyled content).
+    'site.min.css', 'rtl.min.css',
+    // Legacy individual names (pre-bundle), kept for the same reason.
     'tokens.css', 'base.css', 'layout.css', 'components.css',
     'style.css', 'navbar.css', 'footer.css', 'rtl.css',
     'theme-switcher.css', 'spa-transitions.css'
@@ -352,8 +380,14 @@
     var inlineScripts = [];
     doc.querySelectorAll('script:not([src])').forEach(function (script) {
       var text = script.textContent.trim();
+      // Skip the shell's own inline globals: __navConfig (page routes/current
+      // page — swapContent already updates it), __lang/__ui (server-resolved
+      // language + UI map from _Layout — re-running them is a pointless
+      // overwrite on every navigation), plus the legacy i18n/theme/lang hooks.
       if (text &&
           text.indexOf('__navConfig') === -1 &&
+          text.indexOf('__lang') === -1 &&
+          text.indexOf('__ui') === -1 &&
           text.indexOf('i18n.translateElements') === -1 &&
           text.indexOf('portfolio-theme') === -1 &&
           text.indexOf('portfolio-lang') === -1) {
@@ -501,10 +535,10 @@
     window.__navConfig = window.__navConfig || {};
     window.__navConfig.currentPage = page.pageName;
 
-    document.querySelectorAll('[data-reveal-applied]').forEach(function (el) {
-      el.removeAttribute('data-reveal-applied');
-    });
-
+    // Note: the old [data-reveal-applied] scrub that ran here was a no-op —
+    // the very next line replaces main.innerHTML entirely, discarding those
+    // elements (and their attributes) regardless. Fresh page markup arrives
+    // without the attribute, so text-reveal re-runs correctly.
     main.innerHTML = page.content.innerHTML;
 
     if (window.i18n) {
@@ -545,7 +579,11 @@
     });
   }
 
-  function rebuildSharedComponents() {
+  // Light per-navigation chrome sync. The navbar/footer/palette markup is built
+  // once at bundle load and never re-created during SPA navigation — each
+  // __rebuild* hook below is now a classes/state-only update, so this is cheap
+  // and side-effect-free to run on every page change.
+  function updateSharedComponents() {
     if (typeof window.__rebuildNavbar === 'function') window.__rebuildNavbar();
     if (typeof window.__rebuildFooter === 'function') window.__rebuildFooter();
     if (typeof window.__rebuildCommandPalette === 'function') window.__rebuildCommandPalette();
@@ -628,7 +666,7 @@
       }).then(function () {
         if (aborted()) return;
 
-        rebuildSharedComponents();
+        updateSharedComponents();
 
         if (isPush !== false) {
           history.pushState({ spaURL: url }, '', url);

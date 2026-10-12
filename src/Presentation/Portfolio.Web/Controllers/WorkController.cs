@@ -5,7 +5,7 @@ using Portfolio.Web.Services.Api;
 
 namespace Portfolio.Web.Controllers;
 
-public class WorkController(IPortfolioApiClient api) : Controller
+public class WorkController(IPortfolioApiClient api, ILogger<WorkController> logger) : Controller
 {
     public async Task<IActionResult> Index(string? lang, CancellationToken cancellationToken)
     {
@@ -17,6 +17,12 @@ public class WorkController(IPortfolioApiClient api) : Controller
         var model = projects
             .Select(ApiViewModelMapper.ToViewModel)
             .ToList();
+
+        // A 4xx now escalates to the error page, so a blank shell should be
+        // unreachable — but a legitimately empty list would still render one. Log it
+        // so any future blank render stays greppable in production.
+        if (model.Count == 0)
+            logger.LogWarning("Work page rendered with no projects for language '{Language}'.", language);
 
         return View(model);
     }

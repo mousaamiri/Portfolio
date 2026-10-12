@@ -5,14 +5,22 @@ namespace Portfolio.Web.Services.Api;
 
 /// <summary>
 /// <see cref="HttpClient"/>-backed <see cref="IPortfolioApiClient"/>. The base
-/// address is configured via <c>AddHttpClient</c> in <c>Program.cs</c>.
+/// address is configured via <c>AddHttpClient</c> in <c>Program.cs</c>, which also
+/// layers a short retry so transient proxy/API blips self-heal.
 /// <para>
-/// Error policy: a genuinely unreachable server or server-side failure (connection
-/// refused, DNS/TLS failure, timeout, 5xx, unparseable body) throws
+/// Error policy: anything that means the site cannot honestly render its data — an
+/// unreachable server (connection refused, DNS/TLS failure, timeout), a 5xx, an
+/// unparseable body, or <b>any 4xx on a collection endpoint</b> — throws
 /// <see cref="ApiUnavailableException"/> so the global error page renders instead
-/// of a half-empty page. A 4xx (server up, resource absent) yields an empty list /
-/// null so the page renders normally. Genuine client cancellation (the request's
-/// own token) is rethrown untouched.
+/// of a half-empty page. A collection has no "absent resource" semantics: a
+/// 404/403/429 there is a routing or infrastructure fault, not an empty list.
+/// Genuine client cancellation (the request's own token) is rethrown untouched.
+/// </para>
+/// <para>
+/// 4xx-as-absent is kept only for genuinely optional single resources:
+/// <see cref="GetProfileAsync"/> (404 → <see langword="null"/>) and
+/// <see cref="GetUiTranslationsAsync"/> (404 → empty map), where "not configured
+/// yet" is a legitimate, renderable state.
 /// </para>
 /// </summary>
 public class PortfolioApiClient(HttpClient httpClient, ILogger<PortfolioApiClient> logger) : IPortfolioApiClient
@@ -112,6 +120,11 @@ public class PortfolioApiClient(HttpClient httpClient, ILogger<PortfolioApiClien
         }
     }
 
+    // A collection endpoint has no "absent resource" semantics — a 4xx here is a
+    // routing/infrastructure fault (e.g. a proxy 404/403 during an app-pool recycle
+    // or deploy), not "the list is empty". Surfacing it as an outage shows the honest
+    // error page instead of a normal-looking shell with no data. The transient cases
+    // are absorbed by the retry handler configured in Program.cs.
     private async Task<IReadOnlyList<T>> GetListAsync<T>(string resource, string lang, CancellationToken cancellationToken)
     {
         try
@@ -121,19 +134,15 @@ public class PortfolioApiClient(HttpClient httpClient, ILogger<PortfolioApiClien
 
             return response?.Data ?? [];
         }
-        catch (HttpRequestException ex) when (IsResourceAbsent(ex))
-        {
-            logger.LogWarning(ex, "{Resource} not found on Portfolio.API; returning empty list.", resource);
-            return [];
-        }
         catch (Exception ex) when (IsServerUnavailable(ex, cancellationToken))
         {
             throw Unavailable(resource, ex);
         }
     }
 
-    // A 4xx means the server answered — the resource is just absent. That is not an
-    // outage, so the page renders (empty) rather than showing the error screen.
+    // A 4xx means the server answered but the resource is absent. That is only
+    // meaningful for optional single resources (profile, UI translations), where
+    // "not configured yet" still renders normally.
     private static bool IsResourceAbsent(HttpRequestException ex)
         => ex.StatusCode is >= HttpStatusCode.BadRequest and < HttpStatusCode.InternalServerError;
 
@@ -150,7 +159,14 @@ public class PortfolioApiClient(HttpClient httpClient, ILogger<PortfolioApiClien
 
     private ApiUnavailableException Unavailable(string resource, Exception ex)
     {
-        logger.LogError(ex, "Portfolio.API unavailable while fetching {Resource}.", resource);
+        // Log the real status code and resolved URL so an intermittent outage (e.g. a
+        // proxy 404/403/429 during an app-pool recycle or deploy) is traceable.
+        var status = (ex as HttpRequestException)?.StatusCode;
+        logger.LogError(ex,
+            "Portfolio.API unavailable while fetching {Resource} (status: {Status}, url: {Url}).",
+            resource,
+            status is null ? "n/a" : $"{(int)status} {status}",
+            $"{httpClient.BaseAddress}api/public/{resource}");
         return new ApiUnavailableException(
             $"Could not reach Portfolio.API while fetching '{resource}'.", ex);
     }
