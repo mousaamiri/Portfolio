@@ -132,6 +132,17 @@ public class ContactControllerTests
     }
 
     [Fact]
+    public async Task Submit_NullBody_ReturnsBadRequestWithoutCallingApi()
+    {
+        // A malformed body (bad JSON / wrong content-type) leaves [FromBody] null.
+        // This must not throw (500) — it answers BadRequest like any invalid form.
+        var result = await _sut.Submit(null!, CancellationToken.None);
+
+        result.Should().BeOfType<BadRequestObjectResult>();
+        _api.Verify(a => a.SendMessageAsync(It.IsAny<ContactMessageRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task Submit_ApiFailure_ReturnsSuccessFalse()
     {
         _api.Setup(a => a.SendMessageAsync(It.IsAny<ContactMessageRequest>(), It.IsAny<CancellationToken>()))

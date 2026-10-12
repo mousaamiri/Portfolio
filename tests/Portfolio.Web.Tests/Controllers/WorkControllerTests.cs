@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Portfolio.Web.Controllers;
 using Portfolio.Web.Models.ViewModels;
@@ -32,7 +33,7 @@ public class WorkControllerTests
                 Technologies = "React, Java"
             }]);
 
-        _sut = new WorkController(_api.Object);
+        _sut = new WorkController(_api.Object, NullLogger<WorkController>.Instance);
     }
 
     /// <summary>Attaches an HttpContext (optionally with a language cookie) so the
@@ -92,5 +93,19 @@ public class WorkControllerTests
 
         var java = model[0].Techs.Single(t => t.Name == "Java");
         java.Color.Should().Be("#f0a63b");
+    }
+
+    [Fact]
+    public async Task Index_WithNoProjects_ReturnsEmptyView_DoesNotThrow()
+    {
+        // A legitimately empty list still renders (and now logs a warning) rather than
+        // escalating — the empty shell is a renderable state.
+        _api.Setup(a => a.GetProjectsAsync("en", It.IsAny<CancellationToken>())).ReturnsAsync([]);
+
+        WithLanguageCookie(null);
+        var result = await _sut.Index(null, CancellationToken.None);
+
+        result.Should().BeOfType<ViewResult>();
+        ((List<ProjectViewModel>)((ViewResult)result).Model!).Should().BeEmpty();
     }
 }
