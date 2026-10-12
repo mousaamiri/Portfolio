@@ -12,8 +12,10 @@
     must NOT inherit this shell.
 *@
 @inject Portfolio.Web.Localization.LocalizationState Loc
+@inject Microsoft.Extensions.Options.IOptions<Portfolio.Web.Features.FeatureFlags> FeatureFlagsOptions
 @{
     var uiJson = System.Text.Json.JsonSerializer.Serialize(Loc.Map);
+    var features = FeatureFlagsOptions.Value;
 
     // ── SEO ──────────────────────────────────────────────────────────────────
     // Absolute base + canonical (path only, query stripped) for OG/canonical/hreflang.
@@ -130,6 +132,11 @@
     <script>
         window.__navConfig = {
             currentPage: '@(ViewData["ActivePage"] ?? "home")',
+            // Feature flags mirror Features:* in config. Client-built chrome
+            // (navbar/palette/footer) reads these to hide disabled sections.
+            features: {
+                blogEnabled: @(features.BlogEnabled ? "true" : "false")
+            },
             routes: {
                 home:       '@(Url.Action("Index", "Home") ?? "/")',
                 about:      '@(Url.Action("Index", "About") ?? "/About")',

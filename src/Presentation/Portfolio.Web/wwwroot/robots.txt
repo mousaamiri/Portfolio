@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /Admin
-Disallow: /Login
-Disallow: /ForgotPassword
-
-Sitemap: https://mousaamiri.ir/sitemap.xml

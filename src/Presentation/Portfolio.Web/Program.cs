@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Http.Resilience;
 using Polly;
+using Portfolio.Web.Features;
 using Portfolio.Web.Localization;
 using Portfolio.Web.Services.Api;
 
@@ -36,6 +37,10 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 // Per-request localization state (language + UI-chrome map), populated by
 // LanguageMiddleware from the portfolio-lang cookie.
 builder.Services.AddScoped<LocalizationState>();
+
+// Optional public sections (currently the Blog). A disabled section is unlinked
+// from every navigation + SEO surface; flipping the flag re-links it.
+builder.Services.Configure<FeatureFlags>(builder.Configuration.GetSection("Features"));
 
 // Typed clients over Portfolio.API. The public client hits anonymous read
 // endpoints; the admin client hits the authenticated api/admin/* endpoints.

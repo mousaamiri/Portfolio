@@ -4,7 +4,10 @@
     Appears at the bottom of About / Experience / Work / Contact in the static
     site with identical markup. Styles live in footer.css. Static editorial copy
     with data-i18n keys (cta.*); internal links use MVC tag helpers.
+    The "Read Article" card links to the Blog, so it is rendered only while the
+    Blog feature is enabled (mirrors the navbar/footer/sitemap flag).
 *@
+@inject Microsoft.Extensions.Options.IOptions<Portfolio.Web.Features.FeatureFlags> FeatureFlagsOptions
 <div class="closing-cta-block">
     <div class="closing-cta-eyebrow-row">
         <span class="eyebrow">@Html.T("cta.inner_mechanics", "INNER MECHANICS")</span>
@@ -18,12 +21,15 @@
             <p class="closing-cta-card-desc">@Html.T("cta.resumeiq_desc", "Online Learning Platform (DDD / .NET)")</p>
             <a asp-controller="Work" asp-action="Index" class="closing-cta-link"><span>@Html.T("cta.view_work", "View Work")</span> <span class="closing-cta-link-arrow">&rarr;</span></a>
         </div>
-        <div class="closing-cta-card">
-            <span class="eyebrow eyebrow--sm">@Html.T("cta.writing", "WRITING")</span>
-            <h4 class="closing-cta-card-title">@Html.T("cta.article_title", "Clean Architecture in ASP.NET Core: Boundaries that Scale")</h4>
-            <span class="closing-cta-meta">@Html.T("cta.published_date", "Draft")</span>
-            <a asp-controller="Blog" asp-action="Index" class="closing-cta-link"><span>@Html.T("cta.read_article", "Read Article")</span> <span class="closing-cta-link-arrow">&rarr;</span></a>
-        </div>
+        @if (FeatureFlagsOptions.Value.BlogEnabled)
+        {
+            <div class="closing-cta-card">
+                <span class="eyebrow eyebrow--sm">@Html.T("cta.writing", "WRITING")</span>
+                <h4 class="closing-cta-card-title">@Html.T("cta.article_title", "Clean Architecture in ASP.NET Core: Boundaries that Scale")</h4>
+                <span class="closing-cta-meta">@Html.T("cta.published_date", "Draft")</span>
+                <a asp-controller="Blog" asp-action="Index" class="closing-cta-link"><span>@Html.T("cta.read_article", "Read Article")</span> <span class="closing-cta-link-arrow">&rarr;</span></a>
+            </div>
+        }
         <div class="closing-cta-card">
             <span class="eyebrow eyebrow--sm">@Html.T("cta.network", "NETWORK")</span>
             <h4 class="closing-cta-card-title closing-cta-card-title--large">@Html.T("cta.network_title", "Let's build<br /><span class=\"script-gradient\">together</span>")</h4>

@@ -1,4 +1,5 @@
 @model List<ProjectViewModel>
+@inject Microsoft.Extensions.Options.IOptions<Portfolio.Web.Features.FeatureFlags> FeatureFlagsOptions
 @{
     ViewData["Title"] = "Work";
     ViewData["I18nTitle"] = "work.title";
@@ -202,15 +203,18 @@
                 </div>
             </div>
 
-            <div class="closing-cta-card">
-                <span class="eyebrow eyebrow--sm">@Html.T("cta.writing", "WRITING")</span>
-                <h4 class="closing-cta-card-title">@Html.T("cta.article_title", "Clean Architecture in ASP.NET Core: Boundaries that Scale")</h4>
-                <span class="closing-cta-meta">@Html.T("cta.published_date", "Draft")</span>
-                <a asp-controller="Blog" asp-action="Index" class="closing-cta-link">
-                    <span>@Html.T("cta.read_article", "Read Article")</span>
-                    <span class="closing-cta-link-arrow">&rarr;</span>
-                </a>
-            </div>
+            @if (FeatureFlagsOptions.Value.BlogEnabled)
+            {
+                <div class="closing-cta-card">
+                    <span class="eyebrow eyebrow--sm">@Html.T("cta.writing", "WRITING")</span>
+                    <h4 class="closing-cta-card-title">@Html.T("cta.article_title", "Clean Architecture in ASP.NET Core: Boundaries that Scale")</h4>
+                    <span class="closing-cta-meta">@Html.T("cta.published_date", "Draft")</span>
+                    <a asp-controller="Blog" asp-action="Index" class="closing-cta-link">
+                        <span>@Html.T("cta.read_article", "Read Article")</span>
+                        <span class="closing-cta-link-arrow">&rarr;</span>
+                    </a>
+                </div>
+            }
 
             <div class="closing-cta-card">
                 <span class="eyebrow eyebrow--sm">@Html.T("cta.workspace", "WORKSPACE")</span>

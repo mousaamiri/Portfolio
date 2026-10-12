@@ -12,7 +12,6 @@
   function buildNavbar() {
     var config = window.__navConfig || {};
     var bp = config.basePath || "../../";
-    var current = config.currentPage || "home";
     var currentLang = (window.i18n && window.i18n.lang()) || "en";
     var isFa = currentLang === "fa";
 
@@ -44,10 +43,28 @@
       contact: bp + "pages/contact/contact.html",
     };
 
+    // Disabled sections (mirroring the server-side Features flags) are unlinked
+    // from the navbar entirely rather than left as dead links.
+    var features = config.features || {};
+    var showBlog = features.blogEnabled !== false;
+
     function href(page) {
-      if (page === current) return "#";
+      // Always emit the real route. The navbar is built ONCE and the SPA router
+      // only syncs active classes afterwards, so returning "#" for the current
+      // page would leave a dead link after client-side navigation away from it.
+      // The router already no-ops a click whose resolved URL matches the current
+      // page, so re-navigation is still prevented when already on the page.
       return pages[page] || "#";
     }
+
+    // Blog is only linked when its feature flag is enabled; the list items are
+    // built once here and reused by both the desktop pill and the mobile panel.
+    var blogNavItem = showBlog
+      ? '<li><a href="' + href("blog") + '" class="navbar-link" data-nav-link data-page="blog">' + t("nav.blog", "Blog") + '</a></li>'
+      : "";
+    var blogMobileItem = showBlog
+      ? '<li><a href="' + href("blog") + '" class="navbar-mobile-link" data-mobile-link data-page="blog">' + t("nav.blog", "Blog") + '</a></li>'
+      : "";
 
     var navbar = document.getElementById("navbar");
     if (!navbar) return;
@@ -79,7 +96,7 @@
               '<li><a href="' + href("about") + '" class="navbar-link" data-nav-link data-page="about">' + t("nav.about", "About") + '</a></li>' +
               '<li><a href="' + href("experience") + '" class="navbar-link" data-nav-link data-page="experience">' + t("nav.experience", "Experience") + '</a></li>' +
               '<li><a href="' + href("work") + '" class="navbar-link" data-nav-link data-page="work">' + t("nav.work", "Work") + '</a></li>' +
-              '<li><a href="' + href("blog") + '" class="navbar-link" data-nav-link data-page="blog">' + t("nav.blog", "Blog") + '</a></li>' +
+              blogNavItem +
             '</ul>' +
           '</nav>' +
           '<div class="navbar-divider" aria-hidden="true"></div>' +
@@ -128,7 +145,7 @@
             '<li><a href="' + href("about") + '" class="navbar-mobile-link" data-mobile-link data-page="about">' + t("nav.about", "About") + '</a></li>' +
             '<li><a href="' + href("experience") + '" class="navbar-mobile-link" data-mobile-link data-page="experience">' + t("nav.experience", "Experience") + '</a></li>' +
             '<li><a href="' + href("work") + '" class="navbar-mobile-link" data-mobile-link data-page="work">' + t("nav.work", "Work") + '</a></li>' +
-            '<li><a href="' + href("blog") + '" class="navbar-mobile-link" data-mobile-link data-page="blog">' + t("nav.blog", "Blog") + '</a></li>' +
+            blogMobileItem +
           '</ul>' +
         '</nav>' +
         '<div class="navbar-mobile-footer">' +
@@ -167,12 +184,39 @@
     if (mobileLangBtn) mobileLangBtn.addEventListener("click", switchToNext);
   }
 
+  // Build the navbar markup ONCE. The DOM persists for the whole session — the
+  // SPA router never rewrites this markup, it only syncs the active link.
   buildNavbar();
 
-  window.__rebuildNavbar = function () {
-    buildNavbar();
-    if (typeof window.__initNavbarBehavior === "function") {
-      window.__initNavbarBehavior();
+  // Classes-only active-link sync, used by the SPA router after every
+  // navigation. Deliberately does NOT call buildNavbar() (which rewrites
+  // navbar.innerHTML → a full destroy/rebuild flicker and a re-positioned
+  // active pill on every page change) and does NOT re-run
+  // __initNavbarBehavior() (which would stack duplicate listeners).
+  function toggleActiveLinks(scope, selector, page) {
+    scope.querySelectorAll(selector).forEach(function (link) {
+      link.classList.toggle("active", link.getAttribute("data-page") === page);
+    });
+  }
+
+  function updateNavbarState() {
+    var config = window.__navConfig || {};
+    var currentPage = config.currentPage || "home";
+
+    var navbar = document.getElementById("navbar");
+    if (!navbar) return;
+
+    // Fast path: navbar.js owns the active-link + sliding-pill logic, so let it
+    // keep the pill and the two link sets in sync in one place.
+    if (typeof window.__setActiveNavPage === "function") {
+      window.__setActiveNavPage(currentPage);
+      return;
     }
-  };
+
+    // Fallback (navbar.js not loaded yet): sync the active classes manually.
+    toggleActiveLinks(navbar, "[data-nav-link]", currentPage);
+    toggleActiveLinks(navbar, "[data-mobile-link]", currentPage);
+  }
+
+  window.__rebuildNavbar = updateNavbarState;
 })();

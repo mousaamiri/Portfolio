@@ -27,6 +27,12 @@
       contact: bp + "pages/contact/contact.html",
     };
 
+    // Disabled sections (mirroring server-side Features flags) stay unlinked.
+    var features = config.features || {};
+    var blogFooterLink = features.blogEnabled !== false
+      ? '<a href="' + pages.blog + '" class="footer-nav-link">' + t("footer.blog", "Blog") + '</a>'
+      : "";
+
     var existingFooter = document.querySelector(".site-footer");
     if (existingFooter) existingFooter.remove();
 
@@ -48,7 +54,7 @@
             '<a href="' + pages.about + '" class="footer-nav-link">' + t("footer.about", "About") + '</a>' +
             '<a href="' + pages.experience + '" class="footer-nav-link">' + t("footer.experience", "Experience") + '</a>' +
             '<a href="' + pages.work + '" class="footer-nav-link">' + t("footer.work", "Work") + '</a>' +
-            '<a href="' + pages.blog + '" class="footer-nav-link">' + t("footer.blog", "Blog") + '</a>' +
+            blogFooterLink +
             '<a href="' + pages.contact + '" class="footer-nav-link">' + t("footer.contact", "Contact") + '</a>' +
           '</nav>' +
           '<div class="footer-social">' +
@@ -97,9 +103,17 @@
     }, { passive: true });
   }
 
+  // Build the footer + scroll-progress button ONCE. They persist for the whole
+  // session; the SPA router swaps only <main>. Language switches go through a
+  // full server reload (i18n.setLang), so chrome text never needs a client-side
+  // refresh either.
   buildFooter();
 
   window.__rebuildFooter = function () {
-    buildFooter();
+    // A full rebuild would remove() + re-append the footer and scroll button on
+    // every navigation → a layout shift at the bottom of the page AND a fresh
+    // window 'scroll' listener each time (leak). Only rebuild when the chrome is
+    // genuinely missing (e.g. something stripped it).
+    if (!document.querySelector(".site-footer")) buildFooter();
   };
 })();

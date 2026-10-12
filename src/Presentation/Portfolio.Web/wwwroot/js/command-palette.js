@@ -27,16 +27,25 @@
       blog: bp + "pages/blog/blog.html",
       contact: bp + "pages/contact/contact.html",
     };
-    return [
+    // Disabled sections (mirroring server-side Features flags) stay unlinked.
+    var features = config.features || {};
+    var showBlog = features.blogEnabled !== false;
+
+    var items = [
       { label: isFa ? t("nav.home", "Home") : "Home", href: r.home, type: "page" },
       { label: isFa ? t("nav.about", "About") : "About", href: r.about, type: "page" },
       { label: isFa ? t("nav.experience", "Experience") : "Experience", href: r.experience, type: "page" },
       { label: isFa ? t("nav.work", "Work") : "Work", href: r.work, type: "page" },
-      { label: isFa ? t("nav.blog", "Blog") : "Blog", href: r.blog, type: "page" },
+    ];
+    if (showBlog) {
+      items.push({ label: isFa ? t("nav.blog", "Blog") : "Blog", href: r.blog, type: "page" });
+    }
+    items.push(
       { label: isFa ? t("nav.contact", "Contact") : "Contact", href: r.contact, type: "page" },
       { label: "GitHub", href: "https://github.com", type: "external" },
-      { label: "LinkedIn", href: "https://linkedin.com", type: "external" },
-    ];
+      { label: "LinkedIn", href: "https://linkedin.com", type: "external" }
+    );
+    return items;
   }
 
   var items = getItems();

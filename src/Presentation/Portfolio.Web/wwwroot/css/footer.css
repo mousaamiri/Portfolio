@@ -41,7 +41,10 @@
 
 .closing-cta-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* auto-fit keeps the row balanced whether the grid holds three cards or two
+     (a feature-disabled section drops its card), instead of leaving an empty
+     third column. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 20px;
   text-align: left;
 }
