@@ -8,18 +8,27 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
       - name: Restore
         run: dotnet restore
+
       - name: Publish API
         run: dotnet publish src\Presentation\Portfolio.API\Portfolio.API.csproj -c Release -o ./publish-api -p:SatelliteResourceLanguages=en
-      - name: Create app_offline.htm
+
+      - name: Prepare publish folder (Exclude appsettings.Production.json & add app_offline)
         shell: pwsh
         run: |
           "Site is being updated, back shortly." | Out-File -FilePath ./publish-api/app_offline.htm -Encoding utf8
+          # اطمینان از عدم وجود فایل پروداکشن در پکیج ارسالی
+          if (Test-Path ./publish-api/appsettings.Production.json) {
+              Remove-Item ./publish-api/appsettings.Production.json -Force
+          }
+
       - name: Deploy API via FTP
         uses: Wandalen/wretry.action@v3
         with:
@@ -36,7 +45,10 @@ jobs:
             timeout: 120000
             state-name: .ftp-deploy-sync-state-api.json
             exclude: |
+              **/.git*
+              **/.git*/**
               **/appsettings.Production.json
+
       - name: Remove app_offline.htm via FTP
         shell: pwsh
         run: |
@@ -48,18 +60,27 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
       - name: Restore
         run: dotnet restore
+
       - name: Publish Web
         run: dotnet publish src\Presentation\Portfolio.Web\Portfolio.Web.csproj -c Release -o ./publish-web -p:SatelliteResourceLanguages=en
-      - name: Create app_offline.htm
+
+      - name: Prepare publish folder (Exclude appsettings.Production.json & add app_offline)
         shell: pwsh
         run: |
           "Site is being updated, back shortly." | Out-File -FilePath ./publish-web/app_offline.htm -Encoding utf8
+          # اطمینان از عدم وجود فایل پروداکشن در پکیج ارسالی
+          if (Test-Path ./publish-web/appsettings.Production.json) {
+              Remove-Item ./publish-web/appsettings.Production.json -Force
+          }
+
       - name: Deploy Web via FTP
         uses: Wandalen/wretry.action@v3
         with:
@@ -76,7 +97,10 @@ jobs:
             timeout: 120000
             state-name: .ftp-deploy-sync-state-web.json
             exclude: |
+              **/.git*
+              **/.git*/**
               **/appsettings.Production.json
+
       - name: Remove app_offline.htm via FTP
         shell: pwsh
         run: |
