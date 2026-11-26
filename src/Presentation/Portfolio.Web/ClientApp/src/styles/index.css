@@ -1,0 +1,11 @@
+/* Global design system — mirrors the original site.min.css bundle order. */
+@import "./tokens.css";
+@import "./base.css";
+@import "./layout.css";
+@import "./components.css";
+@import "./navbar.css";
+@import "./footer.css";
+@import "./theme-switcher.css";
+@import "./spa-transitions.css";
+/* RTL overrides are scoped to [dir="rtl"], so importing globally is safe. */
+@import "./rtl.css";

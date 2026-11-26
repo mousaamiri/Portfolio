@@ -1,0 +1,620 @@
+/* ==========================================================================
+   experience.css — Experience page styles
+   --------------------------------------------------------------------------
+   Uses tokens defined in style.css (--bg, --amber, --card, --radius-xl, etc).
+   ========================================================================== */
+
+.experience-section {
+  padding: 120px 0;
+}
+
+/* ================= SECTION 1: HEADER ================= */
+
+.exp-heading {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin: 0 0 72px;
+  max-width: 18ch;
+}
+
+/* ================= SECTION 2: IMPACT METRICS + CORE PRINCIPLES ================= */
+
+.exp-impact-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* --- Impact Metrics 2x2 Grid --- */
+
+.exp-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.exp-metric-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.exp-metric-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.exp-metric-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.exp-metric-tag--pink {
+  color: var(--pink);
+  background: rgba(236, 72, 153, 0.12);
+  border: 1px solid rgba(236, 72, 153, 0.25);
+}
+
+.exp-metric-tag--amber {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-soft);
+}
+
+.exp-metric-tag--green {
+  color: var(--green);
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.exp-metric-value {
+  font-family: var(--font-mono);
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+  margin-top: 4px;
+}
+
+.exp-metric-desc {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* --- Core Principles Card --- */
+
+    .exp-principles-card {
+        margin-top: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  overflow: hidden;
+}
+
+.exp-principles-list {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.exp-principle-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-height: 48px;
+}
+
+.exp-principle-bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.exp-principle-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.exp-principle-desc {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* ================= SECTION 3: SUMMARY + PROFESSIONAL EXPERIENCE ================= */
+
+.exp-main-row {
+  margin-top: 140px;
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* --- Summary --- */
+
+.exp-summary-block {
+  margin-bottom: 48px;
+}
+
+.exp-summary-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 20px 0 14px;
+}
+
+.exp-name-bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.exp-summary-text {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* --- Education Timeline --- */
+
+.exp-education-block {
+  margin-top: 0;
+}
+
+.exp-edu-timeline {
+  margin-top: 24px;
+  position: relative;
+}
+
+.exp-edu-entry {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 16px;
+  padding-bottom: 28px;
+}
+
+.exp-edu-entry--last {
+  padding-bottom: 0;
+}
+
+.exp-edu-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.exp-edu-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2.5px solid var(--accent);
+  background: var(--bg);
+  flex-shrink: 0;
+  margin-top: 4px;
+  z-index: 1;
+}
+
+.exp-edu-line {
+  width: 2px;
+  flex: 1;
+  background: var(--accent-soft);
+  margin-top: 4px;
+}
+
+.exp-edu-content {
+  min-width: 0;
+}
+
+.exp-edu-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+
+.exp-edu-year {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.exp-edu-institution {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 6px 0 2px;
+}
+
+.exp-edu-score {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-faint);
+  margin: 2px 0 0;
+}
+
+.exp-edu-courses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.exp-edu-course-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  text-transform: uppercase;
+}
+
+/* --- Professional Experience (Right Column) --- */
+
+.exp-right-col {
+  min-width: 0;
+}
+
+.exp-job-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.exp-job-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.exp-job-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.exp-job-date-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.1);
+  padding: 4px 14px;
+  border-radius: 999px;
+}
+
+.exp-job-company {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 8px 0 28px;
+}
+
+/* --- Job Bullet Points --- */
+
+.exp-job-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.exp-job-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.exp-job-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.exp-job-item p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.highlight {
+  font-weight: 600;
+}
+
+.highlight--amber {
+  color: var(--accent);
+}
+
+.highlight--pink {
+  color: var(--pink);
+}
+
+/* --- Stack Pills --- */
+
+.exp-stack-block {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.exp-stack-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.exp-stack-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.exp-stack-pill:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+/* ================= SECTION 4: TECHNICAL PROFICIENCY MATRIX ================= */
+
+.exp-proficiency-block {
+  margin-top: 140px;
+}
+
+.exp-proficiency-grid {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.exp-proficiency-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.exp-proficiency-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.exp-proficiency-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.exp-proficiency-bullet {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.exp-proficiency-bullet--amber {
+  background: var(--accent);
+}
+
+.exp-proficiency-bullet--pink {
+  background: var(--pink);
+}
+
+.exp-proficiency-bullet--purple {
+  background: var(--purple);
+}
+
+.exp-proficiency-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  margin: 0;
+}
+
+.exp-proficiency-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exp-proficiency-list li {
+  font-size: 14px;
+  color: var(--text-muted);
+  padding-left: 18px;
+  position: relative;
+}
+
+.exp-proficiency-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-strong);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 860px) {
+  .experience-section {
+    padding: 80px 0;
+  }
+
+  .exp-heading {
+    margin-bottom: 48px;
+  }
+
+  .exp-impact-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .exp-main-row {
+    grid-template-columns: 1fr;
+    gap: 56px;
+    margin-top: 80px;
+  }
+
+  .exp-proficiency-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exp-proficiency-block {
+    margin-top: 80px;
+  }
+}
+
+@media (max-width: 560px) {
+  .experience-section {
+    padding: 60px 0;
+  }
+
+  .exp-heading {
+    margin-bottom: 36px;
+    font-size: clamp(26px, 7vw, 38px);
+  }
+
+  .exp-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .exp-metric-card {
+    padding: 18px 16px;
+  }
+
+  .exp-metric-value {
+    font-size: 28px;
+  }
+
+  .exp-metric-desc {
+    font-size: 12px;
+  }
+
+  .exp-main-row {
+    margin-top: 56px;
+    gap: 40px;
+  }
+
+  .exp-job-title {
+    font-size: 17px;
+  }
+
+  .exp-job-item p {
+    font-size: 13px;
+  }
+
+  .exp-stack-pill {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+
+  .exp-edu-course-tag {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+
+  .exp-proficiency-block {
+    margin-top: 56px;
+  }
+
+  .exp-proficiency-card {
+    padding: 22px 18px;
+  }
+
+     .exp-principles-card {
+        margin-top: 24px;
+    padding: 22px 18px;
+  }
+
+  .exp-principles-list {
+    gap: 28px;
+  }
+}
+
+@media (max-width: 380px) {
+  .exp-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exp-metric-value {
+    font-size: 24px;
+  }
+}

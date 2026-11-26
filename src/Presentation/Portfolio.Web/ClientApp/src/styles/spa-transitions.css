@@ -1,0 +1,170 @@
+/* ==========================================================================
+   spa-transitions.css — SPA router visual layer
+   --------------------------------------------------------------------------
+   Progress bar, page transition animations, View Transition API integration,
+   accessibility announcer, and reduced-motion fallbacks.
+   ========================================================================== */
+
+/* ======================== PROGRESS BAR ======================== */
+
+.spa-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  z-index: 100000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.spa-progress.active {
+  opacity: 1;
+}
+
+.spa-progress-bar {
+  position: relative;
+  height: 100%;
+  background: var(--accent, #f0a63b);
+  transform-origin: 0 0;
+  transform: scaleX(0);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.spa-progress-bar::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -1px;
+  width: 64px;
+  height: 4px;
+  background: var(--accent, #f0a63b);
+  box-shadow: 0 0 12px var(--accent, #f0a63b),
+              0 0 4px  var(--accent, #f0a63b);
+  opacity: 0.7;
+  border-radius: 0 50% 50% 0;
+}
+
+[dir="rtl"] .spa-progress-bar {
+  transform-origin: 100% 0;
+}
+
+[dir="rtl"] .spa-progress-bar::after {
+  right: auto;
+  left: 0;
+  border-radius: 50% 0 0 50%;
+}
+
+
+/* ======================== PAGE TRANSITIONS (CSS Fallback) ======================== */
+
+.spa-leave {
+  opacity: 0 !important;
+  filter: blur(6px) !important;
+  transform: scale(0.99) !important;
+  transition: opacity 150ms ease,
+              filter  150ms ease,
+              transform 150ms ease !important;
+}
+
+.spa-enter-prep {
+  opacity: 0 !important;
+  filter: blur(6px) !important;
+  transform: translateY(10px) scale(0.99) !important;
+  transition: none !important;
+}
+
+.spa-enter {
+  opacity: 1 !important;
+  filter: blur(0) !important;
+  transform: translateY(0) scale(1) !important;
+  transition: opacity 250ms cubic-bezier(0, 0, 0.2, 1),
+              filter  250ms cubic-bezier(0, 0, 0.2, 1),
+              transform 250ms cubic-bezier(0, 0, 0.2, 1) !important;
+}
+
+
+/* ======================== VIEW TRANSITION API ======================== */
+
+#page-content {
+  view-transition-name: page-content;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(page-content) {
+  animation: spa-vt-out 150ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(page-content) {
+  animation: spa-vt-in 250ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes spa-vt-out {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(0.99);
+  }
+}
+
+@keyframes spa-vt-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* ======================== ACCESSIBILITY ======================== */
+
+.spa-announcer {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+
+/* ======================== REDUCED MOTION ======================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .spa-progress-bar {
+    transition-duration: 0.01ms;
+  }
+
+  .spa-leave,
+  .spa-enter-prep,
+  .spa-enter {
+    transition-duration: 0.01ms !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  ::view-transition-old(page-content),
+  ::view-transition-new(page-content) {
+    animation-duration: 0.01ms !important;
+  }
+}

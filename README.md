@@ -49,7 +49,7 @@ The whole site ships with a **live accent-color switcher** (the palette button, 
 ## Tech Stack
 
 - **Backend:** .NET 10, ASP.NET Core Web API
-- **Frontend:** ASP.NET Core MVC (Razor Views) — consumes the API over HTTP
+- **Frontend:** React 18 + Vite (SPA) — consumes the API over HTTP (the original Razor MVC views remain in the repo)
 - **ORM:** Entity Framework Core (SQL Server)
 - **Testing:** xUnit + FluentAssertions + Moq
 - **Architecture:** Clean Architecture (monolith with internal layer separation)
@@ -66,7 +66,8 @@ Portfolio/
 │   │   └── Portfolio.Infrastructure/    # EF Core, Repositories, Migrations, Seed
 │   └── Presentation/
 │       ├── Portfolio.API/               # ASP.NET Core Web API (Public + Admin Controllers)
-│       └── Portfolio.Web/               # ASP.NET Core MVC front-end (consumes the API)
+│       └── Portfolio.Web/               # Host for the React SPA + legacy MVC views
+│           └── ClientApp/               # React + Vite front-end source
 ├── tests/
 │   ├── Portfolio.Domain.Tests/
 │   ├── Portfolio.Application.Tests/
@@ -94,7 +95,23 @@ Implements the interfaces defined in Application. Contains the EF Core DbContext
 The back-end entry point. Contains ASP.NET Core controllers split into `Public` (portfolio display) and `Admin` (content management) areas. Depends on Application (service interfaces) and Infrastructure (DI registration).
 
 ### Web (`Portfolio.Web`)
-The MVC front-end. Renders the public site and the admin panel with Razor views, and talks to `Portfolio.API` over HTTP — it holds no direct database dependency.
+Hosts the React single-page app from `wwwroot` and talks to `Portfolio.API` over HTTP — it holds no direct database dependency. The React source lives in `Portfolio.Web/ClientApp`; the original Razor MVC views are kept for reference but are no longer served.
+
+## Front-end (React SPA)
+
+The public site and the admin panel are a Vite + React app in `src/Presentation/Portfolio.Web/ClientApp`.
+
+```bash
+cd src/Presentation/Portfolio.Web/ClientApp
+npm install
+npm run dev      # Vite dev server on http://localhost:5173
+npm run build    # builds into ../wwwroot (served by Portfolio.Web)
+```
+
+- **API base URL:** set `VITE_API_BASE_URL` (see `.env.example`); it defaults to `https://localhost:7003`.
+- **CORS:** `Portfolio.API` allows the Web host and the Vite dev server via `Cors:AllowedOrigins` in `appsettings.json` — add your production Web origin there.
+- **Admin auth:** the SPA stores the admin JWT in `localStorage` and sends it as a `Bearer` header (the old MVC panel kept it in an HttpOnly cookie).
+- **Routing:** `Portfolio.Web` serves `wwwroot/index.html` for `/`, the public pages, and `/Admin/*` so client-side routes survive a refresh.
 
 ## Dependency Rule
 

@@ -48,7 +48,12 @@ var configuredBaseUrl = builder.Configuration["PortfolioApi:BaseUrl"];
 // Outside Development this fallback almost certainly can't reach the API, so every
 // content page and contact-form submit fails silently — warn after the app builds.
 var baseUrlMissing = string.IsNullOrWhiteSpace(configuredBaseUrl);
-var apiBaseUrl = baseUrlMissing ? "https://localhost:7003" : configuredBaseUrl!;
+// In Development prefer the API's plain-HTTP port: it avoids the self-signed
+// dev certificate, which otherwise makes every proxied /api call fail and the
+// React pages render empty.
+var apiBaseUrl = baseUrlMissing
+    ? (builder.Environment.IsDevelopment() ? "http://localhost:5175" : "https://localhost:7003")
+    : configuredBaseUrl!;
 // A transient blip in front of the API (a proxy 403/404/429 or a 5xx during an
 // app-pool recycle or the FTP deploy window) is retried before the visitor sees it,
 // so a content page self-heals (second render has data) instead of flashing an empty
@@ -86,6 +91,15 @@ builder.Services.AddHttpClient<IAdminApiClient, AdminApiClient>(
 builder.Services.AddHttpClient<IAdminCrudClient, AdminCrudClient>(
     client => client.BaseAddress = new Uri(apiBaseUrl))
     .AddHttpMessageHandler<BearerTokenHandler>();
+
+// Same-origin proxy used by the React SPA: the browser calls /api/* on this host
+// and the Web server forwards to Portfolio.API. That removes browser CORS and
+// dev-certificate issues and keeps the SPA working on any host/port.
+builder.Services.AddHttpClient("spa-api-proxy", client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(100);
+});
 
 // Cookie authentication for the admin panel (MVC proxy). The API JWT is stored
 // inside the encrypted, HttpOnly auth cookie — it never reaches the browser.
@@ -143,6 +157,114 @@ app.UseHttpsRedirection();
 // Before UseStaticFiles so served files are compressed; before response caching is
 // not needed here (the Web app does not cache responses server-side).
 app.UseResponseCompression();
+
+// Forward /api/* to Portfolio.API so the SPA can use same-origin requests.
+app.Use(async (context, next) =>
+{
+    if (!context.Request.Path.StartsWithSegments("/api"))
+    {
+        await next();
+        return;
+    }
+
+    var client = context.RequestServices
+        .GetRequiredService<IHttpClientFactory>()
+        .CreateClient("spa-api-proxy");
+
+    using var upstream = new HttpRequestMessage(
+        new HttpMethod(context.Request.Method),
+        context.Request.Path.Value + context.Request.QueryString.Value);
+
+    if (context.Request.ContentLength is > 0
+        || context.Request.Headers.ContainsKey("Transfer-Encoding"))
+    {
+        upstream.Content = new StreamContent(context.Request.Body);
+    }
+
+    foreach (var header in context.Request.Headers)
+    {
+        if (header.Key.Equals("Host", StringComparison.OrdinalIgnoreCase)
+            || header.Key.Equals("Content-Length", StringComparison.OrdinalIgnoreCase)
+            || header.Key.Equals("Accept-Encoding", StringComparison.OrdinalIgnoreCase)
+            || header.Key.Equals("Connection", StringComparison.OrdinalIgnoreCase))
+        {
+            continue;
+        }
+
+        if (!upstream.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray()))
+        {
+            upstream.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+        }
+    }
+
+    // The API's "messages" limiter partitions by client IP; keep the visitor's.
+    var remoteIp = context.Connection.RemoteIpAddress?.ToString();
+    if (!string.IsNullOrEmpty(remoteIp))
+    {
+        upstream.Headers.Remove("X-Forwarded-For");
+        upstream.Headers.TryAddWithoutValidation("X-Forwarded-For", remoteIp);
+        upstream.Headers.TryAddWithoutValidation("X-Forwarded-Proto", context.Request.Scheme);
+    }
+
+    try
+    {
+        using var response = await client.SendAsync(
+            upstream, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted);
+
+        context.Response.StatusCode = (int)response.StatusCode;
+
+        foreach (var header in response.Headers.Concat(response.Content.Headers))
+        {
+            if (header.Key.Equals("Transfer-Encoding", StringComparison.OrdinalIgnoreCase)
+                || header.Key.Equals("Content-Length", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            context.Response.Headers[header.Key] = header.Value.ToArray();
+        }
+
+        await response.Content.CopyToAsync(context.Response.Body, context.RequestAborted);
+    }
+    catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+    {
+        if (context.Response.HasStarted) throw;
+        context.Response.Clear();
+        context.Response.StatusCode = StatusCodes.Status502BadGateway;
+        context.Response.ContentType = "application/json; charset=utf-8";
+        await context.Response.WriteAsync(
+            "{\"success\":false,\"message\":\"Portfolio.API is unreachable.\"}");
+    }
+});
+
+// The front-end is now the React SPA built into wwwroot (ClientApp -> `npm run build`).
+// Serve its index.html for every HTML navigation that is not an API/utility route so
+// client-side routing works on deep links, refreshes and unknown paths (the SPA then
+// renders its own 404 page). Static assets (/app, /images, /fonts) and the utility
+// endpoints (robots.txt, sitemap.xml, /Language, /Error) fall through to the existing
+// middleware/controllers below.
+var spaExcludedPrefixes = new[] { "/api", "/Error", "/Language", "/health" };
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path;
+    var accept = context.Request.Headers.Accept.ToString();
+    var wantsHtml = string.IsNullOrEmpty(accept) || accept.Contains("text/html", StringComparison.OrdinalIgnoreCase);
+    var isExcluded = spaExcludedPrefixes.Any(prefix =>
+        path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase));
+
+    if (HttpMethods.IsGet(context.Request.Method)
+        && wantsHtml
+        && !isExcluded
+        && !Path.HasExtension(path.Value))
+    {
+        context.Response.ContentType = "text/html; charset=utf-8";
+        context.Response.Headers.CacheControl = "no-cache";
+        await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "index.html"));
+        return;
+    }
+
+    await next();
+});
 
 // Static assets are content-addressed via asp-append-version in the views, so they
 // can be cached immutably for a year: a file edit changes its hash and thus its URL.

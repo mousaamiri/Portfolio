@@ -131,6 +131,25 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// The React SPA (served by Portfolio.Web or the Vite dev server) calls this API
+// directly from the browser, so it is cross-origin. Origins are configurable via
+// Cors:AllowedOrigins; the defaults cover the Web host and the Vite dev server.
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[]
+    {
+        "https://localhost:7266",
+        "http://localhost:5266",
+        "https://localhost:5173",
+        "http://localhost:5173"
+    };
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("spa", policy =>
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 // Rate limiting
 builder.Services.AddRateLimiter(options =>
 {
@@ -222,6 +241,8 @@ app.UseResponseCompression();
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseCors("spa");
 
 app.UseRateLimiter();
 
