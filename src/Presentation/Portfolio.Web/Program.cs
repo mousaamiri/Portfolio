@@ -1,22 +1,15 @@
-using System.Net;
-using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Http.Resilience;
-using Polly;
+using Portfolio.Web.Endpoints;
 using Portfolio.Web.Features;
-using Portfolio.Web.Localization;
-using Portfolio.Web.Services.Api;
 
+// Thin host for the React SPA (ClientApp -> `npm run build` -> wwwroot).
+// It serves the built assets, forwards /api/* to Portfolio.API so the browser
+// only ever talks to one origin, and exposes the SEO endpoints.
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
-
-// HTML/CSS/JS are highly compressible; UiTranslations-heavy pages shrink 60–80%.
-// No secrets in these responses (contact-form POSTs are neither cached nor
-// compressed), so compression is enabled for HTTPS too.
+// HTML/CSS/JS are highly compressible; the SPA bundle shrinks 60-80%.
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
@@ -24,9 +17,7 @@ builder.Services.AddResponseCompression(options =>
     options.Providers.Add<GzipCompressionProvider>();
 });
 
-// Trust X-Forwarded-* from a reverse proxy so RemoteIpAddress is the visitor's
-// real IP. The "contact" rate-limit partitions by it — without this, everyone
-// behind a proxy shares one partition and the 3/10min limit is consumed globally.
+// Trust X-Forwarded-* from a reverse proxy so the API sees the visitor's real IP.
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -34,104 +25,25 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-// Per-request localization state (language + UI-chrome map), populated by
-// LanguageMiddleware from the portfolio-lang cookie.
-builder.Services.AddScoped<LocalizationState>();
-
-// Optional public sections (currently the Blog). A disabled section is unlinked
-// from every navigation + SEO surface; flipping the flag re-links it.
+// Optional public sections (currently the Blog). A disabled section is dropped
+// from robots.txt and sitemap.xml.
 builder.Services.Configure<FeatureFlags>(builder.Configuration.GetSection("Features"));
 
-// Typed clients over Portfolio.API. The public client hits anonymous read
-// endpoints; the admin client hits the authenticated api/admin/* endpoints.
 var configuredBaseUrl = builder.Configuration["PortfolioApi:BaseUrl"];
-// Outside Development this fallback almost certainly can't reach the API, so every
-// content page and contact-form submit fails silently — warn after the app builds.
 var baseUrlMissing = string.IsNullOrWhiteSpace(configuredBaseUrl);
 // In Development prefer the API's plain-HTTP port: it avoids the self-signed
-// dev certificate, which otherwise makes every proxied /api call fail and the
-// React pages render empty.
+// dev certificate, which otherwise makes every proxied /api call fail.
 var apiBaseUrl = baseUrlMissing
     ? (builder.Environment.IsDevelopment() ? "http://localhost:5175" : "https://localhost:7003")
     : configuredBaseUrl!;
-// A transient blip in front of the API (a proxy 403/404/429 or a 5xx during an
-// app-pool recycle or the FTP deploy window) is retried before the visitor sees it,
-// so a content page self-heals (second render has data) instead of flashing an empty
-// shell or the error page for a second or two. Added to the public client only — the
-// admin clients deliberately surface failures to the signed-in admin.
-builder.Services.AddHttpClient<IPortfolioApiClient, PortfolioApiClient>(
-    client =>
-    {
-        client.BaseAddress = new Uri(apiBaseUrl);
-        // Bound well below the 100s default so a hung API call fails fast and the
-        // retry below still fits inside a sane page-load budget.
-        client.Timeout = TimeSpan.FromSeconds(30);
-    })
-    .AddResilienceHandler("public-api", pipeline => pipeline.AddRetry(
-        new HttpRetryStrategyOptions
-        {
-            MaxRetryAttempts = 2,
-            BackoffType = DelayBackoffType.Exponential,
-            Delay = TimeSpan.FromMilliseconds(500),
-            // The built-in default retries only 408/429/5xx. A reverse proxy in front
-            // of the API answers 403/404 while the route is briefly gone, so those are
-            // added here. Network-level failures (HttpRequestException) always retry.
-            ShouldHandle = args => ValueTask.FromResult(
-                args.Outcome.Exception is HttpRequestException
-                || args.Outcome.Result?.StatusCode is { } status && IsTransientProxyBlip(status))
-        }));
-
-// The admin client's requests carry the admin's JWT (from the auth cookie) as a
-// Bearer header via BearerTokenHandler.
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddTransient<BearerTokenHandler>();
-builder.Services.AddHttpClient<IAdminApiClient, AdminApiClient>(
-    client => client.BaseAddress = new Uri(apiBaseUrl))
-    .AddHttpMessageHandler<BearerTokenHandler>();
-builder.Services.AddHttpClient<IAdminCrudClient, AdminCrudClient>(
-    client => client.BaseAddress = new Uri(apiBaseUrl))
-    .AddHttpMessageHandler<BearerTokenHandler>();
 
 // Same-origin proxy used by the React SPA: the browser calls /api/* on this host
 // and the Web server forwards to Portfolio.API. That removes browser CORS and
 // dev-certificate issues and keeps the SPA working on any host/port.
-builder.Services.AddHttpClient("spa-api-proxy", client =>
+builder.Services.AddHttpClient("api-proxy", client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
     client.Timeout = TimeSpan.FromSeconds(100);
-});
-
-// Cookie authentication for the admin panel (MVC proxy). The API JWT is stored
-// inside the encrypted, HttpOnly auth cookie — it never reaches the browser.
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Admin/Login";
-        options.LogoutPath = "/Admin/Logout";
-        options.AccessDeniedPath = "/Admin/Login";
-        options.Cookie.Name = "Portfolio.Admin";
-        options.Cookie.HttpOnly = true;
-        options.ExpireTimeSpan = TimeSpan.FromDays(7);
-        options.SlidingExpiration = true;
-    });
-builder.Services.AddAuthorization();
-
-// Per-visitor rate limiting for the public contact form. Partitioned by the
-// real client IP (the Web layer, unlike the API, sees the visitor's address).
-// 3 submissions / 10 minutes; excess is rejected with 429 (contact.js shows a
-// "too many attempts" message).
-builder.Services.AddRateLimiter(options =>
-{
-    options.AddPolicy("contact", httpContext =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            _ => new FixedWindowRateLimiterOptions
-            {
-                PermitLimit = 3,
-                Window = TimeSpan.FromMinutes(10),
-                QueueLimit = 0
-            }));
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
 var app = builder.Build();
@@ -146,16 +58,32 @@ if (baseUrlMissing && !app.Environment.IsDevelopment())
 
 if (!app.Environment.IsDevelopment())
 {
-    // Any unhandled exception (notably ApiUnavailableException when Portfolio.API /
-    // the database is unreachable) renders the clean error page instead of a 500.
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler(errorApp => errorApp.Run(async context =>
+    {
+        if (context.Response.HasStarted)
+            return;
+
+        var feature = context.Features.Get<IExceptionHandlerFeature>();
+        var isUpstreamDown = feature?.Error is HttpRequestException or TaskCanceledException;
+
+        context.Response.Clear();
+        context.Response.StatusCode = isUpstreamDown
+            ? StatusCodes.Status503ServiceUnavailable
+            : StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "text/html; charset=utf-8";
+        await context.Response.WriteAsync(isUpstreamDown
+            ? "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>Service unavailable</title></head>" +
+              "<body><h1>Service temporarily unavailable</h1><p>The server cannot be reached right now. Please try again shortly.</p></body></html>"
+            : "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>Error</title></head>" +
+              "<body><h1>Something went wrong</h1><p>An unexpected error occurred. Please try again.</p></body></html>");
+    }));
     app.UseHsts();
 }
 
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 
-// Before UseStaticFiles so served files are compressed; before response caching is
-// not needed here (the Web app does not cache responses server-side).
+// Before UseStaticFiles so served files are compressed.
 app.UseResponseCompression();
 
 // Forward /api/* to Portfolio.API so the SPA can use same-origin requests.
@@ -169,7 +97,7 @@ app.Use(async (context, next) =>
 
     var client = context.RequestServices
         .GetRequiredService<IHttpClientFactory>()
-        .CreateClient("spa-api-proxy");
+        .CreateClient("api-proxy");
 
     using var upstream = new HttpRequestMessage(
         new HttpMethod(context.Request.Method),
@@ -237,13 +165,11 @@ app.Use(async (context, next) =>
     }
 });
 
-// The front-end is now the React SPA built into wwwroot (ClientApp -> `npm run build`).
-// Serve its index.html for every HTML navigation that is not an API/utility route so
-// client-side routing works on deep links, refreshes and unknown paths (the SPA then
-// renders its own 404 page). Static assets (/app, /images, /fonts) and the utility
-// endpoints (robots.txt, sitemap.xml, /Language, /Error) fall through to the existing
-// middleware/controllers below.
-var spaExcludedPrefixes = new[] { "/api", "/Error", "/Language", "/health" };
+// Serve index.html for every HTML navigation that is not an API/utility route so
+// client-side routing works on deep links, refreshes and unknown paths (the SPA
+// then renders its own 404 page). Static assets (/app, /images, /fonts, /resumes)
+// and the SEO/health endpoints fall through to the middleware/endpoints below.
+var spaExcludedPrefixes = new[] { "/api", "/health", "/robots.txt", "/sitemap.xml" };
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path;
@@ -266,43 +192,21 @@ app.Use(async (context, next) =>
     await next();
 });
 
-// Static assets are content-addressed via asp-append-version in the views, so they
-// can be cached immutably for a year: a file edit changes its hash and thus its URL.
+// Vite emits content-hashed filenames under /app, so those can be cached
+// immutably; the remaining assets (images, fonts, resumes) keep a short TTL.
 app.UseStaticFiles(new StaticFileOptions
 {
-    OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable"
+    OnPrepareResponse = ctx =>
+    {
+        var isHashed = ctx.Context.Request.Path.StartsWithSegments("/app", StringComparison.OrdinalIgnoreCase);
+        ctx.Context.Response.Headers.CacheControl = isHashed
+            ? "public, max-age=31536000, immutable"
+            : "public, max-age=3600";
+    }
 });
 
-app.UseRouting();
-
-// Must run before rate limiting so the "contact" limiter partitions by the real
-// client IP rather than the reverse proxy's.
-app.UseForwardedHeaders();
-
-app.UseRateLimiter();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-// Resolve language from the cookie and load the UI-chrome map (non-English)
-// before MVC renders. Placed after auth so the admin area can be skipped inside.
-app.UseMiddleware<LanguageMiddleware>();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapSeoEndpoints();
 
 app.Run();
 
-public partial class Program
-{
-    // Status codes the public-api retry treats as transient. Beyond the usual set
-    // (408 / 429 / 5xx), this includes the 403/404 a reverse proxy emits while the
-    // downstream route is briefly unavailable.
-    internal static bool IsTransientProxyBlip(HttpStatusCode status)
-        => status is HttpStatusCode.Forbidden
-            or HttpStatusCode.NotFound
-            or HttpStatusCode.RequestTimeout
-            or HttpStatusCode.TooManyRequests
-            or >= HttpStatusCode.InternalServerError;
-}
+public partial class Program;
