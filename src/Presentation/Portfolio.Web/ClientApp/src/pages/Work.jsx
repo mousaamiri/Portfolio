@@ -7,7 +7,14 @@ import { usePageMeta, useApi } from "../lib/hooks";
 import { api } from "../lib/api";
 import { FEATURES, ROUTES } from "../lib/features";
 import { modernImageSrc, splitTechs } from "../lib/techColor";
-import { CATEGORY_KEYS, localizeDigits, pad2, projectCategory, projectPath } from "../lib/projectMeta";
+import {
+  CATEGORY_KEYS,
+  isRtlLang,
+  localizeDigits,
+  pad2,
+  projectCategory,
+  projectPath,
+} from "../lib/projectMeta";
 import PageStatus from "../components/PageStatus";
 
 const COPY = {
@@ -35,7 +42,7 @@ const COPY = {
   },
 };
 
-function ProjectThumb({ image, alt }) {
+function ProjectThumb({ image }) {
   if (!image) {
     return (
       <span className="work-card-placeholder" aria-hidden="true">
@@ -47,7 +54,7 @@ function ProjectThumb({ image, alt }) {
     <picture>
       <source type="image/avif" srcSet={modernImageSrc(image, "avif")} />
       <source type="image/webp" srcSet={modernImageSrc(image, "webp")} />
-      <img src={image} alt={alt} loading="lazy" />
+      <img src={image} alt="" loading="lazy" />
     </picture>
   );
 }
@@ -60,7 +67,7 @@ function WorkCard({ project, copy, lang }) {
   return (
     <Link className="work-card" to={projectPath(project.slug)}>
       <span className="work-card-media">
-        <ProjectThumb image={project.thumbnailUrl} alt={project.title} />
+        <ProjectThumb image={project.thumbnailUrl} />
       </span>
 
       <span className="work-card-body">
@@ -95,7 +102,7 @@ function WorkCard({ project, copy, lang }) {
 
 export default function Work() {
   const { t, lang } = useI18n();
-  const copy = lang === "fa" || lang === "ar" ? COPY.fa : COPY.en;
+  const copy = isRtlLang(lang) ? COPY.fa : COPY.en;
   usePageMeta(t("work.title", copy.heading), t("work.meta_description", copy.lede));
 
   const { data: projects, loading, error } = useApi(() => api.getProjects(lang), [lang]);
@@ -124,7 +131,11 @@ export default function Work() {
     [counts]
   );
 
-  const visible = filter === "all" ? items : items.filter((item) => item.category === filter);
+  // A refetch can drop the category that is currently selected; fall back to "all".
+  const activeFilter = filters.includes(filter) ? filter : "all";
+
+  const visible =
+    activeFilter === "all" ? items : items.filter((item) => item.category === activeFilter);
 
   if (!projects) {
     return (
@@ -154,8 +165,8 @@ export default function Work() {
               <button
                 key={key}
                 type="button"
-                className={`work-filter${filter === key ? " is-active" : ""}`}
-                aria-pressed={filter === key}
+                className={`work-filter${activeFilter === key ? " is-active" : ""}`}
+                aria-pressed={activeFilter === key}
                 onClick={() => setFilter(key)}
               >
                 <span>{key === "all" ? copy.all : copy.categories[key]}</span>
@@ -168,7 +179,7 @@ export default function Work() {
         {visible.length > 0 ? (
           <div className="work-grid">
             {visible.map((project) => (
-              <WorkCard key={project.id} project={project} copy={copy} lang={lang} />
+              <WorkCard key={project.id || project.slug} project={project} copy={copy} lang={lang} />
             ))}
           </div>
         ) : (

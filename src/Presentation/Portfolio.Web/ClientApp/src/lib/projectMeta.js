@@ -41,7 +41,8 @@ export function projectYear(project, lang) {
   const iso = project?.completedAt || project?.startedAt;
   if (!iso) return null;
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return null;
+  // Unset DateTime columns serialize as 0001-01-01; treat them as "no date".
+  if (Number.isNaN(date.getTime()) || date.getUTCFullYear() < 1900) return null;
   if (isRtlLang(lang)) {
     return new Intl.DateTimeFormat("fa-IR-u-ca-persian", { year: "numeric" }).format(date);
   }
@@ -51,7 +52,7 @@ export function projectYear(project, lang) {
 // Returns { months, ongoing } or null when the start date is unusable.
 export function projectDuration(project) {
   const start = project?.startedAt ? new Date(project.startedAt) : null;
-  if (!start || Number.isNaN(start.getTime())) return null;
+  if (!start || Number.isNaN(start.getTime()) || start.getUTCFullYear() < 1900) return null;
 
   const end = project?.completedAt ? new Date(project.completedAt) : null;
   if (!end || Number.isNaN(end.getTime()) || end < start) {
@@ -70,9 +71,4 @@ export function splitParagraphs(text) {
 
 export function projectPath(slug) {
   return `/Work/${encodeURIComponent(slug || "")}`;
-}
-
-// Index of a project inside the ordered list, falling back to -1.
-export function projectIndex(projects, id) {
-  return (projects || []).findIndex((project) => project?.id === id);
 }

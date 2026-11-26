@@ -3,8 +3,10 @@ import "../styles/pages/project-detail.css";
 import { useI18n } from "../lib/i18n";
 import { useApi, usePageMeta } from "../lib/hooks";
 import { api } from "../lib/api";
+import { ROUTES } from "../lib/features";
 import { modernImageSrc, splitTechs } from "../lib/techColor";
 import {
+  isRtlLang,
   localizeDigits,
   pad2,
   projectCategory,
@@ -18,6 +20,7 @@ import PageStatus from "../components/PageStatus";
 const copy = {
   en: {
     breadcrumb: "Work",
+    breadcrumbLabel: "Breadcrumb",
     eyebrow: "CASE STUDY",
     viewSite: "View website",
     github: "GitHub",
@@ -48,6 +51,7 @@ const copy = {
     nextTitle: "Next case study",
     viewProject: "View project",
     back: "Back to all work",
+    backArrow: "←",
     notFound: "Project not found",
     notFoundBack: "Back to work",
     placeholder: "No preview image",
@@ -55,6 +59,7 @@ const copy = {
   },
   fa: {
     breadcrumb: "نمونه‌کارها",
+    breadcrumbLabel: "مسیر صفحه",
     eyebrow: "CASE STUDY",
     viewSite: "مشاهدهٔ وب‌سایت",
     github: "گیت‌هاب",
@@ -85,6 +90,7 @@ const copy = {
     nextTitle: "نمونه‌کار بعدی",
     viewProject: "مشاهدهٔ پروژه",
     back: "بازگشت به فهرست نمونه‌کارها",
+    backArrow: "→",
     notFound: "پروژه پیدا نشد",
     notFoundBack: "بازگشت به نمونه‌کارها",
     placeholder: "بدون تصویر پیش‌نمایش",
@@ -95,7 +101,7 @@ const copy = {
 export default function ProjectDetail() {
   const { slug } = useParams();
   const { t, lang } = useI18n();
-  const fa = lang === "fa" || lang === "ar";
+  const fa = isRtlLang(lang);
   const dict = fa ? copy.fa : copy.en;
   const c = (key) => t(`case.${key}`, dict[key]);
 
@@ -115,8 +121,8 @@ export default function ProjectDetail() {
   } else if (!project) {
     body = (
       <div className="case-empty">
-        <p className="case-empty-title">{c("notFound")}</p>
-        <Link className="case-empty-link" to="/Work">
+        <h1 className="case-empty-title">{c("notFound")}</h1>
+        <Link className="case-empty-link" to={ROUTES.work}>
           {c("notFoundBack")}
         </Link>
       </div>
@@ -169,7 +175,7 @@ export default function ProjectDetail() {
     const webp = image ? modernImageSrc(image, "webp") : "";
 
     const facts = [
-      project.completedAt ? c("statusDone") : c("statusOngoing"),
+      duration && !duration.ongoing ? c("statusDone") : c("statusOngoing"),
       project.isSourcePrivate ? c("sourcePrivate") : c("sourcePublic"),
       `${localizeDigits(techs.length, lang)} ${c("techUnit")}`,
     ];
@@ -183,8 +189,8 @@ export default function ProjectDetail() {
 
     body = (
       <>
-        <nav className="case-breadcrumb" aria-label="Breadcrumb">
-          <Link to="/Work">{c("breadcrumb")}</Link>
+        <nav className="case-breadcrumb" aria-label={c("breadcrumbLabel")}>
+          <Link to={ROUTES.work}>{c("breadcrumb")}</Link>
           <span className="case-breadcrumb-sep" aria-hidden="true">
             /
           </span>
@@ -231,7 +237,7 @@ export default function ProjectDetail() {
             <picture>
               {avif ? <source type="image/avif" srcSet={avif} /> : null}
               {webp ? <source type="image/webp" srcSet={webp} /> : null}
-              <img src={image} alt={project.title} />
+              <img src={image} alt="" />
             </picture>
           ) : (
             <span className="case-hero-placeholder">{c("placeholder")}</span>
@@ -314,7 +320,7 @@ export default function ProjectDetail() {
               className="case-pager-link case-pager-link--prev"
               to={projectPath(prev.slug)}
               title={prev.title}
-              aria-label={prev.title}
+              aria-label={`${c("prevProject")}: ${prev.title}`}
             >
               <span className="case-pager-label">{c("prevProject")}</span>
               <span className="case-pager-title">{prev.title}</span>
@@ -329,7 +335,7 @@ export default function ProjectDetail() {
             </span>
           )}
 
-          <Link className="case-pager-all" to="/Work">
+          <Link className="case-pager-all" to={ROUTES.work}>
             {c("allProjects")}
           </Link>
 
@@ -338,7 +344,7 @@ export default function ProjectDetail() {
               className="case-pager-link case-pager-link--next"
               to={projectPath(next.slug)}
               title={next.title}
-              aria-label={next.title}
+              aria-label={`${c("nextProject")}: ${next.title}`}
             >
               <span className="case-pager-label">{c("nextProject")}</span>
               <span className="case-pager-title">{next.title}</span>
@@ -360,7 +366,7 @@ export default function ProjectDetail() {
             <Link className="case-next-card" to={projectPath(nextProject.slug)}>
               <span className="case-next-thumb">
                 {nextProject.thumbnailUrl ? (
-                  <img src={nextProject.thumbnailUrl} alt={nextProject.title} loading="lazy" />
+                    <img src={nextProject.thumbnailUrl} alt="" loading="lazy" />
                 ) : null}
               </span>
               <span className="case-next-body">
@@ -375,8 +381,9 @@ export default function ProjectDetail() {
           </div>
         ) : null}
 
-        <Link className="case-back" to="/Work">
-          ← {c("back")}
+        <Link className="case-back" to={ROUTES.work}>
+          <span className="case-back-arrow" aria-hidden="true">{c("backArrow")}</span>
+          {c("back")}
         </Link>
       </>
     );
