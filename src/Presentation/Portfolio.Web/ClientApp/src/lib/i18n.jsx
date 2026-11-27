@@ -2,8 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { api } from "./api";
 
 const LANG_KEY = "portfolio-lang";
-const SUPPORTED = ["en", "fa", "ar"];
-const RTL = new Set(["fa", "ar"]);
+const SUPPORTED = ["en", "fa"];
+const RTL = new Set(["fa"]);
 
 const LanguageContext = createContext(null);
 

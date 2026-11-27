@@ -137,7 +137,7 @@ public class EducationServiceTests
         _unitOfWorkMock.Setup(u => u.Educations.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Education> { edu });
 
-        var result = await _sut.GetAllAsync("ar");
+        var result = await _sut.GetAllAsync("fa");
 
         result.Value![0].InstitutionName.Should().BeEmpty();
         result.Value[0].Degree.Should().BeEmpty();

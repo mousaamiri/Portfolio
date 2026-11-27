@@ -148,7 +148,7 @@ public class ProjectServiceTests
         _unitOfWorkMock.Setup(u => u.Projects.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Project> { project });
 
-        var result = await _sut.GetAllAsync("ar");
+        var result = await _sut.GetAllAsync("fa");
 
         result.IsSuccess.Should().BeTrue();
         result.Value![0].Title.Should().BeEmpty();

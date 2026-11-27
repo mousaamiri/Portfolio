@@ -53,13 +53,13 @@ public class ExperiencesControllerTests : IDisposable
     [Fact]
     public async Task GetAll_WithLangParam_ShouldPassLanguageToService()
     {
-        _mockService.Setup(s => s.GetPublicAsync("ar", It.IsAny<CancellationToken>()))
+        _mockService.Setup(s => s.GetPublicAsync("fa", It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<ExperienceDto>>.Success(new List<ExperienceDto>()));
 
-        var response = await _client.GetAsync("/api/public/experiences?lang=ar");
+        var response = await _client.GetAsync("/api/public/experiences?lang=fa");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        _mockService.Verify(s => s.GetPublicAsync("ar", It.IsAny<CancellationToken>()), Times.Once);
+        _mockService.Verify(s => s.GetPublicAsync("fa", It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

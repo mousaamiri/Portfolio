@@ -19,7 +19,7 @@ public static class SeoEndpoints
     private static readonly string[] AlwaysVisiblePaths =
         ["/", "/Work", "/About", "/Experience", "/Contact"];
 
-    private static readonly string[] SupportedLanguages = ["en", "fa", "ar"];
+    private static readonly string[] SupportedLanguages = ["en", "fa"];
 
     public static IEndpointRouteBuilder MapSeoEndpoints(this IEndpointRouteBuilder endpoints)
     {

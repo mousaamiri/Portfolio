@@ -16,7 +16,7 @@ const FA_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
 const MONTH_MS = 1000 * 60 * 60 * 24 * 30.44;
 
 export function isRtlLang(lang) {
-  return lang === "fa" || lang === "ar";
+  return lang === "fa";
 }
 
 export function localizeDigits(value, lang) {

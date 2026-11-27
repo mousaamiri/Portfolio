@@ -130,7 +130,7 @@ public class SkillServiceTests
         _unitOfWorkMock.Setup(u => u.Skills.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Skill> { skill });
 
-        var result = await _sut.GetAllAsync("ar");
+        var result = await _sut.GetAllAsync("fa");
 
         result.Value![0].Name.Should().BeEmpty();
     }

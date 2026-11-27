@@ -373,7 +373,6 @@ export const RESOURCES = {
       { name: "languageCode", label: "Language", type: "select", options: [
         { value: "fa", label: "Persian (fa)" },
         { value: "en", label: "English (en)" },
-        { value: "ar", label: "Arabic (ar)" },
       ] },
       area("value", "Value", { required: true, rows: 3 }),
       check("isActive", "Active"),

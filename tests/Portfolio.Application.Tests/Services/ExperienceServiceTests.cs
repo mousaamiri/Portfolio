@@ -135,7 +135,7 @@ public class ExperienceServiceTests
         _unitOfWorkMock.Setup(u => u.Experiences.GetAllWithTranslationsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Experience> { exp });
 
-        var result = await _sut.GetAllAsync("ar");
+        var result = await _sut.GetAllAsync("fa");
 
         result.Value![0].CompanyName.Should().BeEmpty();
         result.Value[0].JobTitle.Should().BeEmpty();

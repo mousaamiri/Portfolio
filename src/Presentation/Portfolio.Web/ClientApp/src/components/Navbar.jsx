@@ -6,9 +6,9 @@ import { useTheme } from "../lib/theme";
 import { FEATURES, ROUTES, pageFromPath } from "../lib/features";
 import Logo from "./Logo";
 
-const LANG_ORDER = ["en", "fa", "ar"];
-const LANG_SHORT = { en: "EN", fa: "فا", ar: "ع" };
-const LANG_NAME = { en: "English", fa: "فارسی", ar: "العربية" };
+const LANG_ORDER = ["en", "fa"];
+const LANG_SHORT = { en: "EN", fa: "فا" };
+const LANG_NAME = { en: "English", fa: "فارسی" };
 
 const NAV_ITEMS = [
   { page: "home", key: "nav.home", label: "Home" },
